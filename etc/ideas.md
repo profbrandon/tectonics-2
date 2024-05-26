@@ -11,6 +11,7 @@ Plates
     + One way to ensure that there is no immobile state is to allow for small default accelerations in certain parts of the map, akin to the coriolis acceleration
     + Frictional forces determined by the mass of the plate
       * In reality, this should also depend on the shape of the underside of the plate
+      * They could also depend on the velocity of the plate, that way plates don't accelerate indefinitely
   - Fracture boundaries (Weak points where the plate should split)
     + Should either be randomly decided or systematically chosen, but the latter is preferable
       * The thinner the crust, the easier it should be to split
@@ -22,6 +23,7 @@ Plates
       * Occurs after subduction, presumably when a sufficient amount of material (metamorphic rock) binds the two
         - This could be done by adding metamorphic rock to the bottom of the continent
       * What should be the conditions for adhesion to occur?
+        - It seems implausible that plates with radically different speeds would merge
       * When the two plates combine, their center of mass and velocity will need to be recalculated from their total momentum
     + Subduction
       * One plate dives down below the other but most likely this should not be directly simulated
@@ -29,11 +31,19 @@ Plates
       * How far should the plates be allowed to subduct under each other if at all?
         - The worry is that mountains would stack on one line of pixels bordering the continents
           + Perhaps through a combination of accretion and "folding" a similar result could be obtained
+      * How should this affect the plate's momentum? Subduction is theorized to pull the hanging plate towards the margin, but should the riding plate slow down?
+      * Can thrust faults be modeled in a somewhat realistic fashion?
     + Divergence
       * Creates new oceanic crust or crust of decreasing height to some minimum value (probably the latter)
         - In the case of the latter, should there be a drop off when the crust becomes submerged?
+        - How can this be used to model normal faults in a semi-realistic fashion?
       * In the ocean it creates midocean ridges which are explained by the less-dense, freshly created rock that then cools and accumulates rock from the upper mantle
         - This could potentially be modeled but would either need to use age to determine the accretion, or rock temperature (the former seems more appealing)
+      * This should push plates apart, providing an acceleration, possibly related to the length of the boundary?
+    + Transform Boundaries
+      * These only really make sense when the plates are moving in exactly opposite directions and if the boundary between them is parallel to their velocity vectors
+      * How could these be modeled? Is leaving them out inaccurate?
+        - It seems likely that the action of plates would try to minimize the energy between them, thus, plate boundaries should optimize themselves for either purely transform behavior or purely subductive behavior. Perhaps, plates could lose small bits of material to the other, slowly changing the orientation of the boundary. What could be the local mechanism to do this?
 
 Chunks
   - Contain rock type, density, age, erodibility, height (depth?) etc.
@@ -41,7 +51,7 @@ Chunks
       * Rock (Layer) Types:
         - Granular (Extremely erosive)
           + Soil
-            - Fertility might be difficult to model
+            * Fertility might be difficult to model
           + Sand
           + Gravel
           + Ash
@@ -55,16 +65,19 @@ Chunks
           + Tuff
         - Igneous (Hardly erosive)
           + Basalt 
-            - Low viscosity
-            - Flows over a larger area, building shield volcanoes
+            * Low viscosity
+            * Flows over a larger area, building shield volcanoes
           + Andesite
-            - Medium viscosity
-            - Flows over a small area, building stratovolcanoes
-            - Also produces smaller tephra deposits
+            * Medium viscosity
+            * Flows over a small area, building stratovolcanoes
+            * Also produces smaller tephra deposits
           + Rhyolite
-            - High viscosity
-            - Explodes, creating calderas and depositing tephra
+            * High viscosity
+            * Explodes, creating calderas and depositing tephra
         - Metamorphic (Moderately erosive)
+          + While there are many types of metamorphic rock, it might make sense to treat them as one type of rock
+          + The conversion from normal rock to metamorphic should depend on a compression factor and it should preserve some aspects of the parent rock
+          + Maybe this should just be a boolean?
     + Could potentially contain layers
       * Should this model the "floating" of the crust on the mantle, if so, the oceans will need to be dealt with in a similar manner
   - Maybe fertility? As in how much nutrients are present in the rock (which derived soils inherit)
@@ -80,6 +93,7 @@ Erosion
       * Liquid water: this one is also difficult to model without more study done on fluid mechanics, but there are potential workarounds
         - Rivers almost always empty into the ocean, i.e., the boundaries of the continents, imposing the condition that there should be no local minima on the interior of a continent
           + Local minima should fill themselves. A simple blur would act in this manner, but it would only flatten the terrain, which is unrealistic, as erosion often takes flat landscapes and carves canyon systems into them.
+            * This, of course, is a local property that should beget a local manipulation
           + Lower points collect more water, and so erosion is more advanced in those areas
         - Coastal erosion due to waves (which could be affected by wind)
           + This is also affected by how shallow the ocean is ahead of the shore
@@ -87,14 +101,14 @@ Erosion
         - This would be modeled in similar way to rivers, but it would work faster, as glaciers do
       * Landslides: this would be modeled to a less accurate degree by a blur, but it should really take into account sediment type and height relative to adjacent chunks
     + Vegetation, to be accurately modeled, would need some kind of climate simulation, but could possibly be done with a combination of height and sediment
-      * If climate was modeled, then different types of vegetation could be accounted for
-      * Height and sediment would approximate for precipitation levels/climate
+      * If climate was modeled, then different types of vegetation could be accounted for, but maybe this could just be represented in the density parameter
+      * Height and sediment type would approximate for precipitation levels/climate
     + Height, as discussed above, would increase the possibility of glaciers and landslides, and decrease the amount of vegetation present
       * Potentially, soil production could be simulated as a combination of sand and vegetation combined with erosion
         - With this, vegetation could be rated by density and would be severely limited without soil, thus allowing for the development of forests and grasslands
 
 Bodies of Water
-  - The amount of water in the model should ideally not change
+  - The amount of water in the model should ideally not change, but should be an initial parameter
     + Ice would need to be modeled physically, to reduce the amount of water in the oceans
     + The problem with this approach is determining what the height of the oceans should be
       * One would need to progressively "fill" the ocean by ordering all in order of height. This could be done but it might be unnecessarily expensive to run every frame
@@ -107,7 +121,10 @@ Volcanism
     + These volcanoes would be fixed to the world map
   - Back-arc volcanism could be modeled similarly but with short lifespans
     + These volcanoes would need to travel with the continent
-  - The viscosity of the magma could be initially set for a hot spot determining how the large the deposition radius is
+  - The viscosity of the magma could be initially set for a hot spot determining how large the deposition radius is
+    + This would also determine the kind of rock deposited
+    + Potentially, at the end of the intrusion's life, it could deposit some kind of intrusive igneous rock underground
+      * This wouldn't need to be modeled all that accurately. I'm imagining that when the episode is finished, some portion of the preexisting rock is converted to intrusive igneous rock of the correct type
 
 Climate
   - One way to model this would be to create default heat maps, akin to how the equator is perpetually warmer than the poles
@@ -133,9 +150,17 @@ Vegetation
     + Soil/Rock type
     + Temperature
     + Height
+      * But also local height profiles, i.e., vegetation grows along rivers and oceans
     + Precipitation
     + Carbon Dioxide
+    + Proximity to oceans (hieght above oceans?)
+    + Proximity to other vegetation
   - Should there be oceanic vegetation? If so, it would probably need to be interpeted as on the ocean floor, not at the surface
+  - As discussed in other places, vegetation has an effect on the surrounding parameters:
+    + Reduces heat
+    + Converts sand into soil
+    + Reduces local CO2 (should this be what reduces heat?)
+    + Reduces erosion of the underlying soil and rock
 
 The World Map
   - Topology
@@ -147,7 +172,96 @@ The World Map
       * Similar to the sphere, there probably is not a equidistant collection of vertices for high numbers of points
     + The topology would need to account for vector transport, or could be partially encoded through "acceleration" terms (via the christoffel symbols)
       * This would require precomputing a lot of information about the topology
+  - Scale
+    + If we're trying to model an entire planet's worth of surface area (Earth's is 500,000,000 km^2), then even a 2048x1024 pixel map would have each pixel representing 240 km^2, in other words, it would be about 16km on a side
+    + A 2048x1024 pixel map where pixels are 1km on a side is roughly 2,000,000 km^2 which is less than the surface area of the dwarf planet Ceres
 
 
 # Display Ideas
+
+Rendering Modes
+  - For each type of variable, there should be some way to view it in isolation over the whole domain
+    + Some of the variables might include temperature, height, rock type, vegetation, erosive factor, precipitation, etc.
+  - It should be possible to zoom in and out in any of these modes
+    + For zooming out, should it be able to go past single-pixels? If so, some kind of pixel aggregation will need to be done
+  - In addition to a console mode, the user should have the ability to set how often (if at all) the landscape renders to the screen
+  - The program should be able to load previous runs and display them
+  - Pausing/stepping through the playback/simulation should be allowed
+
+Parameters
+  - The user should have the ability to change parameters, but they should become locked once the simulation is started
+
+Output
+  - There should be an option to determine whether intermediate states are saved to disk
+    + These could have several different file formats depending on the use
+      * If used for a simpler purpose, this could be a sequence of grayscale images representing the parameter fields
+        - Maybe the user could select which of these should be saved
+      * (If in Java) They could be entire Java objects, but this seems clumsy
+
+
+
+# Parameter Space 
+
+Chunk
+  - Rock Layer(s)
+    + Composition
+      * Metamorphic Boolean?
+      * Oceanic Origin Boolean?
+      * Fertility
+      * Erodibility (Hardness?)
+      * Density
+      * Age
+    + Original Thickness
+    + Compression Factor
+  - Vegetation Density
+    + Type?
+  - Water Thickness (Depth)
+    + Temperature?
+    + Absorbed CO2?
+  - Ice Thickness
+  - Surface Temperature
+  - Atmospheric CO2 content
+  - Height (Aggregate)
+  - Volcano Present
+  - Derived Mass
+
+World
+  - Plates
+    + Continents/Islands
+    + Bounding Box
+    + Mass (COM)
+      * Column Mass: includes water content
+    + Velocity
+    + Acceleration
+      * External Forces
+        - Friction
+        - Boundary conditions
+    + Boundary
+    + Fracture Zones
+      * Weakness Plot
+  - Margins
+    + Divergent
+    + Convergent
+    + Transform?
+  - Base Heat Map
+    + Terrestrial
+    + Oceanic?
+    + Derived wind patterns
+  - Base Accelerations Map
+  - Hot Spot Volcanoes
+
+Volcanoes
+  - Position (relative to parent)
+  - Age
+  - Lifespan
+  - Viscosity
+  - Size
+      
+
+
+# Phases
+
+
+
+## Phase 1
 
