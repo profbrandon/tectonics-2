@@ -1,4 +1,6 @@
 
+Disclaimer: Many ideas are transferred to here from [Viilanen 2012]
+
 # Simulation Ideas
 
 Plates
@@ -22,8 +24,10 @@ Plates
     + Adhesion of the continental margins
       * Occurs after subduction, presumably when a sufficient amount of material (metamorphic rock) binds the two
         - This could be done by adding metamorphic rock to the bottom of the continent
+        - It seems that this also happens via igneous intrusions, literally suturing the continents together
       * What should be the conditions for adhesion to occur?
         - It seems implausible that plates with radically different speeds would merge
+        - There should be opposing forces to counter the plate's relative motion (i.e., a restorative force proportional to their speeds)
       * When the two plates combine, their center of mass and velocity will need to be recalculated from their total momentum
     + Subduction
       * One plate dives down below the other but most likely this should not be directly simulated
@@ -33,6 +37,7 @@ Plates
           + Perhaps through a combination of accretion and "folding" a similar result could be obtained
       * How should this affect the plate's momentum? Subduction is theorized to pull the hanging plate towards the margin, but should the riding plate slow down?
       * Can thrust faults be modeled in a somewhat realistic fashion?
+        - Aside from thrust belts, the subduction could be partially modeled by some special aggregation function
     + Divergence
       * Creates new oceanic crust or crust of decreasing height to some minimum value (probably the latter)
         - In the case of the latter, should there be a drop off when the crust becomes submerged?
@@ -42,6 +47,7 @@ Plates
       * This should push plates apart, providing an acceleration, possibly related to the length of the boundary?
     + Transform Boundaries
       * These only really make sense when the plates are moving in exactly opposite directions and if the boundary between them is parallel to their velocity vectors
+        - This initially appears to be the case (as is mentioned in [Viilanen 2012]) but on further inspection, there will almost always be transform boundaries. This is because if you consider one plate's frame of reference, then the other is always moving in some other direction. So long as one part of the plate's shared boundary is aligned with this vector then there is a transform fault
       * How could these be modeled? Is leaving them out inaccurate?
         - It seems likely that the action of plates would try to minimize the energy between them, thus, plate boundaries should optimize themselves for either purely transform behavior or purely subductive behavior. Perhaps, plates could lose small bits of material to the other, slowly changing the orientation of the boundary. What could be the local mechanism to do this?
 
@@ -64,14 +70,15 @@ Chunks
           + Conglomerate
           + Tuff
         - Igneous (Hardly erosive)
-          + Basalt 
+          + Basalt -> Intrusive Gabbro
             * Low viscosity
             * Flows over a larger area, building shield volcanoes
-          + Andesite
+            * Harder than other igneous rocks
+          + Andesite -> Intrusive Diorite
             * Medium viscosity
             * Flows over a small area, building stratovolcanoes
             * Also produces smaller tephra deposits
-          + Rhyolite
+          + Rhyolite -> Intrusive Granite
             * High viscosity
             * Explodes, creating calderas and depositing tephra
         - Metamorphic (Moderately erosive)
@@ -106,6 +113,7 @@ Erosion
     + Height, as discussed above, would increase the possibility of glaciers and landslides, and decrease the amount of vegetation present
       * Potentially, soil production could be simulated as a combination of sand and vegetation combined with erosion
         - With this, vegetation could be rated by density and would be severely limited without soil, thus allowing for the development of forests and grasslands
+  - Massive Landslides?
 
 Bodies of Water
   - The amount of water in the model should ideally not change, but should be an initial parameter
@@ -153,7 +161,7 @@ Vegetation
       * But also local height profiles, i.e., vegetation grows along rivers and oceans
     + Precipitation
     + Carbon Dioxide
-    + Proximity to oceans (hieght above oceans?)
+    + Proximity to oceans (height above oceans?)
     + Proximity to other vegetation
   - Should there be oceanic vegetation? If so, it would probably need to be interpeted as on the ocean floor, not at the surface
   - As discussed in other places, vegetation has an effect on the surrounding parameters:
@@ -261,7 +269,50 @@ Volcanoes
 
 # Phases
 
-
-
 ## Phase 1
 
+This will attempt to replicate the results presented in [Viitanen 2012]. As a result, much of the more complicated structure will be presently eliminated (reserved for future implementation). The subset of the parameters to be implemented are:
+
+Chunk
+  - Rock Layer(s)
+    + Age
+    + Original Thickness
+  - Height (Aggregate)
+  - Derived Mass
+
+World
+  - Plates
+    + Continents/Islands
+    + Bounding Box
+    + Mass (COM)
+    + Velocity
+    + Acceleration
+      * External Forces
+        - Friction
+        - Boundary conditions
+    + Boundary
+  - Margins
+    + Divergent
+    + Convergent
+
+There are a few remarks to make about this list:
+  1. Rock layers will be modeled, but they will be indistinguishable
+  2. Erosion will be modeled via a simple blur
+  3. Water thickness will be modeled as a constant height value
+  4. Continents will be defined by whatever is above water as opposed to stratigraphy
+  5. Divergent margins will simply make new crust at decreasing values, with no special boundary modifications
+  6. Convergent margins will just be overlapping pieces that eventually deposite crust underneath existing crust (inland)
+  7. In line with [Viilanen 2012], if plate motion slows down too much, then the plates are given new random velocities
+
+The goal of this phase is mainly to produce results similar to those in the above mentioned paper. The first aspect that should be worked on is that of the GUI. It would be best to figure out all of the magnification, translation, and viewing window mechanics, as well as provide basic simulation control. The GUI should allow for the following to be adjusted:
+  - Map Properties
+    + Width
+    + Length
+  - Viewing Properties
+    + Center Location
+    + Level of Magnification
+    + Query Tool
+  - Adjustable Parameters
+    + Initial Sea Level Height
+    + Transfer Ratio (_folding_ratio in [Viilanen 2012])
+    + Continental Merging Ratio (agg_ratio_rel in [Viilanen 2012])
