@@ -1,0 +1,44 @@
+
+
+class SimulationViewer
+  * public Scene asScene()
+
+interface SimulationMode
+  * String getDescription()
+  * SimulationMode getDefaultMode()
+
+interface Simulation<T extends SimulationMode>
+  * ParameterTree getParameters()
+  * void setParameters(ParameterTree)
+  * void play()
+  * void pause()
+  * void end()
+  * void step()
+  * void setSimulationListener(SimulationListener)
+  * void setSimulationMode(T)
+
+interface SimulationListener
+  * void postImage(WritableImage)
+
+abstract class Parameter<T>
+  * String getName()
+  * String getDescription()
+  * T getValue()
+  * T minValue()
+  * T maxValue()
+  * void setValue(T)
+
+class ByteParameter extends Parameter<Byte>
+class IntegerParameter extends Parameter<Integer>
+class FloatParameter extends Parameter<Float>
+class DoubleParameter extends Parameter<Double>
+class StringParameter extends Parameter<String>
+
+class ParameterTree
+  * boolean isLeaf()
+  * List<ByteParameter> getByteParameters()
+  * List<IntegerParameter> getIntegerParameters()
+  * List<FloatParameter> getFloatParameters()
+  * List<DoubleParameter> getDoubleParameters()
+  * List<StringParameter> getStringParameters()
+  * List<ParameterTree> getSubTrees()

@@ -21,6 +21,9 @@ Plates
         - One way to do this would be to convert plates into a collection of locals, build a graph of connections, and analyze the graph for low connectivity
         - Another way would be to progressively expand from the COM until the the ratio of added continent vs waste reaches some lower threshold
   - Interactions
+    + It makes a lot of sense that [Viilanen 2012] kept a list of continents on plates. This means that collision types can be easily categorized
+      * In reality, it's mostly plate density that dictates plate collisions, but this approach works since continental crust is, on average, less dense than oceanic crust
+      * Perhaps the properties of some local region (the overlap) could be used to determine the status of collisions
     + Adhesion of the continental margins
       * Occurs after subduction, presumably when a sufficient amount of material (metamorphic rock) binds the two
         - This could be done by adding metamorphic rock to the bottom of the continent
@@ -38,6 +41,7 @@ Plates
       * How should this affect the plate's momentum? Subduction is theorized to pull the hanging plate towards the margin, but should the riding plate slow down?
       * Can thrust faults be modeled in a somewhat realistic fashion?
         - Aside from thrust belts, the subduction could be partially modeled by some special aggregation function
+        - A first approach could be to stack weaker layers (up to some maximum) and to inherit the basement of the riding plate (mimicking "thin skinned" tectonics)
     + Divergence
       * Creates new oceanic crust or crust of decreasing height to some minimum value (probably the latter)
         - In the case of the latter, should there be a drop off when the crust becomes submerged?
@@ -303,16 +307,63 @@ There are a few remarks to make about this list:
   5. Divergent margins will simply make new crust at decreasing values, with no special boundary modifications
   6. Convergent margins will just be overlapping pieces that eventually deposite crust underneath existing crust (inland)
   7. In line with [Viilanen 2012], if plate motion slows down too much, then the plates are given new random velocities
+  8. In Ocean-Ocean collisions Continent-Continent collisions, the "subducted" plate is arbitrarily chosen
 
 The goal of this phase is mainly to produce results similar to those in the above mentioned paper. The first aspect that should be worked on is that of the GUI. It would be best to figure out all of the magnification, translation, and viewing window mechanics, as well as provide basic simulation control. The GUI should allow for the following to be adjusted:
   - Map Properties
     + Width
     + Length
+    + Allowable Height
   - Viewing Properties
     + Center Location
     + Level of Magnification
     + Query Tool
+      * Height profile (linear application of the query tool)
   - Adjustable Parameters
     + Initial Sea Level Height
     + Transfer Ratio (_folding_ratio in [Viilanen 2012])
     + Continental Merging Ratio (agg_ratio_rel in [Viilanen 2012])
+
+
+## Phase 2
+
+The goal of this phase is to provide support for stratigraphy, volcanism, and realistic erosion. The introduction of different rock layers is a large step in the direction of realism, but with it raises several questions:
+
+  1. How can discretized plate interactions be modeled in the stratigraphic record?
+    - Can subduction (thrust belts, accretionary wedges, metamorphism, reverse faulting of bedrock) be modeled in a realistic/computationally inexpensive fashion?
+    - How can one model the transition from continental crust to oceanic along rifting margins?
+    - To model this, does one need a representation of faults?
+    - Does this introduce less realism by trying to discretize something too continuous?
+    - Plates automatically organize themselves into two margins, those perpendicular to relative plate motion (extensional), and those parallel (transform). What kind of algorithm is needed to model this? How much realism is gained from an implementation?
+  
+  2. What level of detail is sufficient to represent different rock classes?
+  
+  3. When plates break up, what should determine the break?
+    - Is it too computationally expensive to compute zones of weakness?
+    - How could this algorithm guarantee that plates are not too misshapen?
+
+What is perhaps more pressing than each of these individual questions is whether they can all be unified in a (reasonably) elegant framework. Volcanism should be the easiest of the three features to implement, as volcanoes themselves are not terribly complicated and so a simulated simplification of them should be reasonably straightforward. Since we will not be modeling precipitation in this phase, we will need some algorithm that artificially reproduces the effects of precipitation. Some features that would be excellent to have are:
+  1. Mountainous regions with valleys and ridges
+  2. Large semi-flat watersheds
+  3. Canyons
+  4. Depositional environments (deltas, alluvial fans)
+
+The main issue is that these landforms require certain constraints to produce their forms:
+  - Mountains need to erode quickly, which means high erosion, but they also erode in particular ways that leave tall ridges and steep valleys
+  - For large basins (like the Mississippi River's watershed) high erosion and high deposition cancel each other out, acting more as a transportation system
+  - For canyons to occur, there must be high erosion immediately along the river's path, and low erosion everywhere else (or at least equal deposition)
+  - Deltas can only form if their depositional rate outpaces that of costal erosion
+
+These constrains raise some interesting issues related to equalibrium and suggest that there will necessarily be some parameters that need fine-tuning in order to produce realistic topographies. Yet, nature has automatically picked these fine-tuned variables, which suggests another question: what principles guide nature toward the fine-tuning of these variables?
+
+Different types of erosion should be modeled seperately in order to seperate out their logic, which can then be combined later as a pointwise sum. The main types of erosion we will be trying to model are that due to liquid water and that due to (small) landslides. For the former, there are two factors that initially appear to influence erosion: speed and volume of flow. River speed should be related to how steep the slope is and volume should roughly correspond to height. What is interesting is that river speed actually also follows height. The reason is mostly kinematic, as even though high erosion appears on steep slopes, this erosion steals kinetic energy from the water, reducing its speed: faster water is unencumbered water. This suggests the possibility that height should be the only terrain-based variable. This doesn't feel entirely satisfactory though, because otherwise canyons have no incentive to form. It seems obvious that canyons form because there is less erosion on the canyon's walls than is at the canyon's bottom. There is more water here and thus more erosion. What we are looking for are signs that it follows this pattern, i.e., the height profile of neighboring cells should look something like:
+
+2  1  2          2  2  2          2  2  1
+2  0  2    or    1  0  2    or    2  0  2
+2 -1  2          2 -1  2          2 -1  2
+
+The simplest possible algorithm for this would be to check whether the center cell is the second smallest cell (after checking that it isn't a local minimum). If this is the case, it could increase the erosion factor of the center cell.
+
+Landslides are much simpler, and should really act as a parameterized blur (with the parameter being the hardness of the underlying rock). 
+
+The only other issue to address about erosion is that it is two-fold: erosion is deposition; mass is conserved. In other words, the erosion algorithm must not only figure out how much to decrease a chunks height by. It must also determine which chunks should receive the eroded material. In either case, the material should be deposited on any chunk lower than the target chunk. The material could be partitioned based on how much lower they are. Lastly, the status of this material should be determined. For example, landslides might take rock and reduce it to gravel, or maybe the rock just slides down unaffected. Or, water may take gravel and turn it into sand. One way to do this could be to keep track of how much the material has been subjected to the erosion algorithm. An internal counter for the layer could keep track of how many erosion periods it has left before it becomes the next stage of material.
