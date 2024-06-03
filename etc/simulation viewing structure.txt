@@ -18,7 +18,7 @@ interface Simulation<T extends SimulationMode>
   * void setSimulationMode(T)
 
 interface SimulationListener
-  * void postImage(WritableImage)
+  * void postFrame(WritableImage)
 
 abstract class Parameter<T>
   * String getName()
@@ -28,11 +28,16 @@ abstract class Parameter<T>
   * T maxValue()
   * void setValue(T)
 
-class ByteParameter extends Parameter<Byte>
-class IntegerParameter extends Parameter<Integer>
-class FloatParameter extends Parameter<Float>
-class DoubleParameter extends Parameter<Double>
-class StringParameter extends Parameter<String>
+class BasicParameter<T extends Comparable<T>> extends Parameter<T>
+
+class BooleanParameter extends BasicParameter<Boolean>
+class ByteParameter extends BasicParameter<Byte>
+class ShortParameter extends BasicParameter<Short>
+class IntegerParameter extends BasicParameter<Integer>
+class FloatParameter extends BasicParameter<Float>
+class DoubleParameter extends BasicParameter<Double>
+class CharacterParameter extends BasicParameter<Character>
+class StringParameter extends BasicParameter<String>
 
 class ParameterTree
   * boolean isLeaf()

@@ -1,40 +1,30 @@
 package simulation.parameters;
 
-public abstract class Parameter<T> {
-    /**
-     * @return the name of this parameter
-     */
-    abstract String getName();
-    
-    /**
-     * @return the description of this parameter
-     */
-    abstract String getDescription();
-    
+public abstract class Parameter<T> implements NamedParameter {
     /**
      * @return the value of this parameter
      */
-    abstract T getValue();
+    public abstract T getValue();
     
     /**
      * @return the minimum allowable parameter value
      */
-    abstract T minAllowableValue();
+    public abstract T minAllowableValue();
     
     /**
      * @return the maximum allowable parameter value
      */
-    abstract T maxAllowableValue();
+    public abstract T maxAllowableValue();
 
     /**
      * @return the default value for this parameter
      */
-    abstract T defaultValue();
+    public abstract T defaultValue();
 
     /**
      * Sets this parameter's value to the supplied value.
      * 
      * @param parameter the value to give to this parameter
      */
-    abstract void setValue(final T parameter);
+    public abstract void setValue(final T parameter);
 }

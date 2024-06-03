@@ -78,6 +78,21 @@ public class BasicParameterTree {
         return this.stringParameters;
     }
 
+    public List<NamedParameter> getParameters() {
+        final List<NamedParameter> parameters = new ArrayList<>();
+        parameters.addAll(this.booleanParameters);
+        parameters.addAll(this.byteParameters);
+        parameters.addAll(this.shortParameters);
+        parameters.addAll(this.integerParameters);
+        parameters.addAll(this.longParameters);
+        parameters.addAll(this.floatParameters);
+        parameters.addAll(this.doubleParameters);
+        parameters.addAll(this.characterParameters);
+        parameters.addAll(this.stringParameters);
+
+        return parameters;
+    }
+
     public List<BooleanParameter> getAllBooleanParameters() {
         return this.findAll(tree -> tree.getBooleanParameters(), tree -> tree.getAllBooleanParameters());
     }
@@ -114,6 +129,10 @@ public class BasicParameterTree {
         return this.findAll(tree -> tree.getStringParameters(), tree -> tree.getAllStringParameters());
     }
 
+    public List<NamedParameter> getAllParameters() {
+        return this.findAll(tree -> tree.getParameters(), tree -> tree.getAllParameters());
+    }
+
     private <T> List<T> findAll(final Function<BasicParameterTree, List<T>> initial, final Function<BasicParameterTree, List<T>> produce) {
         final List<T> result = initial.apply(this);
 
@@ -124,7 +143,7 @@ public class BasicParameterTree {
         return result;
     }
 
-    public class Builder {
+    public static class Builder {
         private List<BooleanParameter>   booleanParameters   = new ArrayList<>();
         private List<ByteParameter>      byteParameters      = new ArrayList<>();
         private List<ShortParameter>     shortParameters     = new ArrayList<>();
@@ -138,7 +157,7 @@ public class BasicParameterTree {
         private List<BasicParameterTree> subTrees = new ArrayList<>();
     
         public Builder() {
-
+            
         }
 
         public BasicParameterTree build() {
@@ -155,76 +174,94 @@ public class BasicParameterTree {
                 subTrees);
         }
 
-        public void addBooleanParameters(final Collection<BooleanParameter> booleanParameters) {
+        public Builder addBooleanParameters(final Collection<BooleanParameter> booleanParameters) {
             this.booleanParameters.addAll(booleanParameters);
+            return this;
         }
 
-        public void addByteParameters(final Collection<ByteParameter> byteParameters) {
+        public Builder addByteParameters(final Collection<ByteParameter> byteParameters) {
             this.byteParameters.addAll(byteParameters);
+            return this;
         }
 
-        public void addShortParameters(final Collection<ShortParameter> shortParameters) {
+        public Builder addShortParameters(final Collection<ShortParameter> shortParameters) {
             this.shortParameters.addAll(shortParameters);
+            return this;
         }
 
-        public void addIntegerParameters(final Collection<IntegerParameter> integerParameters) {
+        public Builder addIntegerParameters(final Collection<IntegerParameter> integerParameters) {
             this.integerParameters.addAll(integerParameters);
+            return this;
         }
 
-        public void addLongParameters(final Collection<LongParameter> longParameters) {
+        public Builder addLongParameters(final Collection<LongParameter> longParameters) {
             this.longParameters.addAll(longParameters);
+            return this;
         }
 
-        public void addFloatParameters(final Collection<FloatParameter> floatParameters) {
+        public Builder addFloatParameters(final Collection<FloatParameter> floatParameters) {
             this.floatParameters.addAll(floatParameters);
+            return this;
         }
 
-        public void addDoubleParameters(final Collection<DoubleParameter> doubleParameters) {
+        public Builder addDoubleParameters(final Collection<DoubleParameter> doubleParameters) {
             this.doubleParameters.addAll(doubleParameters);
+            return this;
         }
 
-        public void addCharacterParameters(final Collection<CharacterParameter> characterParameters) {
+        public Builder addCharacterParameters(final Collection<CharacterParameter> characterParameters) {
             this.characterParameters.addAll(characterParameters);
+            return this;
         }
 
-        public void addStringParameters(final Collection<StringParameter> stringParameters) {
+        public Builder addStringParameters(final Collection<StringParameter> stringParameters) {
             this.stringParameters.addAll(stringParameters);
+            return this;
         }
 
-        public void addBooleanParameter(final BooleanParameter booleanParameter) {
+        public Builder addBooleanParameter(final BooleanParameter booleanParameter) {
             this.booleanParameters.add(booleanParameter);
+            return this;
         }
 
-        public void addByteParameter(final ByteParameter byteParameter) {
+        public Builder addByteParameter(final ByteParameter byteParameter) {
             this.byteParameters.add(byteParameter);
+            return this;
         }
 
-        public void addShortParameter(final ShortParameter shortParameter) {
+        public Builder addShortParameter(final ShortParameter shortParameter) {
             this.shortParameters.add(shortParameter);
+            return this;
         }
 
-        public void addIntegerParameter(final IntegerParameter integerParameter) {
+        public Builder addIntegerParameter(final IntegerParameter integerParameter) {
             this.integerParameters.add(integerParameter);
+            return this;
         }
 
-        public void addLongParameter(final LongParameter longParameter) {
+        public Builder addLongParameter(final LongParameter longParameter) {
             this.longParameters.add(longParameter);
+            return this;
         }
 
-        public void addFloatParameter(final FloatParameter floatParameter) {
+        public Builder addFloatParameter(final FloatParameter floatParameter) {
             this.floatParameters.add(floatParameter);
+            return this;
         }
 
-        public void addDoubleParameter(final DoubleParameter doubleParameter) {
+        public Builder addDoubleParameter(final DoubleParameter doubleParameter) {
             this.doubleParameters.add(doubleParameter);
+            return this;
         }
 
-        public void addCharacterParameter(final CharacterParameter characterParameter) {
+        public Builder addCharacterParameter(final CharacterParameter characterParameter) {
             this.characterParameters.add(characterParameter);
+            return this;
         }
 
-        public void addStringParameter(final StringParameter stringParameter) {
+        public Builder addStringParameter(final StringParameter stringParameter) {
             this.stringParameters.add(stringParameter);
+            return this;
         }
     }
 }

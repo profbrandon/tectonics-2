@@ -2,6 +2,7 @@ package simulation.parameters;
 
 public class BasicParameter<T extends Comparable<T>> extends Parameter<T> { 
     private final String NAME;
+    private final String ABBREVIATION;
     private final String DESCRIPTION;
     
     private final T DEFAULT_VALUE;
@@ -12,18 +13,21 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
 
     public BasicParameter(
         final String name,
+        final String abbreviation,
         final String description,
         final T defaultValue,
         final T minValue,
         final T maxValue) {
 
         assert name         != null;
+        assert abbreviation != null;
         assert description  != null;
         assert defaultValue != null;
         assert minValue     != null;
         assert maxValue     != null;
 
         this.NAME          = name;
+        this.ABBREVIATION  = abbreviation;
         this.DESCRIPTION   = description;
         this.DEFAULT_VALUE = defaultValue;
         this.MIN_VALUE     = minValue;
@@ -35,6 +39,11 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
     @Override
     public String getName() {
         return this.NAME;
+    }
+
+    @Override
+    public String getAbbreviation() {
+        return this.ABBREVIATION;
     }
 
     @Override
