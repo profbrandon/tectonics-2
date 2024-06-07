@@ -2,7 +2,9 @@ package simulation.parameters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class BasicParameterTree {
@@ -16,7 +18,7 @@ public class BasicParameterTree {
     private final List<CharacterParameter> characterParameters;
     private final List<StringParameter>    stringParameters;
 
-    private final List<BasicParameterTree> subTrees;
+    private final Map<String, BasicParameterTree> subTrees;
 
     private BasicParameterTree(
         final List<BooleanParameter>   booleanParameters,
@@ -28,7 +30,7 @@ public class BasicParameterTree {
         final List<DoubleParameter>    doubleParameters,
         final List<CharacterParameter> characterParameters,
         final List<StringParameter>    stringParameters,
-        final List<BasicParameterTree> subTrees) {
+        final Map<String, BasicParameterTree> subTrees) {
         
         this.booleanParameters   = booleanParameters;
         this.byteParameters      = byteParameters;
@@ -133,10 +135,18 @@ public class BasicParameterTree {
         return this.findAll(tree -> tree.getParameters(), tree -> tree.getAllParameters());
     }
 
+    public Collection<BasicParameterTree> getSubTrees() {
+        return this.subTrees.values();
+    }
+
+    public Collection<String> getSubTreeNames() {
+        return this.subTrees.keySet();
+    }
+
     private <T> List<T> findAll(final Function<BasicParameterTree, List<T>> initial, final Function<BasicParameterTree, List<T>> produce) {
         final List<T> result = initial.apply(this);
 
-        for (final BasicParameterTree subTree : subTrees) {
+        for (final BasicParameterTree subTree : subTrees.values()) {
             result.addAll(produce.apply(subTree));
         }
 
@@ -154,7 +164,7 @@ public class BasicParameterTree {
         private List<CharacterParameter> characterParameters = new ArrayList<>();
         private List<StringParameter>    stringParameters    = new ArrayList<>();
 
-        private List<BasicParameterTree> subTrees = new ArrayList<>();
+        private Map<String, BasicParameterTree> subTrees = new HashMap<>();
     
         public Builder() {
             
@@ -261,6 +271,11 @@ public class BasicParameterTree {
 
         public Builder addStringParameter(final StringParameter stringParameter) {
             this.stringParameters.add(stringParameter);
+            return this;
+        }
+
+        public Builder addSubTree(final String title, final BasicParameterTree subTree) {
+            this.subTrees.put(title, subTree);
             return this;
         }
     }

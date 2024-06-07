@@ -10,7 +10,7 @@ public class Tectonics extends Application {
         final SimulationScene scene = new SimulationScene();
 
         stage.setScene(scene.asScene());
-
+        stage.setResizable(false);
         stage.show();
     }
 }

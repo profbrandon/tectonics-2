@@ -11,6 +11,8 @@ import simulation.parameters.BasicParameterTree;
 import simulation.parameters.NamedParameter;
 
 public class ParameterSelectionMenu implements NodeInterpretable {
+    private final double OTHER_INSETS = 2;
+    private final double LEFT_INSETS  = 10;
     
     private final VBox container = new VBox();
     private final ScrollPane scrollPane = new ScrollPane();
@@ -19,7 +21,7 @@ public class ParameterSelectionMenu implements NodeInterpretable {
 
     public ParameterSelectionMenu(final String title) {
         final VBox scrollPaneBox = new VBox(scrollPane);
-        scrollPaneBox.setPadding(new Insets(2, 2, 2, 10));
+        scrollPaneBox.setPadding(new Insets(OTHER_INSETS, OTHER_INSETS, OTHER_INSETS, LEFT_INSETS));
 
         this.container.getChildren().addAll(new Text(title), scrollPaneBox);
         this.scrollPane.setContent(parameterTreeToNode(this.currentTree));
@@ -31,16 +33,21 @@ public class ParameterSelectionMenu implements NodeInterpretable {
         this.scrollPane.setContent(parameterTreeToNode(this.currentTree));
     }
 
-    private final Node parameterTreeToNode(final Optional<BasicParameterTree> parameterTree) {
+    private Node parameterTreeToNode(final Optional<BasicParameterTree> parameterTree) {
         final VBox vbox = new VBox();
 
-        parameterTree.ifPresentOrElse(tree -> 
+        parameterTree.ifPresentOrElse(tree -> {
             vbox.getChildren().addAll(
-                tree.getAllParameters().stream()
+                tree.getParameters().stream()
                     .map(NamedParameter::getName)
                     .map(Text::new)
-                    .toList()),
-                () -> vbox.getChildren().add(new Text("No parameters to display")));
+                    .toList());
+            vbox.getChildren().addAll(
+                tree.getSubTreeNames().stream()
+                    .map(Text::new)
+                    .toList());
+            },    
+            () -> vbox.getChildren().add(new Text("No parameters to display")));
 
         return vbox;
     }
