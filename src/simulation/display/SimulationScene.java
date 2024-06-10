@@ -59,8 +59,8 @@ public class SimulationScene {
         borderPane.setCenter(center);
 
         final BasicParameterTree mapParameterTree = new BasicParameterTree.Builder()
-            .addDoubleParameter(new DoubleParameter("Width", "W", "The width, in indivisible chunks, of the simulation."))
-            .addDoubleParameter(new DoubleParameter("Height", "H", "The height, in indvisible chunks, of the simulation."))
+            .addDoubleParameter(new DoubleParameter("Width", "W", "The width, in indivisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_WIDTH))
+            .addDoubleParameter(new DoubleParameter("Height", "H", "The height, in indvisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_HEIGHT))
             .build();
 
         final BasicParameterTree viewingParameterTree = new BasicParameterTree.Builder()

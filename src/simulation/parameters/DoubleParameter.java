@@ -11,4 +11,15 @@ public class DoubleParameter extends BasicParameter<Double> {
     public DoubleParameter(final String name, final String abbreviation, final String description) {
         super(name, abbreviation, description, 0.0, Double.MIN_VALUE, Double.MAX_VALUE);
     }
+
+    public DoubleParameter(
+        final String name,
+        final String abbreviation,
+        final String description,
+        final double defaultValue,
+        final double minValue,
+        final double maxValue) {
+    
+        super(name, abbreviation, description,defaultValue, minValue, maxValue);
+    }
 }
