@@ -1,9 +1,11 @@
-package util;
+package util.trees;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import util.Prod;
 
 public class HomogenousTree<A> implements Tree<A> {
 

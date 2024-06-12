@@ -1,8 +1,11 @@
-package util;
+package util.trees;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+
+import util.Either;
+import util.Prod;
 
 public class DistinguishedTree<N,A> implements Tree<Either<N,A>> {
 

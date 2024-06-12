@@ -1,5 +1,7 @@
 package simulation.parameters;
 
+import util.Preconditions;
+
 public class StringParameter extends BasicParameter<String> {
     /**
      * Constructor that automatically supplies a default value of 0x0, a minimum of 0x0, and a maximum of 0xFF.
@@ -23,8 +25,7 @@ public class StringParameter extends BasicParameter<String> {
 
     @Override
     public void setValue(final String parameter) {
-        assert parameter != null;
-
+        Preconditions.throwIfNull(parameter, "parameter");
         this.value = parameter;
     }
 }

@@ -1,5 +1,7 @@
 package simulation.parameters;
 
+import util.Preconditions;
+
 public class BasicParameter<T extends Comparable<T>> extends Parameter<T> { 
     private final String NAME;
     private final String ABBREVIATION;
@@ -19,12 +21,12 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
         final T minValue,
         final T maxValue) {
 
-        assert name         != null;
-        assert abbreviation != null;
-        assert description  != null;
-        assert defaultValue != null;
-        assert minValue     != null;
-        assert maxValue     != null;
+        Preconditions.throwIfNull(name, "name");
+        Preconditions.throwIfNull(abbreviation, "abbreviation");
+        Preconditions.throwIfNull(description, "description");
+        Preconditions.throwIfNull(defaultValue, "defaultValue");
+        Preconditions.throwIfNull(minValue, "minValue");
+        Preconditions.throwIfNull(maxValue, "maxValue");
 
         this.NAME          = name;
         this.ABBREVIATION  = abbreviation;
@@ -73,7 +75,7 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
 
     @Override
     public void setValue(final T parameter) {
-        assert parameter != null;
+        Preconditions.throwIfNull(parameter, "parameter");
 
         if (parameter.compareTo(this.MIN_VALUE) >= 0 && parameter.compareTo(this.MAX_VALUE) <= 0) {
             this.value = parameter;

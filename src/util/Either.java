@@ -36,18 +36,12 @@ public class Either<A, B> {
     }
 
     public static <A,B> Either<A,B> left(final A left) {
-        if (left == null) {
-            throw new IllegalArgumentException("Null value passed to Either<A,B>.left(A)");
-        }
-
+        Preconditions.throwIfNull(left, "left");
         return new Either<>(Optional.of(left), Optional.empty());
     }
 
     public static <A,B> Either<A,B> right(final B right) {
-        if (right == null) {
-            throw new IllegalArgumentException("Null value passed to Either<A,B>.left(A)");
-        }
-
+        Preconditions.throwIfNull(right, "right");
         return new Either<>(Optional.empty(), Optional.of(right));
     }
 

@@ -8,9 +8,6 @@ public class Prod<A,B> {
     private final B second;
 
     private Prod(final A first, final B second) {
-        assert first != null;
-        assert second != null;
-
         this.first = first;
         this.second = second;
     }
@@ -32,9 +29,8 @@ public class Prod<A,B> {
     }
 
     public static <A,B> Prod<A,B> pair(final A first, final B second) {
-        if (first == null || second == null) {
-            throw new IllegalArgumentException("Null values supplied to Prod.pair(A,B)");
-        }
+        Preconditions.throwIfNull(first, "first");
+        Preconditions.throwIfNull(second, "second");
 
         return new Prod<A,B>(first, second);
     }
