@@ -2,6 +2,7 @@ package gui;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
@@ -78,5 +79,21 @@ public class ExpandableTreeNode<N extends NodeInterpretable, A extends NodeInter
     public void setExpanded(final boolean expanded) {
         this.isExpanded = expanded;
         onExpandChange.run();
+    }
+
+    public static <X, Y, N extends NodeInterpretable, A extends NodeInterpretable> ExpandableTreeNode<N, A> fromDistinguishedTree(
+        final DistinguishedTree<X, Y> tree,
+        final Function<X, N> renderX,
+        final Function<Y, A> renderY,
+        final boolean isRootHidden) {
+
+        return tree.getNode().match(
+            x -> new ExpandableTreeNode<>(
+                renderX.apply(x),
+                tree.getSubTrees().stream()
+                    .map(subTree -> ExpandableTreeNode.fromDistinguishedTree(subTree, renderX, renderY, false))
+                    .toList(),
+                isRootHidden),
+            y -> new ExpandableTreeNode<>(renderY.apply(y)));
     }
 }

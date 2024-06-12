@@ -17,8 +17,14 @@ public class Either<A, B> {
         return this.left.map(leftCase).orElseGet(() -> rightCase.apply(this.right.get()));
     }
 
-    public final boolean equals(final Either<A,B> other) {
-        return this.match(a -> other.match(x -> a.equals(x), y -> false), b -> other.match(x -> false, y -> b.equals(y)));
+    public final boolean equalsEither(final Either<A,B> other) {
+        return this.match(
+            a -> other.match(
+                x -> a.equals(x),
+                y -> false),
+            b -> other.match(
+                x -> false,
+                y -> b.equals(y)));
     }
 
     public final Optional<A> forgetRight() {
@@ -30,13 +36,17 @@ public class Either<A, B> {
     }
 
     public static <A,B> Either<A,B> left(final A left) {
-        assert left != null;
+        if (left == null) {
+            throw new IllegalArgumentException("Null value passed to Either<A,B>.left(A)");
+        }
 
         return new Either<>(Optional.of(left), Optional.empty());
     }
 
     public static <A,B> Either<A,B> right(final B right) {
-        assert right != null;
+        if (right == null) {
+            throw new IllegalArgumentException("Null value passed to Either<A,B>.left(A)");
+        }
 
         return new Either<>(Optional.empty(), Optional.of(right));
     }
@@ -66,12 +76,19 @@ public class Either<A, B> {
     public static <A, B, X> Either<X, B> mapLeft(final Either<A, B> sum, final Function<A, X> function) {
         return sum.match(
             a -> Either.left(function.apply(a)), 
-            b -> Either.right(b));
+            Either::right);
     }
 
     public static <A, B, Y> Either<A, Y> mapRight(final Either<A, B> sum, final Function<B, Y> function) {
         return sum.match(
-            a -> Either.left(a), 
+            Either::left, 
             b -> Either.right(function.apply(b)));
+    }
+
+    @Override
+    public String toString() {
+        return match(
+            a -> "Left(" + a.toString() + ")",
+            b -> "Right(" + b.toString() + ")");
     }
 }

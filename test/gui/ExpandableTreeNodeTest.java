@@ -51,7 +51,6 @@ public class ExpandableTreeNodeTest extends Application {
     }
 
     private class TextNode implements NodeInterpretable {
-
         private final Text node;
 
         public TextNode(final String string) {

@@ -27,15 +27,27 @@ public class Prod<A,B> {
         return second; // this.destroy(a -> { return (b -> b); });
     }
 
-    public final boolean equals(final Prod<A,B> pair) {
+    public final boolean equalsPair(final Prod<A,B> pair) {
         return this.first.equals(pair.first) && this.second.equals(pair.second);
     }
 
     public static <A,B> Prod<A,B> pair(final A first, final B second) {
+        if (first == null || second == null) {
+            throw new IllegalArgumentException("Null values supplied to Prod.pair(A,B)");
+        }
+
         return new Prod<A,B>(first, second);
     }
 
     public static <A,B,U> U destroy(final Prod<A,B> pair, final Function<A, Function<B, U>> curried) {
         return pair.destroy(curried);
+    }
+
+    public static <A,B,X> Prod<X,B> mapFirst(final Prod<A,B> pair, final Function<A, X> function) {
+        return pair.destroy(a -> b -> Prod.pair(function.apply(a), b));
+    }
+
+    public static <A,B,Y> Prod<A,Y> mapSecond(final Prod<A, B> pair, final Function<B, Y> function) {
+        return pair.destroy(a -> b -> Prod.pair(a, function.apply(b)));
     }
 }
