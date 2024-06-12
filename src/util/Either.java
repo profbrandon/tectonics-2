@@ -14,7 +14,7 @@ public class Either<A, B> {
     }
 
     public final <U> U match(final Function<A, U> leftCase, final Function<B, U> rightCase) {
-        return left.map(leftCase).orElse(rightCase.apply(right.get()));
+        return this.left.map(leftCase).orElseGet(() -> rightCase.apply(this.right.get()));
     }
 
     public final boolean equals(final Either<A,B> other) {
@@ -30,10 +30,14 @@ public class Either<A, B> {
     }
 
     public static <A,B> Either<A,B> left(final A left) {
+        assert left != null;
+
         return new Either<>(Optional.of(left), Optional.empty());
     }
 
     public static <A,B> Either<A,B> right(final B right) {
+        assert right != null;
+
         return new Either<>(Optional.empty(), Optional.of(right));
     }
 
