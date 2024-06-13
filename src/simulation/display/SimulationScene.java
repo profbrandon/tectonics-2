@@ -1,5 +1,7 @@
 package simulation.display;
 
+import java.util.List;
+
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,10 +13,11 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import simulation.parameters.BasicParameterTree;
 import simulation.parameters.DoubleParameter;
 import simulation.parameters.FloatParameter;
 import simulation.parameters.IntegerParameter;
+import simulation.parameters.SimulationParameterGroup;
+import util.data.trees.DistinguishedTree;
 
 public class SimulationScene {
     private final double SIMULATION_WIDTH  = 1024;
@@ -58,30 +61,43 @@ public class SimulationScene {
         borderPane.setBottom(bottom);
         borderPane.setCenter(center);
 
-        final BasicParameterTree mapParameterTree = new BasicParameterTree.Builder()
-            .addDoubleParameter(new DoubleParameter("Width", "W", "The width, in indivisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_WIDTH))
-            .addDoubleParameter(new DoubleParameter("Height", "H", "The height, in indvisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_HEIGHT))
-            .build();
+        final DistinguishedTree<String, SimulationParameterGroup> mapParameterTree =
+            new DistinguishedTree<>("Map Parameters", 
+                List.of(
+                    new DistinguishedTree<>(new SimulationParameterGroup.Builder()
+                        .addDoubleParameter(new DoubleParameter("Width", "W", "The width, in indivisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_WIDTH))
+                        .addDoubleParameter(new DoubleParameter("Height", "H", "The height, in indvisible chunks, of the simulation.", 0.0, 0.0, SIMULATION_HEIGHT))
+                        .build())));
 
-        final BasicParameterTree viewingParameterTree = new BasicParameterTree.Builder()
-            .addDoubleParameter(new DoubleParameter("Zoom", "Z", "The zoom-level of the map. If z is the zoom value, then magnification is 2^z."))
-            .addDoubleParameter(new DoubleParameter("Center X Coordinate", "CX", "The center's x coordinate."))
-            .addDoubleParameter(new DoubleParameter("Center Y Coordinate", "CY", "The center's y coordinate."))
-            .build();
+        final DistinguishedTree<String, SimulationParameterGroup> viewingParameterTree =
+            new DistinguishedTree<>("Viewing Window Parameters",
+                List.of(
+                    new DistinguishedTree<>(new SimulationParameterGroup.Builder()
+                        .addDoubleParameter(new DoubleParameter("Zoom", "Z", "The zoom-level of the map. If z is the zoom value, then magnification is 2^z."))
+                        .addDoubleParameter(new DoubleParameter("Center X Coordinate", "CX", "The center's x coordinate."))
+                        .addDoubleParameter(new DoubleParameter("Center Y Coordinate", "CY", "The center's y coordinate."))
+                        .build())));
 
-        final BasicParameterTree simulationParameterTree = new BasicParameterTree.Builder()
-            .addIntegerParameter(new IntegerParameter("Plate Count", "PC", "How many tectonic plates should be initialized."))
-            .addSubTree("Erosion", new BasicParameterTree.Builder()
-                .addFloatParameter(new FloatParameter("Global Erosion Factor", "GEF","A multiplication factor for the total aggregate erosion."))
-                .addFloatParameter(new FloatParameter("Landslide Erosion Factor", "LEF", "A multiplication factor for how well landslides erode material."))
-                .addFloatParameter(new FloatParameter("Water Erosion Factor", "WEF", "A multiplication factor for how well water erodes material."))
-                .build())
-            .addFloatParameter(new FloatParameter("Maximum Chunk Height", "MCH","How tall a chunk is allowed to be before it is truncated."))
-            .build();
+        final DistinguishedTree<String, SimulationParameterGroup> simulationParameterTree =
+            new DistinguishedTree<>("Simulation Parameters",
+                List.of(
+                    new DistinguishedTree<>(new SimulationParameterGroup.Builder()
+                        .addIntegerParameter(new IntegerParameter("Plate Count", "PC", "How many tectonic plates should be initialized."))
+                        .build()),
+                    new DistinguishedTree<>("Erosion",
+                        List.of(
+                            new DistinguishedTree<>(new SimulationParameterGroup.Builder()
+                                .addFloatParameter(new FloatParameter("Global Erosion Factor", "GEF","A multiplication factor for the total aggregate erosion."))
+                                .addFloatParameter(new FloatParameter("Landslide Erosion Factor", "LEF", "A multiplication factor for how well landslides erode material."))
+                                .addFloatParameter(new FloatParameter("Water Erosion Factor", "WEF", "A multiplication factor for how well water erodes material."))
+                                .build()))),
+                    new DistinguishedTree<>(new SimulationParameterGroup.Builder()
+                        .addFloatParameter(new FloatParameter("Maximum Chunk Height", "MCH","How tall a chunk is allowed to be before it is truncated."))
+                        .build())));
 
-        final ParameterSelectionMenu windowParameterSelectionMenu = new ParameterSelectionMenu("Map Parameters", mapParameterTree);
-        final ParameterSelectionMenu viewingParameterSelectionMenu = new ParameterSelectionMenu("Viewing Parameters", viewingParameterTree);
-        final ParameterSelectionMenu parameterSelectionMenu = new ParameterSelectionMenu("Simulation Parameters", simulationParameterTree);
+        final ParameterSelectionMenu windowParameterSelectionMenu = new ParameterSelectionMenu(mapParameterTree);
+        final ParameterSelectionMenu viewingParameterSelectionMenu = new ParameterSelectionMenu(viewingParameterTree);
+        final ParameterSelectionMenu parameterSelectionMenu = new ParameterSelectionMenu(simulationParameterTree);
 
         right.getChildren().addAll(
             windowParameterSelectionMenu.asNode(),

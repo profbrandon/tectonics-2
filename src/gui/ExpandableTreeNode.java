@@ -7,7 +7,7 @@ import java.util.function.Function;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import util.trees.DistinguishedTree;
+import util.data.trees.DistinguishedTree;
 
 public class ExpandableTreeNode<N extends NodeInterpretable, A extends NodeInterpretable> extends DistinguishedTree<N, A> implements NodeInterpretable {
 

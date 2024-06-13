@@ -1,7 +1,9 @@
-package util;
+package util.data;
 
 import java.util.Optional;
 import java.util.function.Function;
+
+import util.Preconditions;
 
 public class Either<A, B> {
     
@@ -33,6 +35,13 @@ public class Either<A, B> {
 
     public final Optional<B> forgetLeft() {
         return Either.forgetLeft(this);
+    }
+
+    @Override
+    public String toString() {
+        return match(
+            a -> "Left(" + a.toString() + ")",
+            b -> "Right(" + b.toString() + ")");
     }
 
     public static <A,B> Either<A,B> left(final A left) {
@@ -77,12 +86,5 @@ public class Either<A, B> {
         return sum.match(
             Either::left, 
             b -> Either.right(function.apply(b)));
-    }
-
-    @Override
-    public String toString() {
-        return match(
-            a -> "Left(" + a.toString() + ")",
-            b -> "Right(" + b.toString() + ")");
     }
 }

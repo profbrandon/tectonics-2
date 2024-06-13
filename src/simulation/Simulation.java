@@ -2,10 +2,11 @@ package simulation;
 
 import java.util.Collection;
 
-import simulation.parameters.BasicParameterTree;
+import simulation.parameters.SimulationParameterGroup;
+import util.data.trees.DistinguishedTree;
 
 public interface Simulation<T extends SimulationMode> {
-    public BasicParameterTree getParameters();
+    public DistinguishedTree<String, SimulationParameterGroup> getParameters();
     public void play();
     public void pause();
     public void end();

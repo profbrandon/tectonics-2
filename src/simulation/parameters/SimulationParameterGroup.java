@@ -2,12 +2,9 @@ package simulation.parameters;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
-public class BasicParameterTree {
+public class SimulationParameterGroup {
     private final List<BooleanParameter>   booleanParameters;
     private final List<ByteParameter>      byteParameters;
     private final List<ShortParameter>     shortParameters;
@@ -18,9 +15,7 @@ public class BasicParameterTree {
     private final List<CharacterParameter> characterParameters;
     private final List<StringParameter>    stringParameters;
 
-    private final Map<String, BasicParameterTree> subTrees;
-
-    private BasicParameterTree(
+    private SimulationParameterGroup(
         final List<BooleanParameter>   booleanParameters,
         final List<ByteParameter>      byteParameters,
         final List<ShortParameter>     shortParameters,
@@ -29,8 +24,7 @@ public class BasicParameterTree {
         final List<FloatParameter>     floatParameters,
         final List<DoubleParameter>    doubleParameters,
         final List<CharacterParameter> characterParameters,
-        final List<StringParameter>    stringParameters,
-        final Map<String, BasicParameterTree> subTrees) {
+        final List<StringParameter>    stringParameters) {
         
         this.booleanParameters   = booleanParameters;
         this.byteParameters      = byteParameters;
@@ -41,7 +35,6 @@ public class BasicParameterTree {
         this.doubleParameters    = doubleParameters;
         this.characterParameters = characterParameters;
         this.stringParameters    = stringParameters;
-        this.subTrees            = subTrees;
     }
 
     public List<BooleanParameter> getBooleanParameters() {
@@ -95,64 +88,6 @@ public class BasicParameterTree {
         return parameters;
     }
 
-    public List<BooleanParameter> getAllBooleanParameters() {
-        return this.findAll(tree -> tree.getBooleanParameters(), tree -> tree.getAllBooleanParameters());
-    }
-
-    public List<ByteParameter> getAllByteParameters() {
-        return this.findAll(tree -> tree.getByteParameters(), tree -> tree.getAllByteParameters());
-    }
-
-    public List<ShortParameter> getAllShortParameters() {
-        return this.findAll(tree -> tree.getShortParameters(), tree -> tree.getAllShortParameters());
-    }
-
-    public List<IntegerParameter> getAllIntegerParameters() {
-        return this.findAll(tree -> tree.getIntegerParameters(), tree -> tree.getAllIntegerParameters());
-    }
-
-    public List<LongParameter> getAllLongParameters() {
-        return this.findAll(tree -> tree.getLongParameters(), tree -> tree.getAllLongParameters());
-    }
-
-    public List<FloatParameter> getAllFloatParameters() {
-        return this.findAll(tree -> tree.getFloatParameters(), tree -> tree.getAllFloatParameters());
-    }
-
-    public List<DoubleParameter> getAllDoubleParameters() {
-        return this.findAll(tree -> tree.getDoubleParameters(), tree -> tree.getAllDoubleParameters());
-    }
-
-    public List<CharacterParameter> getAllCharacterParameters() {
-        return this.findAll(tree -> tree.getCharacterParameters(), tree -> tree.getAllCharacterParameters());
-    }
-
-    public List<StringParameter> getAllStringParameters() {
-        return this.findAll(tree -> tree.getStringParameters(), tree -> tree.getAllStringParameters());
-    }
-
-    public List<NamedParameter> getAllParameters() {
-        return this.findAll(tree -> tree.getParameters(), tree -> tree.getAllParameters());
-    }
-
-    public Collection<BasicParameterTree> getSubTrees() {
-        return this.subTrees.values();
-    }
-
-    public Collection<String> getSubTreeNames() {
-        return this.subTrees.keySet();
-    }
-
-    private <T> List<T> findAll(final Function<BasicParameterTree, List<T>> initial, final Function<BasicParameterTree, List<T>> produce) {
-        final List<T> result = initial.apply(this);
-
-        for (final BasicParameterTree subTree : subTrees.values()) {
-            result.addAll(produce.apply(subTree));
-        }
-
-        return result;
-    }
-
     public static class Builder {
         private List<BooleanParameter>   booleanParameters   = new ArrayList<>();
         private List<ByteParameter>      byteParameters      = new ArrayList<>();
@@ -163,15 +98,13 @@ public class BasicParameterTree {
         private List<DoubleParameter>    doubleParameters    = new ArrayList<>();
         private List<CharacterParameter> characterParameters = new ArrayList<>();
         private List<StringParameter>    stringParameters    = new ArrayList<>();
-
-        private Map<String, BasicParameterTree> subTrees = new HashMap<>();
     
         public Builder() {
             
         }
 
-        public BasicParameterTree build() {
-            return new BasicParameterTree(
+        public SimulationParameterGroup build() {
+            return new SimulationParameterGroup(
                 booleanParameters,
                 byteParameters, 
                 shortParameters, 
@@ -180,8 +113,7 @@ public class BasicParameterTree {
                 floatParameters, 
                 doubleParameters, 
                 characterParameters, 
-                stringParameters,
-                subTrees);
+                stringParameters);
         }
 
         public Builder addBooleanParameters(final Collection<BooleanParameter> booleanParameters) {
@@ -271,11 +203,6 @@ public class BasicParameterTree {
 
         public Builder addStringParameter(final StringParameter stringParameter) {
             this.stringParameters.add(stringParameter);
-            return this;
-        }
-
-        public Builder addSubTree(final String title, final BasicParameterTree subTree) {
-            this.subTrees.put(title, subTree);
             return this;
         }
     }

@@ -1,24 +1,24 @@
-package util.trees;
+package util.data.trees;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import util.Prod;
+import util.data.Prod;
 
-public class HomogenousTree<A> implements Tree<A> {
+public class HomogeneousTree<A> implements Tree<A> {
 
     private final A node;
 
-    private final List<HomogenousTree<A>> subTrees;
+    private final List<HomogeneousTree<A>> subTrees;
 
-    public HomogenousTree(final A node) {
+    public HomogeneousTree(final A node) {
         this.node = node;
         this.subTrees = List.of();
     }
 
-    public HomogenousTree(final A node, final Collection<HomogenousTree<A>> subTrees) {
+    public HomogeneousTree(final A node, final Collection<HomogeneousTree<A>> subTrees) {
         this.node = node;
         this.subTrees = List.copyOf(subTrees);
     }
@@ -29,16 +29,16 @@ public class HomogenousTree<A> implements Tree<A> {
     }
 
     @Override
-    public final Collection<HomogenousTree<A>> getSubTrees() {
+    public final Collection<HomogeneousTree<A>> getSubTrees() {
         return this.subTrees;
     }
 
     @Override
-    public final <B> HomogenousTree<B> map(final Function<A, B> function) {
+    public final <B> HomogeneousTree<B> map(final Function<A, B> function) {
         if (subTrees.isEmpty()) {
-            return new HomogenousTree<B>(function.apply(this.node));
+            return new HomogeneousTree<B>(function.apply(this.node));
         } else {
-            return new HomogenousTree<B>(function.apply(this.node), this.subTrees.stream().map(tree -> tree.map(function)).toList());
+            return new HomogeneousTree<B>(function.apply(this.node), this.subTrees.stream().map(tree -> tree.map(function)).toList());
         }
     }
 
@@ -48,7 +48,7 @@ public class HomogenousTree<A> implements Tree<A> {
         } else {
             A result = this.node;
 
-            for (final HomogenousTree<A> subTree : this.subTrees) {
+            for (final HomogeneousTree<A> subTree : this.subTrees) {
                 result = accumulator.apply(Prod.pair(result, subTree.foldl(accumulator)));
             }
 

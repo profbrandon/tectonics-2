@@ -1,6 +1,8 @@
-package util;
+package util.data;
 
 import java.util.function.Function;
+
+import util.Preconditions;
 
 public class Prod<A,B> {
 
@@ -26,6 +28,11 @@ public class Prod<A,B> {
 
     public final boolean equalsPair(final Prod<A,B> pair) {
         return this.first.equals(pair.first) && this.second.equals(pair.second);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.first.toString() + ", " + this.second.toString() + ")";
     }
 
     public static <A,B> Prod<A,B> pair(final A first, final B second) {

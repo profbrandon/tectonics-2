@@ -1,11 +1,11 @@
-package util.trees;
+package util.data.trees;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import util.Either;
-import util.Prod;
+import util.data.Either;
+import util.data.Prod;
 
 public class DistinguishedTree<N,A> implements Tree<Either<N,A>> {
 
@@ -44,10 +44,10 @@ public class DistinguishedTree<N,A> implements Tree<Either<N,A>> {
     }
 
     @Override
-    public final <B> HomogenousTree<B> map(final Function<Either<N, A>, B> function) {
+    public final <B> HomogeneousTree<B> map(final Function<Either<N, A>, B> function) {
         return this.node.match(
-            pair -> new HomogenousTree<B>(function.apply(Either.left(pair.first())), pair.second().stream().map(tree -> tree.map(function)).toList()),
-            a -> new HomogenousTree<B>(function.apply(Either.right(a))));
+            pair -> new HomogeneousTree<B>(function.apply(Either.left(pair.first())), pair.second().stream().map(tree -> tree.map(function)).toList()),
+            a -> new HomogeneousTree<B>(function.apply(Either.right(a))));
     }
 
     public final boolean isLeaf() {

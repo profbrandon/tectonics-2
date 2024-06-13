@@ -1,4 +1,4 @@
-package util.trees;
+package util.data.trees;
 
 import java.util.Collection;
 import java.util.function.Function;
