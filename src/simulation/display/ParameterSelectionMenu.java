@@ -16,6 +16,7 @@ import util.data.trees.DistinguishedTree;
 public class ParameterSelectionMenu implements NodeInterpretable {
     private final double OTHER_INSETS = 2;
     private final double LEFT_INSETS  = 10;
+    private final double LABEL_WIDTH  = 100;
     
     private final VBox container = new VBox();
     private final ScrollPane scrollPane = new ScrollPane();
@@ -40,18 +41,24 @@ public class ParameterSelectionMenu implements NodeInterpretable {
         return parameterTree.map(tree ->
             ExpandableTreeNode.fromDistinguishedTree(
                 tree, 
-                s -> new LabelNode(s),
+                s -> new LabelNode(s, LABEL_WIDTH),
                 spg -> {
                     final VBox vbox = new VBox();
 
                     for (final NamedParameter parameter : spg.getParameters()) {
-                        vbox.getChildren().add(new LabelNode(parameter.getName()).asNode());
+                        vbox.getChildren().add(
+                            new LabelNode(
+                                parameter.getName(),
+                                parameter.getAbbreviation(),
+                                parameter.getDescription(),
+                                LABEL_WIDTH)
+                            .asNode());
                     }
 
                     return () -> vbox;
                 },
                 true).asNode())
-            .orElse(new LabelNode("No parameters to display").asNode());
+            .orElse(new LabelNode("No parameters to display", LABEL_WIDTH).asNode());
 
     }
 
