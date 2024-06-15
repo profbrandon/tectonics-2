@@ -1,10 +1,13 @@
-package util.data;
+package util.data.algebraic;
 
 import java.util.function.Function;
 
 import util.Preconditions;
 
-public class Prod<A,B> {
+/**
+ * Class to represent the algebraic product-type of two datatypes
+ */
+public final class Prod<A,B> {
 
     private final A first;
     private final B second;

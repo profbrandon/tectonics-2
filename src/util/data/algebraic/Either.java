@@ -1,4 +1,4 @@
-package util.data;
+package util.data.algebraic;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -10,7 +10,7 @@ import util.Preconditions;
  * {@link Either#match(Function, Function)} method which pattern matches on the {@link Either#left()} or
  * {@link Either#right()} value.
  */
-public class Either<A, B> {
+public final class Either<A, B> {
     private final Optional<A> left;
     private final Optional<B> right;
 
@@ -74,6 +74,7 @@ public class Either<A, B> {
      * @param <B> the right summand datatype
      * @param left the left object
      * @return an {@link Either} object containing the left object
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public static <A,B> Either<A,B> left(final A left) {
         Preconditions.throwIfNull(left, "left");
@@ -85,6 +86,7 @@ public class Either<A, B> {
      * @param <B> the right summand datatype
      * @param right the right object
      * @return an {@link Either} object containing the right object
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public static <A,B> Either<A,B> right(final B right) {
         Preconditions.throwIfNull(right, "right");

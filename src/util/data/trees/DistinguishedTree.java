@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import util.data.Either;
-import util.data.Prod;
+import util.data.algebraic.Either;
+import util.data.algebraic.Prod;
 
 public class DistinguishedTree<N,A> implements Tree<Either<N,A>> {
 

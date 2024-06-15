@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import util.data.Prod;
+import util.data.algebraic.Prod;
 
 public class HomogeneousTree<A> implements Tree<A> {
 

@@ -2,8 +2,8 @@ package test.util;
 
 import java.util.Optional;
 
-import util.data.Either;
-import util.data.Prod;
+import util.data.algebraic.Either;
+import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
 public class ProdTest extends UnitTest {

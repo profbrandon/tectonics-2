@@ -2,7 +2,7 @@ package test.util;
 
 import java.util.Optional;
 
-import util.data.Either;
+import util.data.algebraic.Either;
 import util.testing.UnitTest;
 
 public class EitherTest extends UnitTest {
