@@ -11,4 +11,15 @@ public class BooleanParameter extends BasicParameter<Boolean> {
     public BooleanParameter(final String name, final String abbreviation, final String description) {
         super(name, abbreviation, description, false, false, true);
     }
+
+    public BooleanParameter(
+        final String name,
+        final String abbreviation,
+        final String description,
+        final boolean defaultValue,
+        final boolean minValue,
+        final boolean maxValue) {
+
+        super(name, abbreviation, description, defaultValue, minValue, maxValue);
+    }
 }

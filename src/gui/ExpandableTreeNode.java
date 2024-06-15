@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import util.data.trees.DistinguishedTree;
 
@@ -44,12 +45,15 @@ public class ExpandableTreeNode<N extends NodeInterpretable, A extends NodeInter
                 final VBox vBox2 = new VBox();
                 final HBox hBox2 = new HBox();
 
-                hBox2.setMinWidth(10);
+                hBox2.setMinWidth(12);
                 vBox.getChildren().add(branch.asNode());
                 this.getSubTrees().forEach(subTree -> {
                     vBox2.getChildren().add(((ExpandableTreeNode<N, A>) subTree).asNode());
                 });
                 hBox.getChildren().addAll(hBox2, vBox2);
+                vBox.setFillWidth(true);
+                vBox2.setFillWidth(true);
+                HBox.setHgrow(vBox2, Priority.ALWAYS);
 
                 onExpandChange = () -> {
                     synchronized(this) {

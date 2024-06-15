@@ -11,4 +11,15 @@ public class IntegerParameter extends BasicParameter<Integer> {
     public IntegerParameter(final String name, final String abbreviation, final String description) {
         super(name, abbreviation, description, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
+
+    public IntegerParameter(
+        final String name,
+        final String abbreviation,
+        final String description,
+        final int defaultValue,
+        final int minValue,
+        final int maxValue) {
+
+        super(name, abbreviation, description, defaultValue, minValue, maxValue);
+    }
 }

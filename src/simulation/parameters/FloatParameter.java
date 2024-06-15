@@ -11,4 +11,15 @@ public class FloatParameter extends BasicParameter<Float> {
     public FloatParameter(final String name, final String abbreviation, final String description) {
         super(name, abbreviation, description, 0f, Float.MIN_VALUE, Float.MAX_VALUE);
     }
+
+    public FloatParameter(
+        final String name, 
+        final String abbreviation,
+        final String description,
+        final float defaultValue,
+        final float minValue,
+        final float maxValue) {
+
+        super(name, abbreviation, description, defaultValue, minValue, maxValue);
+    }
 }
