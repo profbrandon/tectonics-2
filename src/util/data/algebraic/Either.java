@@ -11,6 +11,7 @@ import util.Preconditions;
  * {@link Either#right()} value.
  */
 public final class Either<A, B> {
+
     private final Optional<A> left;
     private final Optional<B> right;
 
@@ -26,8 +27,11 @@ public final class Either<A, B> {
      * @param leftCase the function to be applied upon an {@link Either#left()} pattern match success
      * @param rightCase the function to be applied upon an {@link Either#right()} pattern match success
      * @return the result of either the application of the leftCase or rightCase functions
+     * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
     public final <U> U match(final Function<A, U> leftCase, final Function<B, U> rightCase) {
+        Preconditions.throwIfNull(leftCase, "leftCase");
+        Preconditions.throwIfNull(rightCase, "rightCase");
         return this.left.map(leftCase).orElseGet(() -> rightCase.apply(this.right.get()));
     }
 
@@ -37,8 +41,10 @@ public final class Either<A, B> {
      * 
      * @param other the other {@link Either} object
      * @return whether the two objects are equal by determining if the contained sub-object is equivalent
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public final boolean equalsEither(final Either<A,B> other) {
+        Preconditions.throwIfNull(other, "other");
         return this.match(
             a -> other.match(
                 x -> a.equals(x),
@@ -103,19 +109,23 @@ public final class Either<A, B> {
      * @param leftCase the function to be applied upon an {@link Either#left()} pattern match success
      * @param rightCase the function to be applied upon an {@link Either#right()} pattern match success
      * @return the result of either the application of the leftCase or rightCase functions
+     * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
     public static <A,B,U> U match(final Either<A, B> sum, final Function<A, U> leftCase, final Function<B, U> rightCase) {
+        Preconditions.throwIfNull(sum, "sum");
         return sum.match(leftCase, rightCase);
     }
 
     /**
-     * Collapses an {@link Either} of the same type twice to a single value.
+     * Collapses an {@link Either} of the same type twice to that single type.
      * 
      * @param <A> the resultant and summand types
      * @param sum the {@link Either} object to destroy
      * @return a value of the type A
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public static <A> A collapse(final Either<A, A> sum) {
+        Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> a,
             a -> a);
@@ -124,8 +134,10 @@ public final class Either<A, B> {
     /**
      * @param sum the {@link Either} object to destroy
      * @return an optional possibly containing an object of the left type
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public static <A, B> Optional<A> forgetRight(final Either<A, B> sum) {
+        Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> Optional.of(a),
             b -> Optional.empty());
@@ -134,8 +146,10 @@ public final class Either<A, B> {
     /**
      * @param sum the {@link Either} object to destroy
      * @return an optional possibly containing an object of the right type
+     * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
     public static <A, B> Optional<B> forgetLeft(final Either<A, B> sum) {
+        Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> Optional.empty(),
             b -> Optional.of(b));
@@ -150,8 +164,11 @@ public final class Either<A, B> {
      * @param sum the {@link Either} object to pattern match on
      * @param function the left summand type transformation
      * @return a new {@link Either} object with the new left summand type
+     * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
     public static <A, B, X> Either<X, B> mapLeft(final Either<A, B> sum, final Function<A, X> function) {
+        Preconditions.throwIfNull(sum, "sum");
+        Preconditions.throwIfNull(function, "function");
         return sum.match(
             a -> Either.left(function.apply(a)), 
             Either::right);
@@ -166,10 +183,35 @@ public final class Either<A, B> {
      * @param sum the {@link Either} object to pattern match on
      * @param function the right summand type transformation
      * @return a new {@link Either} object with the new right summand type
+     * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
     public static <A, B, Y> Either<A, Y> mapRight(final Either<A, B> sum, final Function<B, Y> function) {
+        Preconditions.throwIfNull(sum, "sum");
+        Preconditions.throwIfNull(function, "function");
         return sum.match(
             Either::left, 
             b -> Either.right(function.apply(b)));
+    }
+
+    /**
+     * Transforms an {@link Either} object by conditionally applying either the left map or right map to produce
+     * a new {@link Either} object
+     * @param <A> the left summand type
+     * @param <B> the right summand type
+     * @param <X> the new left summand type
+     * @param <Y> the new right summand type
+     * @param sum the {@link Either} object to pattern match on
+     * @param mapLeft the left summand type transformation
+     * @param mapRight the right summand type transformation
+     * @return a new {@link Either} object with the new left and right summand types
+     * @throws {@link IllegalArgumentException} when given {@code null} objects
+     */
+    public static <A, B, X, Y> Either<X, Y> map(final Either<A, B> sum, final Function<A, X> mapLeft, final Function<B, Y> mapRight) {
+        Preconditions.throwIfNull(sum, "sum");
+        Preconditions.throwIfNull(mapLeft, "mapLeft");
+        Preconditions.throwIfNull(mapRight, "mapRight");
+        return sum.match(
+            a -> Either.left(mapLeft.apply(a)),
+            b -> Either.right(mapRight.apply(b)));
     }
 }
