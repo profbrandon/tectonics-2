@@ -1,5 +1,6 @@
 package util.data.algebraic;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import util.Preconditions;
@@ -9,14 +10,24 @@ import util.Preconditions;
  * instead has the {@link Exp#curry(Function)} and {@link Exp#uncurry(Function)} methods to transform
  * functions of products ({@link Prod}) into functions that produce exponentials ({@link Exp}).
  * Additionally, the static method {@link Exp#asExponential(Function)} is allowed to directly transform
- * normal Java functions into exponential objects
+ * normal Java functions into exponential objects.
+ * 
+ * TODO: Actually handle functional equality. This should be possible through currying and constant functions, but it might require disallowing instantiation from Java functions.
  */
 public final class Exp<A,B> implements Function<A,B> {
 
     private final Function<A, B> function;
+
+    private final Optional<B> constantValue;
     
     private Exp(final Function<A, B> function) {
         this.function = function;
+        this.constantValue = Optional.empty();
+    }
+
+    private Exp(final B constant) {
+        this.function = a -> constant;
+        this.constantValue = Optional.of(constant);
     }
 
     /**
@@ -48,7 +59,15 @@ public final class Exp<A,B> implements Function<A,B> {
      */
     public boolean equalsExp(final Exp<A, B> other) {
         Preconditions.throwIfNull(other, "other");
-        return this.function.equals(other.function);
+        return this.constantValue
+            .map(
+                c1 -> 
+                    other.constantValue
+                        .map(
+                            c2 -> 
+                                c1.equals(c2))
+                        .orElse(false))
+            .orElse(this.function.equals(other.function));
     }
     
     /**
@@ -84,7 +103,7 @@ public final class Exp<A,B> implements Function<A,B> {
      */
     public static <A, B> Exp<A, B> constant(final B value) {
         Preconditions.throwIfNull(value, "value");
-        return Exp.asExponential(a -> value);
+        return new Exp<>(value);
     }
 
     /**
@@ -130,7 +149,6 @@ public final class Exp<A,B> implements Function<A,B> {
         Preconditions.throwIfNull(transpose, "transpose");
         return a -> Exp.asExponential(b -> transpose.apply(Prod.pair(a,b)));
     }
-
 
     /**
      * Contravariantly maps an exponential in the first type argument.

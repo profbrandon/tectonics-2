@@ -1,11 +1,12 @@
-package test.util;
+package test.util.data.algebraic;
 
+import java.util.List;
 import java.util.Optional;
 
 import util.data.algebraic.Either;
 import util.testing.UnitTest;
 
-public class EitherTest extends UnitTest {
+public final class EitherTest extends UnitTest {
     
     private EitherTest() {
         super("Either Test");
@@ -34,6 +35,8 @@ public class EitherTest extends UnitTest {
         unitTest.addTest(EitherTest::rightEquality);
         unitTest.addTest(EitherTest::leftDisequality);
         unitTest.addTest(EitherTest::rightDisequality);
+        unitTest.addTest(EitherTest::mapOnLeft);
+        unitTest.addTest(EitherTest::mapOnRight);
 
         unitTest.runTests();
     }
@@ -176,5 +179,19 @@ public class EitherTest extends UnitTest {
             "Right vs left disequality", 
             v -> !Either.<Optional<Integer>, Optional<Integer>>right(Optional.of(1)).equalsEither(v),
             () -> Either.<Optional<Integer>, Optional<Integer>>left(Optional.of(1)));
+    }
+
+    private static boolean mapOnLeft() {
+        return UnitTest.checkValue(
+            "Map on left either", 
+            v -> Either.<Integer, Integer>left(6).equalsEither(v),
+            () -> Either.map(Either.<List<Integer>, String>left(List.of(1,2,3,4,5,6)), List::size, String::length));
+    }
+
+    private static boolean mapOnRight() {
+        return UnitTest.checkValue(
+            "Map on right either", 
+            v -> Either.<Integer, Integer>right(6).equalsEither(v),
+            () -> Either.map(Either.<List<Integer>, String>right("123456"), List::size, String::length));
     }
 }

@@ -30,7 +30,9 @@ public final class Unit {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
+        Preconditions.throwIfNull(obj, "obj");
+
         if (obj instanceof Unit) {
             return true;
         } else {

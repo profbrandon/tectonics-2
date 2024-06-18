@@ -1,12 +1,13 @@
-package test.util;
+package test.util.data.algebraic;
 
+import java.util.List;
 import java.util.Optional;
 
 import util.data.algebraic.Either;
 import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
-public class ProdTest extends UnitTest {
+public final class ProdTest extends UnitTest {
     
     private ProdTest() {
         super("Prod Test");
@@ -25,6 +26,7 @@ public class ProdTest extends UnitTest {
         unitTest.addTest(ProdTest::equality);
         unitTest.addTest(ProdTest::disequalityFirst);
         unitTest.addTest(ProdTest::disequalitySecond);
+        unitTest.addTest(ProdTest::mapBoth);
 
         unitTest.runTests();
     }
@@ -97,5 +99,12 @@ public class ProdTest extends UnitTest {
             "Disequality test in second argument", 
             v -> !Prod.pair("x", Optional.of(3)).equalsPair(v),
             () -> Prod.pair("x", Optional.of(4)));
+    }
+
+    private static boolean mapBoth() {
+        return UnitTest.checkValue(
+            "Map both product elements",
+            v -> Prod.pair(6,6).equalsPair(v), 
+            () -> Prod.map(Prod.pair(List.of(1,2,3,4,5,6), "123456"), List::size, String::length));
     }
 }
