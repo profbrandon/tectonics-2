@@ -11,5 +11,6 @@ public interface Simulation<T extends SimulationMode> {
     public void pause();
     public void end();
     public void step();
-    public void addSimulationListeners(Collection<SimulationListener> listeners);
+    public void addSimulationListeners(final Collection<SimulationListener> listeners);
+    public void setMode(final T simulationMode);
 }

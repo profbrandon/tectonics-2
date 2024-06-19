@@ -19,6 +19,7 @@ public class ParameterSliderNode<T extends Number> implements NodeInterpretable 
             parameter.maxAllowableValue().doubleValue(),
             parameter.defaultValue().doubleValue());
 
+        slider.setBlockIncrement(increment);
         slider.setPrefWidth(width);
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             final T value = converter.apply(Math.round(newValue.doubleValue() / increment) * increment);

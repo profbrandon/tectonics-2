@@ -40,4 +40,8 @@ public class TectonicSimulation implements Simulation<TectonicSimulationMode> {
 
     }
     
+    @Override
+    public void setMode(TectonicSimulationMode simulationMode) {
+        
+    }
 }
