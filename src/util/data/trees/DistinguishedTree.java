@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import util.data.algebraic.Sum;
 import util.Preconditions;
+import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
 
 /**
@@ -69,6 +70,41 @@ public class DistinguishedTree<N,A> implements Tree<Sum<N,A>> {
             leaf -> new DistinguishedTree<>(leafMap.apply(leaf)));
     }
 
+    /**
+     * Deterimines if this {@link DistinguishedTree} is equivalent to the given one. At the lowest level, it
+     * uses {@link Object#equals(Object)} to determine if the node values are equal. Trees must be structurally
+     * equivalent to be considered for value equivalence.
+     * 
+     * @param other the other distinguished tree
+     * @return whether the two trees are equal (up to structural equivalence and {@link Object#equals(Object)})
+     */
+    public final boolean equalsDistinguishedTree(final DistinguishedTree<N, A> other) {
+        final Sum<A, Prod<N, List<DistinguishedTree<N, A>>>> otherSwapped = Identities.sumCommute(other.node);
+
+        // TODO: make this more efficient by checking structure before item equivalence.
+        
+        return Identities.sumCommute(this.node).match(
+            a1 -> otherSwapped.match(
+                a2 -> a1.equals(a2),
+                p2 -> false),
+            p1 -> otherSwapped.match(
+                a2 -> false,
+                p2 -> {
+                    final List<DistinguishedTree<N, A>> list1 = p1.second();
+                    final List<DistinguishedTree<N, A>> list2 = p2.second();
+
+                    final boolean looselyEqual = p1.first().equals(p2.first()) && list1.size() == list2.size();
+
+                    if (!looselyEqual) return false;
+                    else {
+                        for (int i = 0; i < list1.size(); ++i) {
+                            if (!list1.get(i).equalsDistinguishedTree(list2.get(i))) return false;
+                        }
+                        return true;
+                    }
+                }));
+    }
+
     @Override
     public final boolean isLeaf() {
         return node.match(pair -> false, a -> true);
@@ -93,9 +129,13 @@ public class DistinguishedTree<N,A> implements Tree<Sum<N,A>> {
 
     @Override
     public final <B> HomogeneousTree<B> map(final Function<Sum<N, A>, B> function) {
+        Preconditions.throwIfNull(function, "function");
         return this.node.match(
-            pair -> new HomogeneousTree<B>(function.apply(Sum.left(pair.first())), pair.second().stream().map(tree -> tree.map(function)).toList()),
-            a -> new HomogeneousTree<B>(function.apply(Sum.right(a))));
+            pair -> pair.destroy(
+                n ->
+                    subTrees ->
+                        new HomogeneousTree<>(function.apply(Sum.left(n)), subTrees.stream().map(tree -> tree.map(function)).toList())),
+            a -> new HomogeneousTree<>(function.apply(Sum.right(a))));
     }
 
     @Override
@@ -121,9 +161,10 @@ public class DistinguishedTree<N,A> implements Tree<Sum<N,A>> {
      * @return a {@link DistinguishedTree} that now distinguishes leaves from branches with both having the same type
      */
     public final static <N> DistinguishedTree<N, N> fromHomogeneous(final HomogeneousTree<N> homogeneousTree) {
+        Preconditions.throwIfNull(homogeneousTree, "homogeneousTree");
         return homogeneousTree.isLeaf() ?
-            new DistinguishedTree<N,N>(homogeneousTree.getNode()) :
-            new DistinguishedTree<N,N>(
+            new DistinguishedTree<>(homogeneousTree.getNode()) :
+            new DistinguishedTree<>(
                 homogeneousTree.getNode(), 
                 homogeneousTree.getSubTrees()
                     .stream()

@@ -55,7 +55,7 @@ public final class Prod<A, B> {
      * @return whether this pair's elements equal the other pairs elements (using {@link Object#equals(Object)})
      * @throws IllegalArgumentException when given a {@code null} object
      */
-    public final boolean equalsPair(final Prod<A, B> pair) {
+    public final boolean equalsProd(final Prod<A, B> pair) {
         Preconditions.throwIfNull(pair, "pair");
         return this.first.equals(pair.first) && this.second.equals(pair.second);
     }

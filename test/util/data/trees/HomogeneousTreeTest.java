@@ -1,4 +1,4 @@
-package test.util.trees;
+package test.util.data.trees;
 
 import java.util.List;
 

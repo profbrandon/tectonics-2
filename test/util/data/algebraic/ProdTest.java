@@ -55,7 +55,7 @@ public final class ProdTest extends UnitTest {
     private static boolean secondProjection() {
         return UnitTest.checkValue(
             "Second projection test", 
-            v -> Sum.left(0).equalsEither(v),
+            v -> Sum.left(0).equalsSum(v),
             () -> Prod.pair("xyz", Sum.left(0)).second());
     }
 
@@ -69,42 +69,42 @@ public final class ProdTest extends UnitTest {
     private static boolean mapFirst() {
         return UnitTest.checkValue(
             "Map first element",
-            v -> Prod.pair(0, false).equalsPair(v),
+            v -> Prod.pair(0, false).equalsProd(v),
             () -> Prod.mapFirst(Prod.pair('a', false), x -> x == 'a' ? 0 : 1));
     }
 
     private static boolean mapSecond() {
         return UnitTest.checkValue(
             "Map second element",
-            v -> Prod.pair('a', false).equalsPair(v),
+            v -> Prod.pair('a', false).equalsProd(v),
             () -> Prod.mapSecond(Prod.pair('a', 0), x -> x != 0));
     }
 
     private static boolean equality() {
         return UnitTest.checkValue(
             "Equality test",
-            v -> Prod.pair(0, false).equalsPair(v),
+            v -> Prod.pair(0, false).equalsProd(v),
             () -> Prod.pair(0, false));
     }
 
     private static boolean disequalityFirst() {
         return UnitTest.checkValue(
             "Disequality test in first argument",
-            v -> !Prod.pair("x", true).equalsPair(v),
+            v -> !Prod.pair("x", true).equalsProd(v),
             () -> Prod.pair("y", true));
     }
 
     private static boolean disequalitySecond() {
         return UnitTest.checkValue(
             "Disequality test in second argument", 
-            v -> !Prod.pair("x", Optional.of(3)).equalsPair(v),
+            v -> !Prod.pair("x", Optional.of(3)).equalsProd(v),
             () -> Prod.pair("x", Optional.of(4)));
     }
 
     private static boolean mapBoth() {
         return UnitTest.checkValue(
             "Map both product elements",
-            v -> Prod.pair(6,6).equalsPair(v), 
+            v -> Prod.pair(6,6).equalsProd(v), 
             () -> Prod.map(Prod.pair(List.of(1,2,3,4,5,6), "123456"), List::size, String::length));
     }
 }

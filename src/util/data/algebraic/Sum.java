@@ -43,7 +43,7 @@ public final class Sum<A, B> {
      * @return whether the two objects are equal by determining if the contained sub-object is equivalent
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public final boolean equalsEither(final Sum<A,B> other) {
+    public final boolean equalsSum(final Sum<A,B> other) {
         Preconditions.throwIfNull(other, "other");
         return this.match(
             a -> other.match(

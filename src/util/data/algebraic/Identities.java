@@ -2,23 +2,23 @@ package util.data.algebraic;
 
 public final class Identities {
 
-    public static <A> A eitherEmptyLeft(final Sum<Empty, A> sum) {
+    public static <A> A sumEmptyLeft(final Sum<Empty, A> sum) {
         return sum.match(
             Empty::absurd, 
             a -> a);
     }
 
-    public static <A> Sum<Empty, A> eitherEmptyLeftInverse(final A value) {
+    public static <A> Sum<Empty, A> sumEmptyLeftInverse(final A value) {
         return Sum.right(value);
     }
 
-    public static <A> A eitherEmptyRight(final Sum<A, Empty> sum) {
+    public static <A> A sumEmptyRight(final Sum<A, Empty> sum) {
         return sum.match(
             a -> a, 
             Empty::absurd);
     }
 
-    public static <A> Sum<A, Empty> eitherEmptyRightInverse(final A value) {
+    public static <A> Sum<A, Empty> sumEmptyRightInverse(final A value) {
         return Sum.left(value);
     }
 
@@ -54,7 +54,7 @@ public final class Identities {
         return Prod.pair(Empty.absurd(empty), empty);
     }
 
-    public static <A, B, C> Sum<Sum<A, B>, C> eitherAssociate(final Sum<A, Sum<B, C>> sum) {
+    public static <A, B, C> Sum<Sum<A, B>, C> sumAssociate(final Sum<A, Sum<B, C>> sum) {
         return sum.match(
             a -> Sum.left(Sum.left(a)),
             sum1 -> sum1.match(
@@ -62,7 +62,7 @@ public final class Identities {
                 c -> Sum.right(c)));
     }
 
-    public static <A, B, C> Sum<A, Sum<B, C>> eitherAssociateInverse(final Sum<Sum<A, B>, C> sum) {
+    public static <A, B, C> Sum<A, Sum<B, C>> sumAssociateInverse(final Sum<Sum<A, B>, C> sum) {
         return sum.match(
             sum1 -> sum1.match(
                 a -> Sum.left(a),
@@ -86,7 +86,7 @@ public final class Identities {
                         b -> Prod.pair(a, Prod.pair(b, c))));
     }
 
-    public static <A, B> Sum<B, A> eitherCommute(final Sum<A, B> sum) {
+    public static <A, B> Sum<B, A> sumCommute(final Sum<A, B> sum) {
         return sum.match(
             a -> Sum.right(a),
             b -> Sum.left(b));
@@ -116,7 +116,7 @@ public final class Identities {
     }
 
     public static <A, B, C> Exp<Sum<A, B>, C> expSumInverse(final Prod<Exp<A, C>, Exp<B, C>> pair) {
-        return Exp.asExponential(either -> either.match(pair.first(), pair.second()));
+        return Exp.asExponential(sum -> sum.match(pair.first(), pair.second()));
     }
 
     public static <A, B, C> Prod<Exp<A, B>, Exp<A, C>> expDistribute(final Exp<A, Prod<B, C>> function) {
