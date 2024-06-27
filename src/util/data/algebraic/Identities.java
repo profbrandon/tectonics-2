@@ -2,24 +2,24 @@ package util.data.algebraic;
 
 public final class Identities {
 
-    public static <A> A eitherEmptyLeft(final Either<Empty, A> sum) {
+    public static <A> A eitherEmptyLeft(final Sum<Empty, A> sum) {
         return sum.match(
             Empty::absurd, 
             a -> a);
     }
 
-    public static <A> Either<Empty, A> eitherEmptyLeftInverse(final A value) {
-        return Either.right(value);
+    public static <A> Sum<Empty, A> eitherEmptyLeftInverse(final A value) {
+        return Sum.right(value);
     }
 
-    public static <A> A eitherEmptyRight(final Either<A, Empty> sum) {
+    public static <A> A eitherEmptyRight(final Sum<A, Empty> sum) {
         return sum.match(
             a -> a, 
             Empty::absurd);
     }
 
-    public static <A> Either<A, Empty> eitherEmptyRightInverse(final A value) {
-        return Either.left(value);
+    public static <A> Sum<A, Empty> eitherEmptyRightInverse(final A value) {
+        return Sum.left(value);
     }
 
     public static <A> A prodUnitLeft(final Prod<Unit, A> pair) {
@@ -54,20 +54,20 @@ public final class Identities {
         return Prod.pair(Empty.absurd(empty), empty);
     }
 
-    public static <A, B, C> Either<Either<A, B>, C> eitherAssociate(final Either<A, Either<B, C>> sum) {
+    public static <A, B, C> Sum<Sum<A, B>, C> eitherAssociate(final Sum<A, Sum<B, C>> sum) {
         return sum.match(
-            a -> Either.left(Either.left(a)),
+            a -> Sum.left(Sum.left(a)),
             sum1 -> sum1.match(
-                b -> Either.left(Either.right(b)),
-                c -> Either.right(c)));
+                b -> Sum.left(Sum.right(b)),
+                c -> Sum.right(c)));
     }
 
-    public static <A, B, C> Either<A, Either<B, C>> eitherAssociateInverse(final Either<Either<A, B>, C> sum) {
+    public static <A, B, C> Sum<A, Sum<B, C>> eitherAssociateInverse(final Sum<Sum<A, B>, C> sum) {
         return sum.match(
             sum1 -> sum1.match(
-                a -> Either.left(a),
-                b -> Either.right(Either.left(b))), 
-            c -> Either.right(Either.right(c)));
+                a -> Sum.left(a),
+                b -> Sum.right(Sum.left(b))), 
+            c -> Sum.right(Sum.right(c)));
     }
 
     public static <A, B, C> Prod<Prod<A, B>, C> prodAssociate(final Prod<A, Prod<B, C>> pair) {
@@ -86,36 +86,36 @@ public final class Identities {
                         b -> Prod.pair(a, Prod.pair(b, c))));
     }
 
-    public static <A, B> Either<B, A> eitherCommute(final Either<A, B> sum) {
+    public static <A, B> Sum<B, A> eitherCommute(final Sum<A, B> sum) {
         return sum.match(
-            a -> Either.right(a),
-            b -> Either.left(b));
+            a -> Sum.right(a),
+            b -> Sum.left(b));
     }
 
     public static <A, B> Prod<B, A> prodCommute(final Prod<A, B> pair) {
         return pair.destroy(a -> b -> Prod.pair(b, a));
     }
 
-    public static <A, B, C> Either<Prod<A, B>, Prod<A, C>> prodDistribute(final Prod<A, Either<B, C>> pair) {
-        return Either.map(
+    public static <A, B, C> Sum<Prod<A, B>, Prod<A, C>> prodDistribute(final Prod<A, Sum<B, C>> pair) {
+        return Sum.map(
             pair.second(),
             b -> Prod.pair(pair.first(), b),
             c -> Prod.pair(pair.first(), c));
     }
 
-    public static <A, B, C> Prod<A, Either<B, C>> prodDistributeInverse(final Either<Prod<A, B>, Prod<A, C>> sum) {
+    public static <A, B, C> Prod<A, Sum<B, C>> prodDistributeInverse(final Sum<Prod<A, B>, Prod<A, C>> sum) {
         return sum.match(
-            ab -> Prod.pair(ab.first(), Either.left(ab.second())),
-            ac -> Prod.pair(ac.first(), Either.right(ac.second())));
+            ab -> Prod.pair(ab.first(), Sum.left(ab.second())),
+            ac -> Prod.pair(ac.first(), Sum.right(ac.second())));
     }
 
-    public static <A, B, C> Prod<Exp<A, C>, Exp<B, C>> expSum(final Exp<Either<A, B>, C> function) {
+    public static <A, B, C> Prod<Exp<A, C>, Exp<B, C>> expSum(final Exp<Sum<A, B>, C> function) {
         return Prod.pair(
-            Exp.asExponential(a -> function.apply(Either.left(a))),
-            Exp.asExponential(b -> function.apply(Either.right(b))));
+            Exp.asExponential(a -> function.apply(Sum.left(a))),
+            Exp.asExponential(b -> function.apply(Sum.right(b))));
     }
 
-    public static <A, B, C> Exp<Either<A, B>, C> expSumInverse(final Prod<Exp<A, C>, Exp<B, C>> pair) {
+    public static <A, B, C> Exp<Sum<A, B>, C> expSumInverse(final Prod<Exp<A, C>, Exp<B, C>> pair) {
         return Exp.asExponential(either -> either.match(pair.first(), pair.second()));
     }
 

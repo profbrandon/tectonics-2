@@ -73,7 +73,7 @@ public class UnitTest {
 
         final V testValue = test.get();
 
-        return wrapOutcome(value.equals(testValue), "test value did not match returned value. Supplied value is " + testValue.toString());
+        return wrapOutcome(value.equals(testValue), "test value did not match returned value. Supplied value is '" + testValue.toString() + "'");
     }
 
     public static <V> boolean checkValue(final String testName, final Predicate<V> check, final Supplier<V> test) {
@@ -85,7 +85,7 @@ public class UnitTest {
     }
 
     private static void printSuccess() {
-        System.out.println("passed.");
+        System.out.println("passed");
     }
 
     private static void printFailure(final String failureMessage) {
@@ -103,6 +103,6 @@ public class UnitTest {
     }
 
     private static void printTest(final String testName) {
-        System.out.print("\t'" + testName + "' executing...");
+        System.out.print("\t'" + testName + "' executing...\n\t\t");
     }
 }

@@ -3,7 +3,7 @@ package test.util.data.algebraic;
 import java.util.List;
 import java.util.Optional;
 
-import util.data.algebraic.Either;
+import util.data.algebraic.Sum;
 import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
@@ -55,8 +55,8 @@ public final class ProdTest extends UnitTest {
     private static boolean secondProjection() {
         return UnitTest.checkValue(
             "Second projection test", 
-            v -> Either.left(0).equalsEither(v),
-            () -> Prod.pair("xyz", Either.left(0)).second());
+            v -> Sum.left(0).equalsEither(v),
+            () -> Prod.pair("xyz", Sum.left(0)).second());
     }
 
     private static boolean destroy() {

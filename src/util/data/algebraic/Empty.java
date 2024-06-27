@@ -10,6 +10,9 @@ import util.Preconditions;
  */
 public final class Empty {
     
+    /**
+     * Private constructor to disallow creation.
+     */
     private Empty() {
 
     }

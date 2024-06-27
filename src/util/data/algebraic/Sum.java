@@ -7,15 +7,15 @@ import util.Preconditions;
 
 /**
  * Class to represent the algebraic sum-type of two datatypes. The recursor is defined by the 
- * {@link Either#match(Function, Function)} method which pattern matches on the {@link Either#left()} or
- * {@link Either#right()} value.
+ * {@link Sum#match(Function, Function)} method which pattern matches on the {@link Sum#left()} or
+ * {@link Sum#right()} value.
  */
-public final class Either<A, B> {
+public final class Sum<A, B> {
 
     private final Optional<A> left;
     private final Optional<B> right;
 
-    private Either(final Optional<A> left, final Optional<B> right) {
+    private Sum(final Optional<A> left, final Optional<B> right) {
         this.left = left;
         this.right = right;
     }
@@ -24,8 +24,8 @@ public final class Either<A, B> {
      * The recursor for the sum-type which pattern matches on this sum.
      * 
      * @param <U> the resultant type
-     * @param leftCase the function to be applied upon an {@link Either#left()} pattern match success
-     * @param rightCase the function to be applied upon an {@link Either#right()} pattern match success
+     * @param leftCase the function to be applied upon an {@link Sum#left()} pattern match success
+     * @param rightCase the function to be applied upon an {@link Sum#right()} pattern match success
      * @return the result of either the application of the leftCase or rightCase functions
      * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
@@ -36,14 +36,14 @@ public final class Either<A, B> {
     }
 
     /**
-     * Determines if this {@link Either} object is equivalent to another. Utilizes the base {@link Object#equals(Object)}
+     * Determines if this {@link Sum} object is equivalent to another. Utilizes the base {@link Object#equals(Object)}
      * function on the two summand datatypes.
      * 
-     * @param other the other {@link Either} object
+     * @param other the other {@link Sum} object
      * @return whether the two objects are equal by determining if the contained sub-object is equivalent
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public final boolean equalsEither(final Either<A,B> other) {
+    public final boolean equalsEither(final Sum<A,B> other) {
         Preconditions.throwIfNull(other, "other");
         return this.match(
             a -> other.match(
@@ -58,14 +58,14 @@ public final class Either<A, B> {
      * @return an optional possibly containing an object of the left type
      */
     public final Optional<A> forgetRight() {
-        return Either.forgetRight(this);
+        return Sum.forgetRight(this);
     }
 
     /**
      * @return an optional possibly containing an object of the right type
      */
     public final Optional<B> forgetLeft() {
-        return Either.forgetLeft(this);
+        return Sum.forgetLeft(this);
     }
 
     @Override
@@ -79,24 +79,24 @@ public final class Either<A, B> {
      * @param <A> the left summand datatype
      * @param <B> the right summand datatype
      * @param left the left object
-     * @return an {@link Either} object containing the left object
+     * @return an {@link Sum} object containing the left object
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public static <A,B> Either<A,B> left(final A left) {
+    public static <A,B> Sum<A,B> left(final A left) {
         Preconditions.throwIfNull(left, "left");
-        return new Either<>(Optional.of(left), Optional.empty());
+        return new Sum<>(Optional.of(left), Optional.empty());
     }
 
     /**
      * @param <A> the left summand datatype
      * @param <B> the right summand datatype
      * @param right the right object
-     * @return an {@link Either} object containing the right object
+     * @return an {@link Sum} object containing the right object
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public static <A,B> Either<A,B> right(final B right) {
+    public static <A,B> Sum<A,B> right(final B right) {
         Preconditions.throwIfNull(right, "right");
-        return new Either<>(Optional.empty(), Optional.of(right));
+        return new Sum<>(Optional.empty(), Optional.of(right));
     }
 
     /**
@@ -105,26 +105,26 @@ public final class Either<A, B> {
      * @param <A> the left summand datatype
      * @param <B> the right summand datatype
      * @param <U> the resultant type
-     * @param sum the {@link Either} object to pattern match on
-     * @param leftCase the function to be applied upon an {@link Either#left()} pattern match success
-     * @param rightCase the function to be applied upon an {@link Either#right()} pattern match success
+     * @param sum the {@link Sum} object to pattern match on
+     * @param leftCase the function to be applied upon an {@link Sum#left()} pattern match success
+     * @param rightCase the function to be applied upon an {@link Sum#right()} pattern match success
      * @return the result of either the application of the leftCase or rightCase functions
      * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
-    public static <A,B,U> U match(final Either<A, B> sum, final Function<A, U> leftCase, final Function<B, U> rightCase) {
+    public static <A,B,U> U match(final Sum<A, B> sum, final Function<A, U> leftCase, final Function<B, U> rightCase) {
         Preconditions.throwIfNull(sum, "sum");
         return sum.match(leftCase, rightCase);
     }
 
     /**
-     * Collapses an {@link Either} of the same type twice to that single type.
+     * Collapses an {@link Sum} of the same type twice to that single type.
      * 
      * @param <A> the resultant and summand types
-     * @param sum the {@link Either} object to destroy
+     * @param sum the {@link Sum} object to destroy
      * @return a value of the type A
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public static <A> A collapse(final Either<A, A> sum) {
+    public static <A> A collapse(final Sum<A, A> sum) {
         Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> a,
@@ -132,11 +132,11 @@ public final class Either<A, B> {
     }
 
     /**
-     * @param sum the {@link Either} object to destroy
+     * @param sum the {@link Sum} object to destroy
      * @return an optional possibly containing an object of the left type
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public static <A, B> Optional<A> forgetRight(final Either<A, B> sum) {
+    public static <A, B> Optional<A> forgetRight(final Sum<A, B> sum) {
         Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> Optional.of(a),
@@ -144,11 +144,11 @@ public final class Either<A, B> {
     }
 
     /**
-     * @param sum the {@link Either} object to destroy
+     * @param sum the {@link Sum} object to destroy
      * @return an optional possibly containing an object of the right type
      * @throws {@link IllegalArgumentException} when given a {@code null} object
      */
-    public static <A, B> Optional<B> forgetLeft(final Either<A, B> sum) {
+    public static <A, B> Optional<B> forgetLeft(final Sum<A, B> sum) {
         Preconditions.throwIfNull(sum, "sum");
         return sum.match(
             a -> Optional.empty(),
@@ -161,17 +161,17 @@ public final class Either<A, B> {
      * @param <A> the left summand type
      * @param <B> the right summand type
      * @param <X> the new left summand type
-     * @param sum the {@link Either} object to pattern match on
+     * @param sum the {@link Sum} object to pattern match on
      * @param function the left summand type transformation
-     * @return a new {@link Either} object with the new left summand type
+     * @return a new {@link Sum} object with the new left summand type
      * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
-    public static <A, B, X> Either<X, B> mapLeft(final Either<A, B> sum, final Function<A, X> function) {
+    public static <A, B, X> Sum<X, B> mapLeft(final Sum<A, B> sum, final Function<A, X> function) {
         Preconditions.throwIfNull(sum, "sum");
         Preconditions.throwIfNull(function, "function");
         return sum.match(
-            a -> Either.left(function.apply(a)), 
-            Either::right);
+            a -> Sum.left(function.apply(a)), 
+            Sum::right);
     }
 
     /**
@@ -180,38 +180,38 @@ public final class Either<A, B> {
      * @param <A> the left summand type
      * @param <B> the right summand type
      * @param <Y> the new right summand type
-     * @param sum the {@link Either} object to pattern match on
+     * @param sum the {@link Sum} object to pattern match on
      * @param function the right summand type transformation
-     * @return a new {@link Either} object with the new right summand type
+     * @return a new {@link Sum} object with the new right summand type
      * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
-    public static <A, B, Y> Either<A, Y> mapRight(final Either<A, B> sum, final Function<B, Y> function) {
+    public static <A, B, Y> Sum<A, Y> mapRight(final Sum<A, B> sum, final Function<B, Y> function) {
         Preconditions.throwIfNull(sum, "sum");
         Preconditions.throwIfNull(function, "function");
         return sum.match(
-            Either::left, 
-            b -> Either.right(function.apply(b)));
+            Sum::left, 
+            b -> Sum.right(function.apply(b)));
     }
 
     /**
-     * Transforms an {@link Either} object by conditionally applying either the left map or right map to produce
-     * a new {@link Either} object
+     * Transforms an {@link Sum} object by conditionally applying either the left map or right map to produce
+     * a new {@link Sum} object
      * @param <A> the left summand type
      * @param <B> the right summand type
      * @param <X> the new left summand type
      * @param <Y> the new right summand type
-     * @param sum the {@link Either} object to pattern match on
+     * @param sum the {@link Sum} object to pattern match on
      * @param mapLeft the left summand type transformation
      * @param mapRight the right summand type transformation
-     * @return a new {@link Either} object with the new left and right summand types
+     * @return a new {@link Sum} object with the new left and right summand types
      * @throws {@link IllegalArgumentException} when given {@code null} objects
      */
-    public static <A, B, X, Y> Either<X, Y> map(final Either<A, B> sum, final Function<A, X> mapLeft, final Function<B, Y> mapRight) {
+    public static <A, B, X, Y> Sum<X, Y> map(final Sum<A, B> sum, final Function<A, X> mapLeft, final Function<B, Y> mapRight) {
         Preconditions.throwIfNull(sum, "sum");
         Preconditions.throwIfNull(mapLeft, "mapLeft");
         Preconditions.throwIfNull(mapRight, "mapRight");
         return sum.match(
-            a -> Either.left(mapLeft.apply(a)),
-            b -> Either.right(mapRight.apply(b)));
+            a -> Sum.left(mapLeft.apply(a)),
+            b -> Sum.right(mapRight.apply(b)));
     }
 }
