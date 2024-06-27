@@ -21,6 +21,9 @@ public class ParameterTextFieldNode<T extends CharSequence> implements NodeInter
             parameter.setValue(converter.apply(newValue));
         });
 
+        textField.setDisable(!parameter.isEnabled());
+        parameter.addEnableListener(enabled -> textField.setDisable(!enabled));
+
         this.textFieldWrapper.getChildren().add(textField);
         this.textFieldWrapper.setPrefWidth(width);
     }

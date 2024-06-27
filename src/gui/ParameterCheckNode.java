@@ -17,6 +17,9 @@ public class ParameterCheckNode implements NodeInterpretable {
             parameter.setValue(newValue);
         });
 
+        checkBox.setDisable(!parameter.isEnabled());
+        parameter.addEnableListener(enabled -> checkBox.setDisable(!enabled));
+
         this.checkBoxWrapper.getChildren().addAll(checkBox);
     }
 

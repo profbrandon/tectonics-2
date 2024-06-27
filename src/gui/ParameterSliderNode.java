@@ -29,6 +29,9 @@ public class ParameterSliderNode<T extends Number> implements NodeInterpretable 
             valueLabel.setText(valueString.length() < 9 ? valueString : valueString.substring(0, 9));
         });
 
+        slider.setDisable(!parameter.isEnabled());
+        parameter.addEnableListener(enabled -> slider.setDisable(!enabled));
+
         this.sliderWrapper = new HBox(slider, valueLabel);
     }
 

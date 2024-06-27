@@ -4,8 +4,6 @@ import java.util.List;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -30,9 +28,14 @@ public class SimulationScene {
     private static final double RIGHT_BAR_WIDTH   = 320;
     private static final double INSETS            = 10;
 
-    private final ParameterSelectionMenu windowParametersMenu     = new ParameterSelectionMenu(getWindowParameterTree(), WINDOW_PARAMETERS_HEIGHT);
-    private final ParameterSelectionMenu viewingParametersMenu    = new ParameterSelectionMenu(getViewingParameterTree(), VIEWING_PARAMETERS_HEIGHT);
+    private DistinguishedTree<String, SimulationParameterGroup> windowParametersTree  = getWindowParameterTree();
+    private DistinguishedTree<String, SimulationParameterGroup> viewingParametersTree = getViewingParameterTree();
+
+    private final ParameterSelectionMenu windowParametersMenu     = new ParameterSelectionMenu(windowParametersTree, WINDOW_PARAMETERS_HEIGHT);
+    private final ParameterSelectionMenu viewingParametersMenu    = new ParameterSelectionMenu(viewingParametersTree, VIEWING_PARAMETERS_HEIGHT);
     private final ParameterSelectionMenu simulationParametersMenu = new ParameterSelectionMenu("Simulation Parameters", SIMULATION_PARAMETERS_HEIGHT);
+
+    final ViewingCanvas canvas = new ViewingCanvas(MAX_SIMULATION_WIDTH, MAX_SIMULATION_HEIGHT);
 
     private Scene scene;
 
@@ -41,19 +44,15 @@ public class SimulationScene {
         final HBox bottom = new HBox();
         final VBox right  = new VBox(10);
         final HBox center = new HBox();
-        final Canvas canvas = new Canvas();
-        final GraphicsContext context = canvas.getGraphicsContext2D();
         final Background background = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
 
         this.scene = new Scene(borderPane);
 
-        canvas.setWidth(MAX_SIMULATION_WIDTH);
-        canvas.setHeight(MAX_SIMULATION_HEIGHT);
+        this.canvas.setZoom(-2);
+        this.canvas.setCenterX(MAX_SIMULATION_WIDTH / 2);
+        this.canvas.setCenterY(MAX_SIMULATION_HEIGHT / 2);
 
-        context.setFill(Color.BLACK);
-        context.fillRect(0, 0, MAX_SIMULATION_WIDTH, MAX_SIMULATION_HEIGHT);
-
-        center.getChildren().add(canvas);
+        center.getChildren().add(this.canvas.asNode());
 
         bottom.setMinHeight(BOTTOM_BAR_HEIGHT);
         bottom.setPadding(new Insets(INSETS));
@@ -77,53 +76,76 @@ public class SimulationScene {
         return this.scene;
     }
 
-    private static DistinguishedTree<String, SimulationParameterGroup> getWindowParameterTree() {
+    private DistinguishedTree<String, SimulationParameterGroup> getWindowParameterTree() {
+        final IntegerParameter widthParameter = new IntegerParameter(
+            "Width", 
+            "W", 
+            "The width, in pixels, of the simulation.",
+            MAX_SIMULATION_WIDTH, 
+            0, 
+            MAX_SIMULATION_WIDTH);
+            
+        widthParameter.addUpdateListener(width -> this.canvas.setWidth(width));
+
+        final IntegerParameter heightParameter = new IntegerParameter(
+            "Height", 
+            "H", 
+            "The height, in pixels, of the simulation.", 
+            MAX_SIMULATION_HEIGHT, 
+            0, 
+            MAX_SIMULATION_HEIGHT);
+
+        heightParameter.addUpdateListener(height -> this.canvas.setHeight(height));
+
         return new DistinguishedTree<>(
             "Map Parameters", 
             List.of(
                 new DistinguishedTree<>(new SimulationParameterGroup.Builder()
-                    .addIntegerParameter(new IntegerParameter(
-                        "Width", 
-                        "W", 
-                        "The width, in pixels, of the simulation.",
-                        MAX_SIMULATION_WIDTH, 
-                        0, 
-                        MAX_SIMULATION_WIDTH))
-                    .addIntegerParameter(new IntegerParameter(
-                        "Height", 
-                        "H", 
-                        "The height, in pixels, of the simulation.", 
-                        MAX_SIMULATION_HEIGHT, 
-                        0, 
-                        MAX_SIMULATION_HEIGHT))
+                    .addIntegerParameter(widthParameter)
+                    .addIntegerParameter(heightParameter)
                     .build())));
     }
 
-    private static DistinguishedTree<String, SimulationParameterGroup> getViewingParameterTree() {
-        return new DistinguishedTree<>("Viewing Parameters",
+    private DistinguishedTree<String, SimulationParameterGroup> getViewingParameterTree() {
+        final FloatParameter zoomParameter = new FloatParameter(
+            "Zoom",
+            "Z", 
+            "The zoom-level of the map. If z is the zoom value, then magnification is 2^z.", 
+            0f, 
+            -10f, 
+            10f);
+
+        zoomParameter.addUpdateListener(zoom -> this.canvas.setZoom(zoom));
+
+        final FloatParameter centerXParameter = new FloatParameter(
+            "Center X", 
+            "CX", 
+            "The center's x coordinate.", 
+            (float) (MAX_SIMULATION_WIDTH / 2),
+            0f,
+            (float) MAX_SIMULATION_WIDTH);
+
+        centerXParameter.addUpdateListener(centerX -> this.canvas.setCenterX(centerX));
+        centerXParameter.setEnabled(false);
+
+        final FloatParameter centerYParameter = new FloatParameter(
+            "Center Y", 
+            "CY", 
+            "The center's y coordinate.", 
+            (float) (MAX_SIMULATION_HEIGHT / 2),
+            0f,
+            (float) MAX_SIMULATION_HEIGHT);
+
+        centerYParameter.addUpdateListener(centerY -> this.canvas.setCenterY(centerY));
+        centerYParameter.setEnabled(false);
+
+        return new DistinguishedTree<>(
+            "Viewing Parameters",
             List.of(
                 new DistinguishedTree<>(new SimulationParameterGroup.Builder()
-                    .addFloatParameter(new FloatParameter(
-                        "Zoom",
-                        "Z", 
-                        "The zoom-level of the map. If z is the zoom value, then magnification is 2^z.", 
-                        0f, 
-                        -10f, 
-                        10f))
-                    .addFloatParameter(new FloatParameter(
-                        "Center X", 
-                        "CX", 
-                        "The center's x coordinate.", 
-                        0f,
-                        (float) (-MAX_SIMULATION_WIDTH / 2),
-                        (float) (MAX_SIMULATION_WIDTH / 2)))
-                    .addFloatParameter(new FloatParameter(
-                        "Center Y", 
-                        "CY", 
-                        "The center's y coordinate.", 
-                        0f, 
-                        (float) (-MAX_SIMULATION_HEIGHT / 2), 
-                        (float) (MAX_SIMULATION_HEIGHT / 2)))
+                    .addFloatParameter(zoomParameter)
+                    .addFloatParameter(centerXParameter)
+                    .addFloatParameter(centerYParameter)
                     .build())));
     }
 }

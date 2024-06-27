@@ -1,6 +1,10 @@
 package simulation.parameters;
 
 import util.Preconditions;
+import util.properties.EnableListener;
+import util.properties.StandardEnableableValue;
+import util.properties.StandardUpdatableValue;
+import util.properties.UpdateListener;
 
 public class BasicParameter<T extends Comparable<T>> extends Parameter<T> { 
     private final String NAME;
@@ -11,7 +15,8 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
     private final T MIN_VALUE;
     private final T MAX_VALUE;
 
-    protected T value;
+    private final StandardEnableableValue enabledProperty = new StandardEnableableValue();
+    private final StandardUpdatableValue<T> valueProperty;
 
     public BasicParameter(
         final String name,
@@ -35,7 +40,7 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
         this.MIN_VALUE     = minValue;
         this.MAX_VALUE     = maxValue;
 
-        this.value = this.defaultValue();
+        this.valueProperty = new StandardUpdatableValue<>(defaultValue);
     }
 
     @Override
@@ -51,11 +56,6 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
     @Override
     public String getDescription() {
         return this.DESCRIPTION;
-    }
-
-    @Override
-    public T getValue() {
-        return this.value;
     }
 
     @Override
@@ -77,8 +77,33 @@ public class BasicParameter<T extends Comparable<T>> extends Parameter<T> {
     public void setValue(final T parameter) {
         Preconditions.throwIfNull(parameter, "parameter");
 
-        if (parameter.compareTo(this.MIN_VALUE) >= 0 && parameter.compareTo(this.MAX_VALUE) <= 0) {
-            this.value = parameter;
+        if (this.isEnabled() && parameter.compareTo(this.MIN_VALUE) >= 0 && parameter.compareTo(this.MAX_VALUE) <= 0) {
+            this.valueProperty.setValue(parameter);
         }
+    }
+
+    @Override
+    public T getValue() {
+        return this.valueProperty.getValue();
+    }
+
+    @Override
+    public void addUpdateListener(final UpdateListener<T> listener) {
+        this.valueProperty.addUpdateListener(listener);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabledProperty.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(final boolean enabled) {
+        this.enabledProperty.setEnabled(enabled);
+    }
+
+    @Override
+    public void addEnableListener(final EnableListener listener) {
+        this.enabledProperty.addEnableListener(listener);
     }
 }

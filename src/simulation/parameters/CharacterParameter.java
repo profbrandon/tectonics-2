@@ -1,7 +1,5 @@
 package simulation.parameters;
 
-import util.Preconditions;
-
 public class CharacterParameter extends BasicParameter<Character> {
     /**
      * Constructor that automatically supplies a default value of 0x0, a minimum of 0x0, and a maximum of 0xFF.
@@ -21,11 +19,5 @@ public class CharacterParameter extends BasicParameter<Character> {
         final Character defaultValue) {
     
         super(name, abbreviation, description, defaultValue, '\0', '\0');
-    }
-
-    @Override
-    public void setValue(final Character parameter) {
-        Preconditions.throwIfNull(parameter, "parameter");
-        this.value = parameter;
     }
 }
