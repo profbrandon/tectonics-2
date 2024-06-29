@@ -1,5 +1,8 @@
 package util.math.instances.doubles;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 import util.math.Field;
@@ -44,4 +47,21 @@ public final class DoubleField implements Field<Double>, VectorSpace<Double, Dou
     public Double scale(final Double v, final Double scalar) {
         return this.mult(v, scalar);
     }   
+
+    public Double sumAll(final Double...vs) {
+        return sumAll(Arrays.asList(vs));
+    }
+
+    public Double sumAll(final Collection<Double> vs) {
+        if (vs.size() == 0) return zero();
+        else {
+            double accumulator = zero();
+
+            for (final double v : vs) {
+                accumulator = sum(accumulator, v);
+            }
+
+            return accumulator;
+        }
+    }
 }
