@@ -20,6 +20,11 @@ public final class DoubleField implements Field<Double>, VectorSpace<Double, Dou
     }
 
     @Override
+    public Double unit() {
+        return 1.0;
+    }
+
+    @Override
     public Double sum(final Double q1, final Double q2) {
         return q1 + q2;
     }

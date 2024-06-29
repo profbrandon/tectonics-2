@@ -7,6 +7,8 @@ public interface Field<Q> extends Ring<Q> {
     
     public Q zero();
 
+    public Q unit();
+
     public Q sum(final Q q1, final Q q2);
 
     public Q neg(final Q q);
