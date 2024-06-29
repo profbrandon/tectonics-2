@@ -5,12 +5,12 @@ import java.util.function.Function;
 import util.counting.Ordinal;
 import util.counting.OrdinalSet;
 
-public class NSum<O extends Ordinal, A> {
+public class HomSum<O extends Ordinal, A> {
 
     private final OrdinalSet<O> tag;
     private final A value;
 
-    private NSum(final OrdinalSet<O> tag, final A value) {
+    private HomSum(final OrdinalSet<O> tag, final A value) {
         this.tag = tag;
         this.value = value;
     }

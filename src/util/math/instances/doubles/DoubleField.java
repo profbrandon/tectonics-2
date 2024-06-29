@@ -1,10 +1,11 @@
-package util.math.instances;
+package util.math.instances.doubles;
 
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 import util.math.Field;
+import util.math.VectorSpace;
 
-public class DoubleField implements Field<Double> {
+public final class DoubleField implements Field<Double>, VectorSpace<Double, Double> {
 
     public static final DoubleField INSTANCE = new DoubleField();
 
@@ -31,16 +32,16 @@ public class DoubleField implements Field<Double> {
     }
 
     @Override
-    public Double scale(final Double v, final Double scalar) {
-        return this.mult(v, scalar);
-    }
-
-    @Override
     public Sum<Unit, Double> inv(final Double q) {
         if (q.equals(this.zero())) {
             return Sum.left(Unit.unit());
         } else {
             return Sum.right(1.0 / q);
         }
+    }
+
+    @Override
+    public Double scale(final Double v, final Double scalar) {
+        return this.mult(v, scalar);
     }   
 }

@@ -3,7 +3,7 @@ package util.math;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 
-public interface Field<Q> extends VectorSpace<Q, Q> {
+public interface Field<Q> extends Ring<Q> {
     
     public Q zero();
 
