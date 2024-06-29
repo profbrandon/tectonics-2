@@ -48,7 +48,6 @@ public class SimulationScene {
 
         this.scene = new Scene(borderPane);
 
-        this.canvas.setZoom(-2);
         this.canvas.setCenterX(MAX_SIMULATION_WIDTH / 2);
         this.canvas.setCenterY(MAX_SIMULATION_HEIGHT / 2);
 
@@ -112,8 +111,8 @@ public class SimulationScene {
             "Z", 
             "The zoom-level of the map. If z is the zoom value, then magnification is 2^z.", 
             0f, 
-            -10f, 
-            10f);
+            -5f, 
+            5f);
 
         zoomParameter.addUpdateListener(zoom -> this.canvas.setZoom(zoom));
 
