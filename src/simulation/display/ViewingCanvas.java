@@ -1,12 +1,15 @@
 package simulation.display;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 
 public class ViewingCanvas implements NodeInterpretable {
 
@@ -70,11 +73,14 @@ public class ViewingCanvas implements NodeInterpretable {
 
     private void drawBounds() {
         final GraphicsContext context = this.canvas.getGraphicsContext2D();
+
         context.setTransform(new Affine(getTransform()));
 
         context.setStroke(Color.GRAY);
         context.strokeRect(0, 0, this.width, this.height);
-        context.stroke();
+
+        System.out.println("Top Left: " + getTransform().deltaTransform(new Point2D(0, 0)));
+        System.out.println("Lower Right: " + getTransform().deltaTransform(new Point2D(this.width, this.height)));
     }
 
     private double getInternalCanvasWidth() {
@@ -91,15 +97,15 @@ public class ViewingCanvas implements NodeInterpretable {
 
     private Transform getTransform() {
         final double scaleValue = getZoomScalar();
-        return Transform.translate(-this.width / 2, -this.height / 2);
-            //.createConcatenation(Transform.scale(scaleValue, scaleValue))
-            //.createConcatenation(Transform.translate(this.width / scaleValue, this.height / scaleValue));
+        return new Translate(-this.width / 2, -this.height / 2)
+            .createConcatenation(new Scale(scaleValue, scaleValue));
+            //.createConcatenation(new Translate(scaleValue * this.width / 2, scaleValue * this.height / 2));
     }
 
     private void clear() {
         final GraphicsContext context = this.canvas.getGraphicsContext2D();
         context.setFill(Color.BLACK);
-        context.setTransform(new Affine(Affine.translate(0, 0)));
+        context.setTransform(new Affine());
         context.fillRect(0, 0, this.actualWidth, this.actualHeight);
     }
 
