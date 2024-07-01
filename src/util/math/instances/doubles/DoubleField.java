@@ -2,17 +2,29 @@ package util.math.instances.doubles;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 import util.math.Field;
-import util.math.VectorSpace;
+import util.math.FiniteVectorSpace;
 
-public final class DoubleField implements Field<Double>, VectorSpace<Double, Double> {
+public final class DoubleField implements Field<Double>, FiniteVectorSpace<Double, Double> {
 
     public static final DoubleField INSTANCE = new DoubleField();
 
     private DoubleField() {};
+
+    @Override
+    public List<Double> basis() {
+        return List.of(unit());
+    }
+
+    @Override
+    public List<Prod<Double, Double>> decompose(final Double v) {
+        return List.of(Prod.pair(v, unit()));
+    }
 
     @Override
     public Double zero() {

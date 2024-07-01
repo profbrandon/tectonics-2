@@ -81,6 +81,10 @@ public class OrdinalSet<O extends Ordinal> {
                     lower);
     }
 
+    public static <A> Function<OrdinalSet<Zero>, A> zero() {
+        return ordSet -> { throw new IllegalStateException("Somehow supplied an object of type OrdinalSet<Zero>."); };
+    }
+
     public static <A> Function<OrdinalSet<One>, A> one(final A value) {
         return injectOne(value);
     }

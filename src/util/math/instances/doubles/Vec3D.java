@@ -1,8 +1,11 @@
 package util.math.instances.doubles;
 
+import java.util.List;
+
 import util.counting.OrdinalSet;
 import util.counting.Ordinals.Three;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Prod;
 
 public final class Vec3D extends VecD<Three> {
     
@@ -21,6 +24,20 @@ public final class Vec3D extends VecD<Three> {
         return INSTANCE.equalsVector(OrdinalSet.THREE_SET, v1, v2);
     }
 
+    @Override
+    public List<HomTuple<Three, Double>> basis() {
+        return List.of(UNIT_X, UNIT_Y, UNIT_Z);
+    }
+
+    @Override
+    public List<Prod<Double, HomTuple<Three, Double>>> decompose(HomTuple<Three, Double> v) {
+        return List.of(
+            Prod.pair(v.at(OrdinalSet.ZERO_3), UNIT_X),
+            Prod.pair(v.at(OrdinalSet.ONE_3), UNIT_Y),
+            Prod.pair(v.at(OrdinalSet.TWO_3), UNIT_Z));
+    }
+
+    @Override
     public Double dot(final HomTuple<Three, Double> v1, final HomTuple<Three, Double> v2) {
         final HomTuple<Three, Double> prod = v1.zip(v2)
             .mapAll(pair -> 

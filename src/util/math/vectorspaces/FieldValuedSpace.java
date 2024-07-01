@@ -8,7 +8,7 @@ import util.math.VectorSpace;
 
 public class FieldValuedSpace<V, K> implements VectorSpace<Exp<V, K>, K>, Ring<Exp<V, K>> {
 
-    private final Field<K> UNDERLYING_F;
+    protected final Field<K> UNDERLYING_F;
 
     public FieldValuedSpace(final Field<K> underylingField) {
         Preconditions.throwIfNull(underylingField, "underlyingField");

@@ -10,7 +10,6 @@ public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, 
 
     public LinearMapSpace(final VectorSpace<W, K> targetSpace) {
         Preconditions.throwIfNull(targetSpace, "targetSpace");
-
         this.TARGET = targetSpace;
     }
 
@@ -32,5 +31,9 @@ public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, 
     @Override
     public Exp<V, W> scale(final Exp<V, W> linear, final K scalar) {
         return Exp.asExponential(v -> TARGET.scale(linear.apply(v), scalar));
+    }
+
+    public W transform(final Exp<V, W> linear, final V vector) {
+        return linear.apply(vector);
     }
 }

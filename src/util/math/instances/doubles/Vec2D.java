@@ -1,8 +1,11 @@
 package util.math.instances.doubles;
 
+import java.util.List;
+
 import util.counting.OrdinalSet;
 import util.counting.Ordinals.Two;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Prod;
 
 public final class Vec2D extends VecD<Two> {
 
@@ -18,6 +21,18 @@ public final class Vec2D extends VecD<Two> {
 
     public static boolean equalsVector(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
         return INSTANCE.equalsVector(OrdinalSet.TWO_SET, v1, v2);
+    }
+
+    @Override
+    public List<HomTuple<Two, Double>> basis() {
+        return List.of(UNIT_X, UNIT_Y);
+    }
+
+    @Override
+    public List<Prod<Double, HomTuple<Two, Double>>> decompose(final HomTuple<Two, Double> v) {
+        return List.of(
+            Prod.pair(v.at(OrdinalSet.ZERO_2), UNIT_X),
+            Prod.pair(v.at(OrdinalSet.ONE_2), UNIT_Y));
     }
 
     @Override
