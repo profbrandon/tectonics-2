@@ -1,6 +1,6 @@
 package util.math;
 
-public interface Monoid<M> {
+public interface Monoid<M> extends Equiv<M> {
     
     public M zero();
 

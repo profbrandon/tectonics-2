@@ -66,19 +66,19 @@ public class OrdinalSet<O extends Ordinal> {
     private static <O extends Ordinal, P extends Prev<O>> OrdinalSet<O> lift(final OrdinalSet<P> value) {
         return new OrdinalSet<O>(value.ordinal.match(
             prev -> new OrdinalSet<>(prev),
-            prevOrdSet -> OrdinalSet.lift(prevOrdSet)));
+            prevOrdSet -> new OrdinalSet<>(prevOrdSet)));
     }
 
     private static <A> Function<OrdinalSet<One>, A> injectOne(final A value) {
         return ord -> value;
     }
 
-    private static <O extends Ordinal, A> Function<OrdinalSet<O>, A> liftFun(final A value, final Function<OrdinalSet<? extends Prev<O>>, A> lower) {
+    private static <O extends Ordinal, A> Function<OrdinalSet<O>, A> liftFun(final A higherValue, final Function<OrdinalSet<? extends Prev<O>>, A> lowerValues) {
         return 
             higherOrd -> 
                 higherOrd.ordinal.match(
-                    ord -> value,
-                    lower);
+                    ord -> higherValue,
+                    lowerValues);
     }
 
     public static <A> Function<OrdinalSet<Zero>, A> zero() {
@@ -120,7 +120,7 @@ public class OrdinalSet<O extends Ordinal> {
                         v -> ZERO_4)))));
     }
 
-    public static <A, O extends Ordinal> Function<OrdinalSet<O>, A> populate(final A value) {
+    public static <O extends Ordinal, A> Function<OrdinalSet<O>, A> populate(final A value) {
         return ordSet -> value;
     }
 }

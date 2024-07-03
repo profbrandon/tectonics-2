@@ -18,6 +18,14 @@ public abstract class NVectorSpace<O extends Ordinal, V, K> implements VectorSpa
         this.UNDERLYING = underlyingSpace;
     }
 
+    public boolean equalsVector(final Collection<OrdinalSet<O>> enumerated, final HomTuple<O, V> v1, final HomTuple<O, V> v2) {
+        return v1.equalsTuple(pair -> pair.destroy(a -> b -> UNDERLYING.equiv(a, b)), enumerated, v2);
+    }
+
+    public VectorSpace<V, K> underlyingVectorSpace() {
+        return this.UNDERLYING;
+    }
+
     @Override
     public HomTuple<O, V> zero() {
         return new HomTuple<>(OrdinalSet.populate(UNDERLYING.zero()));
@@ -36,9 +44,5 @@ public abstract class NVectorSpace<O extends Ordinal, V, K> implements VectorSpa
     @Override
     public HomTuple<O, V> scale(final HomTuple<O, V> v, final K scalar) {
         return v.mapAll(a -> UNDERLYING.scale(a, scalar));
-    }
-
-    public boolean equalsVector(final Collection<OrdinalSet<O>> enumerated, final HomTuple<O, V> v1, final HomTuple<O, V> v2) {
-        return v1.equalsTuple(enumerated, v2);
     }
 }

@@ -2,6 +2,7 @@ package util.math.instances.doubles;
 
 import java.util.List;
 
+import util.Preconditions;
 import util.counting.OrdinalSet;
 import util.counting.Ordinals.Three;
 import util.data.algebraic.HomTuple;
@@ -21,7 +22,7 @@ public final class Vec3D extends VecD<Three> {
     }
 
     public static boolean equalsVector(final HomTuple<Three, Double> v1, final HomTuple<Three, Double> v2) {
-        return INSTANCE.equalsVector(OrdinalSet.THREE_SET, v1, v2);
+        return INSTANCE.equiv(v1, v2);
     }
 
     @Override
@@ -30,7 +31,7 @@ public final class Vec3D extends VecD<Three> {
     }
 
     @Override
-    public List<Prod<Double, HomTuple<Three, Double>>> decompose(HomTuple<Three, Double> v) {
+    public List<Prod<Double, HomTuple<Three, Double>>> decompose(final HomTuple<Three, Double> v) {
         return List.of(
             Prod.pair(v.at(OrdinalSet.ZERO_3), UNIT_X),
             Prod.pair(v.at(OrdinalSet.ONE_3), UNIT_Y),
@@ -44,5 +45,13 @@ public final class Vec3D extends VecD<Three> {
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
         return DoubleField.INSTANCE.sumAll(OrdinalSet.THREE_SET.stream().map(prod::at).toList());
+    }
+
+    @Override
+    public boolean equiv(final HomTuple<Three, Double> v1, final HomTuple<Three, Double> v2) {
+        Preconditions.throwIfNull(v1, "v1");
+        Preconditions.throwIfNull(v2, "v2");
+
+        return super.equalsVector(OrdinalSet.THREE_SET, v1, v2);
     }
 }

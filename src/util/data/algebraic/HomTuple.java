@@ -53,7 +53,7 @@ public class HomTuple<O extends Ordinal, A> {
      */
     public <B> HomTuple<O, B> mapAll(final Function<A, B> function) {
         Preconditions.throwIfNull(function, "function");
-        return new HomTuple<>(function.compose(this.elements));
+        return new HomTuple<>(ordSet -> function.apply(this.elements.apply(ordSet)));
     }
 
     /**
@@ -114,12 +114,50 @@ public class HomTuple<O extends Ordinal, A> {
      * @return whether these two objects are equivalent (up to the given indices)
      */
     public boolean equalsTuple(final Collection<OrdinalSet<O>> enumerated, final HomTuple<O, A> other) {
+        return this.equalsTuple(pair -> pair.destroy(a -> b -> a.equals(b)), enumerated, other);
+    }
+
+    /**
+     * Tests the provided {@link HomTuple} for equality against this one. Note that it only checks the
+     * provided indices in the {@link OrdinalSet} collection argument. The underlying type is checked
+     * for equality via the provided equality function.
+     * 
+     * @param equality an equality function (should be a true equivalence)
+     * @param enumerated the collection of indices to check for equality
+     * @param other the other {@link HomTuple}
+     * @return whether these two objects are equivalent (up to the given indices and provided equivalence)
+     */
+    public boolean equalsTuple(
+        final Function<Prod<A, A>, Boolean> equality,
+        final Collection<OrdinalSet<O>> enumerated,
+        final HomTuple<O, A> other) {
+
+        Preconditions.throwIfNull(equality, "equality");
         Preconditions.throwIfNull(enumerated, "enumerated");
         Preconditions.throwIfNull(other, "other");
 
         for (final OrdinalSet<O> ord : enumerated) {
-            if (!this.at(ord).equals(other.at(ord))) return false;
+            if (!equality.apply(Prod.pair(this.at(ord),(other.at(ord))))) return false;
         }
         return true;
+    }
+
+    /**
+     * Converts a {@link HomTuple} to a string. Note that this only outputs elements of the entire tuple if the
+     * provided {@link Collection} of {@link OrdinalSet} objects is exhaustive. 
+     * 
+     * @param <N> the provided {@link HomTuple}'s dimension
+     * @param <V> the type of the underlying data
+     * @param enumerated the collection of {@link OrdinalSet} objects
+     * @param tuple the tuple to represent as a string
+     * @return a string representation of the tuple
+     */
+    public static <N extends Ordinal, V> String toString(final Collection<OrdinalSet<N>> enumerated, final HomTuple<N, V> tuple) {
+        Preconditions.throwIfNull(enumerated, "enumerated");
+        Preconditions.throwIfNull(tuple, "tuple");
+
+        final Function<String, String> wrapper = v -> "(" + v + ")";
+
+        return wrapper.apply(enumerated.stream().map(ord -> tuple.at(ord).toString()).reduce((a, b) -> a + ", " + b).get());
     }
 }

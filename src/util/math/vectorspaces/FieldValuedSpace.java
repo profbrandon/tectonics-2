@@ -1,24 +1,32 @@
 package util.math.vectorspaces;
 
-import util.Preconditions;
 import util.data.algebraic.Exp;
 import util.math.Field;
 import util.math.Ring;
 import util.math.VectorSpace;
 
-public class FieldValuedSpace<V, K> implements VectorSpace<Exp<V, K>, K>, Ring<Exp<V, K>> {
+public class FieldValuedSpace<V, K> extends LinearMapSpace<V, K, K> implements Ring<Exp<V, K>> {
 
-    protected final Field<K> UNDERLYING_F;
+    private final Field<K> UNDERLYING_F;
 
-    public FieldValuedSpace(final Field<K> underylingField) {
-        Preconditions.throwIfNull(underylingField, "underlyingField");
+    public FieldValuedSpace(final VectorSpace<V, K> underlyingSpace, final Field<K> underylingField) {
+        super(underlyingSpace, underylingField);
 
         this.UNDERLYING_F = underylingField;
+    }
+
+    public Field<K> underlyingField() {
+        return this.UNDERLYING_F;
     }
 
     @Override
     public Exp<V, K> zero() {
         return Exp.constant(UNDERLYING_F.zero());
+    }
+
+    @Override
+    public Exp<V, K> unit() {
+        return Exp.constant(UNDERLYING_F.unit());
     }
 
     @Override
@@ -39,5 +47,13 @@ public class FieldValuedSpace<V, K> implements VectorSpace<Exp<V, K>, K>, Ring<E
     @Override
     public Exp<V, K> mult(final Exp<V, K> r1, final Exp<V, K> r2) {
         return Exp.asExponential(v -> UNDERLYING_F.mult(r1.apply(v), r2.apply(v)));
+    }
+
+    /**
+     * Returns true if they satisfy standard java equality since cannot easily be decided for functions.
+     */
+    @Override
+    public boolean equiv(final Exp<V, K> a1, final Exp<V, K> a2) {
+        return a1 == a2;
     }
 }

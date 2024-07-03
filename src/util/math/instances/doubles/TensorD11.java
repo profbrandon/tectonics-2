@@ -2,6 +2,7 @@ package util.math.instances.doubles;
 
 import java.util.List;
 
+import util.Preconditions;
 import util.counting.OrdinalSet;
 import util.counting.Ordinals.One;
 import util.data.algebraic.Exp;
@@ -44,4 +45,21 @@ public class TensorD11 extends TensorD<One, One> {
         return List.of(Prod.pair(evaluate(tensor, UNIT.second(), UNIT.first()), UNIT));
     }
     
+    @Override
+    public boolean equiv(
+        final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> v1,
+        final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> v2) {
+        
+        Preconditions.throwIfNull(v1, "v1");
+        Preconditions.throwIfNull(v2, "v2");
+
+        final List<Double> components1 = decompose(v1).stream().map(pair -> pair.first()).toList();
+        final List<Double> components2 = decompose(v2).stream().map(pair -> pair.first()).toList();
+
+        for (int i = 0; i < basis().size(); ++i) {
+            if (!UNDERLYING_F.equiv(components1.get(i), components2.get(i))) return false;
+        }
+
+        return true;
+    }
 }

@@ -23,7 +23,7 @@ public abstract class PQTensorSpace<V, K, P extends Ordinal, Q extends Ordinal>
         Preconditions.throwIfNull(underlyingField, "underlyingField");
         this.UNDERLYING_F = underlyingField;
         this.UNDERLYING_V = underlyingSpace;
-        this.UNDERLYING_DUAL = new FieldValuedSpace<>(underlyingField);
+        this.UNDERLYING_DUAL = new FieldValuedSpace<>(underlyingSpace, underlyingField);
     }
 
     public Prod<HomTuple<Prev<P>, V>, HomTuple<Prev<Q>, Exp<V, K>>> contract(

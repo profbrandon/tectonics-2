@@ -2,6 +2,7 @@ package util.testing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -77,11 +78,15 @@ public class UnitTest {
     }
 
     public static <V> boolean checkValue(final String testName, final Predicate<V> check, final Supplier<V> test) {
+        return checkValue(testName, check, v -> v.toString(), test);
+    }
+
+    public static <V> boolean checkValue(final String testName, final Predicate<V> check, final Function<V, String> toString, final Supplier<V> test) {
         printTest(testName);
 
         final V testValue = test.get();
 
-        return wrapOutcome(check.test(testValue), "test value did not pass the check. Supplied value is " + testValue.toString());
+        return wrapOutcome(check.test(testValue), "test value did not pass the check. Supplied value is " + toString.apply(testValue));
     }
 
     private static void printSuccess() {

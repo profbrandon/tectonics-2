@@ -12,6 +12,8 @@ import util.math.FiniteVectorSpace;
 
 public final class DoubleField implements Field<Double>, FiniteVectorSpace<Double, Double> {
 
+    private static final Double TOLERANCE = 1e-10;
+
     public static final DoubleField INSTANCE = new DoubleField();
 
     private DoubleField() {};
@@ -80,5 +82,11 @@ public final class DoubleField implements Field<Double>, FiniteVectorSpace<Doubl
 
             return accumulator;
         }
+    }
+
+    @Override
+    public boolean equiv(final Double a1, final Double a2) {
+        final double differance = a1.doubleValue() - a2.doubleValue();
+        return -TOLERANCE < differance && differance < TOLERANCE;
     }
 }

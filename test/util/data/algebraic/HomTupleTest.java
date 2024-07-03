@@ -33,6 +33,7 @@ public class HomTupleTest extends UnitTest {
         unitTest.addTest(HomTupleTest::test4TupleFourth);
         unitTest.addTest(HomTupleTest::equalsTupleTrue);
         unitTest.addTest(HomTupleTest::equalsTupleFalse);
+        unitTest.addTest(HomTupleTest::correctOutputString);
         
         unitTest.runTests();
     }
@@ -126,5 +127,12 @@ public class HomTupleTest extends UnitTest {
             "Check for inequality",
             v -> !v.equalsTuple(OrdinalSet.FOUR_SET, TUPLE_4),
             () -> TUPLE_4.mapAll(x -> x == 2 ? -1 : x));
+    }
+
+    private static boolean correctOutputString() {
+        return UnitTest.checkValue(
+            "Outputs correct string representation",
+            v -> v.equals("(1, 2, 3, 4)"),
+            () -> HomTuple.toString(OrdinalSet.FOUR_SET, TUPLE_4));
     }
 }

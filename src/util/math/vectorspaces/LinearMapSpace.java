@@ -6,11 +6,27 @@ import util.math.VectorSpace;
 
 public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, K> {
 
+    private final VectorSpace<V, K> DOMAIN;
     private final VectorSpace<W, K> TARGET;
 
-    public LinearMapSpace(final VectorSpace<W, K> targetSpace) {
+    public LinearMapSpace(final VectorSpace<V, K> domainSpace, final VectorSpace<W, K> targetSpace) {
+        Preconditions.throwIfNull(domainSpace, "domainSpace");
         Preconditions.throwIfNull(targetSpace, "targetSpace");
+
+        this.DOMAIN = domainSpace;
         this.TARGET = targetSpace;
+    }
+
+    public VectorSpace<V, K> domainVectorSpace() {
+        return this.DOMAIN;
+    }
+
+    public VectorSpace<W, K> targetVectorSpace() {
+        return this.TARGET;
+    }
+
+    public W transform(final Exp<V, W> linear, final V vector) {
+        return linear.apply(vector);
     }
 
     @Override
@@ -31,9 +47,5 @@ public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, 
     @Override
     public Exp<V, W> scale(final Exp<V, W> linear, final K scalar) {
         return Exp.asExponential(v -> TARGET.scale(linear.apply(v), scalar));
-    }
-
-    public W transform(final Exp<V, W> linear, final V vector) {
-        return linear.apply(vector);
     }
 }

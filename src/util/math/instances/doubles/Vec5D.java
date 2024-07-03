@@ -22,6 +22,10 @@ public final class Vec5D extends VecD<Five> {
         return new HomTuple<>(OrdinalSet.fiveHomo(x, y, z, w, u));
     }
 
+    public static boolean equalsVector(final HomTuple<Five, Double> v1, final HomTuple<Five, Double> v2) {
+        return INSTANCE.equiv(v1, v2);
+    }
+
     @Override
     public List<HomTuple<Five, Double>> basis() {
         return List.of(UNIT_X, UNIT_Y, UNIT_Z, UNIT_W, UNIT_U);
@@ -44,5 +48,10 @@ public final class Vec5D extends VecD<Five> {
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
         return DoubleField.INSTANCE.sumAll(OrdinalSet.FIVE_SET.stream().map(prod::at).toList());
+    }
+
+    @Override
+    public boolean equiv(final HomTuple<Five, Double> v1, final HomTuple<Five, Double> v2) {
+        return super.equalsVector(OrdinalSet.FIVE_SET, v1, v2);
     }
 }

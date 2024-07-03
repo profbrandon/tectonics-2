@@ -23,9 +23,7 @@ public final class Vec2D extends VecD<Two> {
     }
 
     public static boolean equalsVector(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
-        Preconditions.throwIfNull(v1, "v1");
-        Preconditions.throwIfNull(v2, "v2");
-        return INSTANCE.equalsVector(OrdinalSet.TWO_SET, v1, v2);
+        return INSTANCE.equiv(v1, v2);
     }
 
     @Override
@@ -51,5 +49,13 @@ public final class Vec2D extends VecD<Two> {
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
         return DoubleField.INSTANCE.sumAll(OrdinalSet.TWO_SET.stream().map(prod::at).toList());
+    }
+
+    @Override
+    public boolean equiv(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
+        Preconditions.throwIfNull(v1, "v1");
+        Preconditions.throwIfNull(v2, "v2");
+
+        return super.equalsVector(OrdinalSet.TWO_SET, v1, v2);
     }
 }
