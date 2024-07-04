@@ -1,4 +1,4 @@
-package util.math.instances.doubles;
+package util.math.instances.doubles.tensors;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import util.counting.Ordinals.Zero;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.math.instances.doubles.DoubleField;
 
 /**
  * Class to represent the space of (1,0)-tensors over the space of doubles. This is trivially isomorphic

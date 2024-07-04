@@ -1,4 +1,6 @@
-package util.math;
+package util.math.vectorspaces;
+
+import util.math.Group;
 
 public interface VectorSpace<V, K> extends Group<V> {
     

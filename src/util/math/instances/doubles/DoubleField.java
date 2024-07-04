@@ -8,7 +8,7 @@ import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 import util.math.Field;
-import util.math.FiniteVectorSpace;
+import util.math.vectorspaces.FiniteVectorSpace;
 
 public final class DoubleField implements Field<Double>, FiniteVectorSpace<Double, Double> {
 

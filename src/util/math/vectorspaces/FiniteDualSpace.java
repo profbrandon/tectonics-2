@@ -4,7 +4,6 @@ import java.util.List;
 
 import util.data.algebraic.Exp;
 import util.math.Field;
-import util.math.FiniteVectorSpace;
 
 public abstract class FiniteDualSpace<V, K> 
     extends FieldValuedSpace<V, K> 

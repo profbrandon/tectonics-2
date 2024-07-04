@@ -1,4 +1,4 @@
-package util.math;
+package util.math.vectorspaces;
 
 public interface InnerProductSpace<V, K> extends VectorSpace<V, K> {
 

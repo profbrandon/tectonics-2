@@ -1,10 +1,11 @@
-package util.math.instances.doubles;
+package util.math.instances.doubles.tensors;
 
 import util.counting.Ordinal;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
-import util.math.FiniteVectorSpace;
+import util.math.instances.doubles.DoubleField;
+import util.math.vectorspaces.FiniteVectorSpace;
 import util.math.vectorspaces.PQTensorSpace;
 
 public abstract class TensorD<P extends Ordinal, Q extends Ordinal>

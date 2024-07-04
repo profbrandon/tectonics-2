@@ -1,9 +1,10 @@
-package util.math.instances.doubles;
+package util.math.instances.doubles.linear;
 
 import util.counting.Ordinal;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
-import util.math.FiniteVectorSpace;
+import util.math.instances.doubles.vectors.VecD;
+import util.math.vectorspaces.FiniteVectorSpace;
 import util.math.vectorspaces.LinearMapSpace;
 
 public abstract class LinearD<N extends Ordinal, M extends Ordinal> 

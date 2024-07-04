@@ -1,4 +1,4 @@
-package util.math;
+package util.math.vectorspaces;
 
 import util.counting.Ordinal;
 import util.data.algebraic.Exp;

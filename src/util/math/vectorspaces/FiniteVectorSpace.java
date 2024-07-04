@@ -1,4 +1,4 @@
-package util.math;
+package util.math.vectorspaces;
 
 import java.util.List;
 

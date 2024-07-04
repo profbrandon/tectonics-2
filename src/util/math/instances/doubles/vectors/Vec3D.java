@@ -1,4 +1,4 @@
-package util.math.instances.doubles;
+package util.math.instances.doubles.vectors;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import util.counting.OrdinalSet;
 import util.counting.Ordinals.Three;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.math.instances.doubles.DoubleField;
 
 public final class Vec3D extends VecD<Three> {
     

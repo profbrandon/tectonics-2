@@ -3,7 +3,6 @@ package util.math.vectorspaces;
 import util.data.algebraic.Exp;
 import util.math.Field;
 import util.math.Ring;
-import util.math.VectorSpace;
 
 public class FieldValuedSpace<V, K> extends LinearMapSpace<V, K, K> implements Ring<Exp<V, K>> {
 

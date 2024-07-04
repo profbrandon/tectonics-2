@@ -8,8 +8,6 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.Field;
-import util.math.TensorSpace;
-import util.math.VectorSpace;
 
 public abstract class PQTensorSpace<V, K, P extends Ordinal, Q extends Ordinal> 
     implements 

@@ -2,7 +2,6 @@ package util.math.vectorspaces;
 
 import util.Preconditions;
 import util.data.algebraic.Exp;
-import util.math.VectorSpace;
 
 public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, K> {
 

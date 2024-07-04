@@ -5,7 +5,7 @@ import java.util.List;
 import util.counting.OrdinalSet;
 import util.data.algebraic.HomTuple;
 import util.math.instances.doubles.DoubleField;
-import util.math.instances.doubles.Vec2D;
+import util.math.instances.doubles.vectors.Vec2D;
 import util.testing.UnitTest;
 
 public class Vec2DTest extends UnitTest {

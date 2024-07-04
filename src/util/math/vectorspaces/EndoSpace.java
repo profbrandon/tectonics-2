@@ -5,7 +5,6 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.Ring;
-import util.math.VectorSpace;
 
 public class EndoSpace<V, K> extends LinearMapSpace<V, V, K> implements Ring<Exp<V, V>> {
 

@@ -1,4 +1,4 @@
-package util.math.instances.doubles;
+package util.math.instances.doubles.tensors;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import util.counting.Ordinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.math.instances.doubles.DoubleField;
 
 public class TensorD11 extends TensorD<One, One> {
 

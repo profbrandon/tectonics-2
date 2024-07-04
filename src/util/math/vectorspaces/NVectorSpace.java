@@ -6,7 +6,6 @@ import util.Preconditions;
 import util.counting.Ordinal;
 import util.counting.OrdinalSet;
 import util.data.algebraic.HomTuple;
-import util.math.VectorSpace;
 
 public abstract class NVectorSpace<O extends Ordinal, V, K> implements VectorSpace<HomTuple<O, V>, K> {
 
