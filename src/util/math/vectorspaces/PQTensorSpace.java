@@ -15,13 +15,13 @@ public abstract class PQTensorSpace<V, K, P extends Cardinal, Q extends Cardinal
 
     protected final Field<K> UNDERLYING_F;
     protected final VectorSpace<V, K> UNDERLYING_V;
-    protected final VectorSpace<Exp<V, K>, K> UNDERLYING_DUAL;
+    protected final FieldValuedSpace<V, K> UNDERLYING_DUAL;
 
     public PQTensorSpace(final VectorSpace<V, K> underlyingSpace, final Field<K> underlyingField) {
         Preconditions.throwIfNull(underlyingField, "underlyingField");
         this.UNDERLYING_F = underlyingField;
         this.UNDERLYING_V = underlyingSpace;
-        this.UNDERLYING_DUAL = new FieldValuedSpace<>(underlyingSpace, underlyingField);
+        this.UNDERLYING_DUAL = new FieldValuedSpace<>(underlyingSpace);
     }
 
     public Prod<HomTuple<Prev<P>, V>, HomTuple<Prev<Q>, Exp<V, K>>> contract(
@@ -31,6 +31,21 @@ public abstract class PQTensorSpace<V, K, P extends Cardinal, Q extends Cardinal
 
         // TODO: Implement tensor contraction
         return null;
+    }
+
+    @Override
+    public VectorSpace<V, K> underlyingVectorSpace() {
+        return UNDERLYING_V;
+    }
+
+    @Override
+    public FieldValuedSpace<V, K> underlyingDualSpace() {
+        return UNDERLYING_DUAL;
+    }
+
+    @Override
+    public Field<K> underlyingField() {
+        return UNDERLYING_F;
     }
 
     @Override

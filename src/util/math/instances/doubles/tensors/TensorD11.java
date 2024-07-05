@@ -2,27 +2,32 @@ package util.math.instances.doubles.tensors;
 
 import java.util.List;
 
-import util.Preconditions;
 import util.counting.Ordinal;
 import util.counting.Cardinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
+import util.math.instances.doubles.vectors.Vec1D;
 
-public class TensorD11 extends TensorD<One, One> {
+public class TensorD11 extends TensorD<One, One, One> {
 
-    public static final TensorD<One, One> INSTANCE = new TensorD11();
+    public static final TensorD<One, One, One> INSTANCE = new TensorD11();
 
-    public static final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> UNIT = Prod.pair(
-        new HomTuple<>(Ordinal.one(DoubleField.INSTANCE.unit())),
-        new HomTuple<>(Ordinal.one(Exp.constant(DoubleField.INSTANCE.unit()))));
+    public static final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> 
+        UNIT = Prod.pair(
+            HomTuple.tuple(HomTuple.tuple(DoubleField.INSTANCE.unit())),
+            HomTuple.tuple(Exp.constant(DoubleField.INSTANCE.unit())));
+
+    private TensorD11() {
+        super(Vec1D.INSTANCE);
+    }
 
     @Override
     public Double evaluate(
-        final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> tensor,
-        final HomTuple<One, Exp<Double, Double>> dualVectors,
-        final HomTuple<One, Double> vectors) {
+        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor,
+        final HomTuple<One, Exp<HomTuple<One, Double>, Double>> dualVectors,
+        final HomTuple<One, HomTuple<One, Double>> vectors) {
 
         return tensor.destroy(values -> maps -> 
             DoubleField.INSTANCE.mult(
@@ -35,32 +40,14 @@ public class TensorD11 extends TensorD<One, One> {
     }
 
     @Override
-    public List<Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>>> basis() {
+    public List<Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>> basis() {
         return List.of(UNIT);
     }
 
     @Override
-    public List<Prod<Double, Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>>>> decompose(
-            final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> tensor) {
+    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>>> decompose(
+            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
         
         return List.of(Prod.pair(evaluate(tensor, UNIT.second(), UNIT.first()), UNIT));
-    }
-    
-    @Override
-    public boolean equiv(
-        final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> v1,
-        final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> v2) {
-        
-        Preconditions.throwIfNull(v1, "v1");
-        Preconditions.throwIfNull(v2, "v2");
-
-        final List<Double> components1 = decompose(v1).stream().map(pair -> pair.first()).toList();
-        final List<Double> components2 = decompose(v2).stream().map(pair -> pair.first()).toList();
-
-        for (int i = 0; i < basis().size(); ++i) {
-            if (!UNDERLYING_F.equiv(components1.get(i), components2.get(i))) return false;
-        }
-
-        return true;
     }
 }

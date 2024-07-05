@@ -11,14 +11,19 @@ public abstract class FiniteDualSpace<V, K>
 
     private final FiniteVectorSpace<V, K> UNDERLYING_SPACE;
 
-    public FiniteDualSpace(final FiniteVectorSpace<V, K> underlyingSpace, final Field<K> underylingField) {
-        super(underlyingSpace, underylingField);
+    public FiniteDualSpace(final FiniteVectorSpace<V, K> underlyingSpace) {
+        super(underlyingSpace);
         
         this.UNDERLYING_SPACE = underlyingSpace;
     }
 
     public FiniteVectorSpace<V, K> underlyingFiniteVectorSpace() {
         return this.UNDERLYING_SPACE;
+    }
+
+    @Override
+    public Field<K> underlyingField() {
+        return UNDERLYING_SPACE.underlyingField();
     }
     
     @Override

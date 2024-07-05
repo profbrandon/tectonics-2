@@ -17,4 +17,10 @@ public final class Preconditions {
             throw new IllegalArgumentException("Argument collection '" + argumentName + "' contained null values.");
         }
     }
+
+    public static final <V> void throwIfDifferent(final V value1, final V value2, final String message) {
+        if (!value1.equals(value2)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }

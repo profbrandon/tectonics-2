@@ -6,5 +6,9 @@ import util.data.algebraic.HomTuple;
 
 public interface TensorSpace<T, V, K, P extends Cardinal, Q extends Cardinal> extends VectorSpace<T, K> {
 
+    public VectorSpace<V, K> underlyingVectorSpace();
+
+    public FieldValuedSpace<V, K> underlyingDualSpace();
+
     public K evaluate(final T tensor, final HomTuple<P, Exp<V, K>> dualVectors, final HomTuple<Q, V> vectors);
 }

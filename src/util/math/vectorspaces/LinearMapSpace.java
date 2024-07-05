@@ -2,6 +2,7 @@ package util.math.vectorspaces;
 
 import util.Preconditions;
 import util.data.algebraic.Exp;
+import util.math.Field;
 
 public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, K> {
 
@@ -11,6 +12,10 @@ public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, 
     public LinearMapSpace(final VectorSpace<V, K> domainSpace, final VectorSpace<W, K> targetSpace) {
         Preconditions.throwIfNull(domainSpace, "domainSpace");
         Preconditions.throwIfNull(targetSpace, "targetSpace");
+        Preconditions.throwIfDifferent(
+            domainSpace.underlyingField(), 
+            targetSpace.underlyingField(),
+            "Underlying fields do not agree.");
 
         this.DOMAIN = domainSpace;
         this.TARGET = targetSpace;
@@ -26,6 +31,11 @@ public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, 
 
     public W transform(final Exp<V, W> linear, final V vector) {
         return linear.apply(vector);
+    }
+
+    @Override
+    public Field<K> underlyingField() {
+        return targetVectorSpace().underlyingField();
     }
 
     @Override

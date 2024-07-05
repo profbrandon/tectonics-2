@@ -6,6 +6,12 @@ import java.util.function.Function;
 import util.Preconditions;
 import util.counting.Cardinal;
 import util.counting.Ordinal;
+import util.counting.Cardinals.Five;
+import util.counting.Cardinals.Four;
+import util.counting.Cardinals.One;
+import util.counting.Cardinals.Three;
+import util.counting.Cardinals.Two;
+import util.counting.Cardinals.Zero;
 import util.counting.Cardinals;
 
 /**
@@ -159,5 +165,29 @@ public class HomTuple<N extends Cardinal, A> {
         final Function<String, String> wrapper = v -> "(" + v + ")";
 
         return wrapper.apply(enumerated.stream().map(ord -> tuple.at(ord).toString()).reduce((a, b) -> a + ", " + b).get());
+    }
+
+    public static <A> HomTuple<Zero, A> tuple() {
+        return new HomTuple<>(Ordinal.zero());
+    }
+
+    public static <A> HomTuple<One, A> tuple(final A value) {
+        return new HomTuple<>(Ordinal.one(value));
+    }
+
+    public static <A> HomTuple<Two, A> tuple(final A v0, final A v1) {
+        return new HomTuple<>(Ordinal.twoHomo(v0, v1));
+    }
+
+    public static <A> HomTuple<Three, A> tuple(final A v0, final A v1, final A v2) {
+        return new HomTuple<>(Ordinal.threeHomo(v0, v1, v2));
+    }
+
+    public static <A> HomTuple<Four, A> tuple(final A v0, final A v1, final A v2, final A v3) {
+        return new HomTuple<>(Ordinal.fourHomo(v0, v1, v2, v3));
+    }
+
+    public static <A> HomTuple<Five, A> tuple(final A v0, final A v1, final A v2, final A v3, final A v4) {
+        return new HomTuple<>(Ordinal.fiveHomo(v0, v1, v2, v3, v4));
     }
 }

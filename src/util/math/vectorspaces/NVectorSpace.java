@@ -6,6 +6,7 @@ import util.Preconditions;
 import util.counting.Cardinal;
 import util.counting.Ordinal;
 import util.data.algebraic.HomTuple;
+import util.math.Field;
 
 public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSpace<HomTuple<N, V>, K> {
 
@@ -23,6 +24,11 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
 
     public VectorSpace<V, K> underlyingVectorSpace() {
         return this.UNDERLYING;
+    }
+
+    @Override
+    public Field<K> underlyingField() {
+        return this.underlyingField();
     }
 
     @Override

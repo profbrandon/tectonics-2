@@ -19,6 +19,11 @@ public final class DoubleField implements Field<Double>, FiniteVectorSpace<Doubl
     private DoubleField() {};
 
     @Override
+    public Field<Double> underlyingField() {
+        return INSTANCE;
+    }
+
+    @Override
     public List<Double> basis() {
         return List.of(unit());
     }
