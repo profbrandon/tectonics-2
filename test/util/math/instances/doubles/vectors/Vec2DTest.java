@@ -1,8 +1,8 @@
-package test.util.math.instances.doubles;
+package test.util.math.instances.doubles.vectors;
 
 import java.util.List;
 
-import util.counting.OrdinalSet;
+import util.counting.Ordinal;
 import util.data.algebraic.HomTuple;
 import util.math.instances.doubles.DoubleField;
 import util.math.instances.doubles.vectors.Vec2D;
@@ -33,7 +33,7 @@ public class Vec2DTest extends UnitTest {
         return UnitTest.checkValue(
             "Check for valid equality", 
             v -> Vec2D.equalsVector(Vec2D.UNIT_X, v), 
-            () -> new HomTuple<>(OrdinalSet.twoHomo(1.0, 0.0)));
+            () -> new HomTuple<>(Ordinal.twoHomo(1.0, 0.0)));
     }
 
     private static boolean equalityFailure() {
@@ -47,7 +47,7 @@ public class Vec2DTest extends UnitTest {
         return UnitTest.checkValue(
             "Scale vector test 1",
             v -> Vec2D.equalsVector(Vec2D.vector(-3, 0), v),
-            v -> HomTuple.toString(OrdinalSet.TWO_SET, v),
+            v -> HomTuple.toString(Ordinal.TWO_SET, v),
             () -> Vec2D.INSTANCE.scale(Vec2D.UNIT_X, -3.0));
     }
 
@@ -55,7 +55,7 @@ public class Vec2DTest extends UnitTest {
         return UnitTest.checkValue(
             "Scale vector test 2",
             v -> Vec2D.equalsVector(Vec2D.ZERO, v),
-            v -> HomTuple.toString(OrdinalSet.TWO_SET, v),
+            v -> HomTuple.toString(Ordinal.TWO_SET, v),
             () -> Vec2D.INSTANCE.scale(Vec2D.vector(100, 5), 0.0));
     }
 
@@ -63,7 +63,7 @@ public class Vec2DTest extends UnitTest {
         return UnitTest.checkValue(
             "Add vectors",
             v -> Vec2D.equalsVector(Vec2D.vector(-20, 17), v),
-            v -> HomTuple.toString(OrdinalSet.TWO_SET, v),
+            v -> HomTuple.toString(Ordinal.TWO_SET, v),
             () -> Vec2D.INSTANCE.sum(Vec2D.INSTANCE.scale(Vec2D.UNIT_X, -20.0), Vec2D.INSTANCE.scale(Vec2D.UNIT_Y, 17.0)));
     }
 
@@ -71,7 +71,7 @@ public class Vec2DTest extends UnitTest {
         return UnitTest.checkValue(
             "Negate vector",
             v -> Vec2D.equalsVector(Vec2D.vector(-13.5, 6.7), v),
-            v -> HomTuple.toString(OrdinalSet.TWO_SET, v),
+            v -> HomTuple.toString(Ordinal.TWO_SET, v),
             () -> Vec2D.INSTANCE.neg(Vec2D.vector(13.5, -6.7)));
     }
 

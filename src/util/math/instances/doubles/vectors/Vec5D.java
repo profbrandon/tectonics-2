@@ -2,8 +2,8 @@ package util.math.instances.doubles.vectors;
 
 import java.util.List;
 
-import util.counting.OrdinalSet;
-import util.counting.Ordinals.Five;
+import util.counting.Ordinal;
+import util.counting.Cardinals.Five;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
@@ -20,7 +20,7 @@ public final class Vec5D extends VecD<Five> {
     public static final HomTuple<Five, Double> UNIT_U = vector(0, 0, 0, 0, 1);
 
     public static HomTuple<Five, Double> vector(final double x, final double y, final double z, final double w, final double u) {
-        return new HomTuple<>(OrdinalSet.fiveHomo(x, y, z, w, u));
+        return new HomTuple<>(Ordinal.fiveHomo(x, y, z, w, u));
     }
 
     public static boolean equalsVector(final HomTuple<Five, Double> v1, final HomTuple<Five, Double> v2) {
@@ -35,11 +35,11 @@ public final class Vec5D extends VecD<Five> {
     @Override
     public List<Prod<Double, HomTuple<Five, Double>>> decompose(final HomTuple<Five, Double> v) {
         return List.of(
-            Prod.pair(v.at(OrdinalSet.ZERO_5), UNIT_X),
-            Prod.pair(v.at(OrdinalSet.ONE_5), UNIT_Y),
-            Prod.pair(v.at(OrdinalSet.TWO_5), UNIT_Z),
-            Prod.pair(v.at(OrdinalSet.THREE_5), UNIT_W),
-            Prod.pair(v.at(OrdinalSet.FOUR_5), UNIT_U));
+            Prod.pair(v.at(Ordinal.ZERO_5), UNIT_X),
+            Prod.pair(v.at(Ordinal.ONE_5), UNIT_Y),
+            Prod.pair(v.at(Ordinal.TWO_5), UNIT_Z),
+            Prod.pair(v.at(Ordinal.THREE_5), UNIT_W),
+            Prod.pair(v.at(Ordinal.FOUR_5), UNIT_U));
     }
 
     @Override
@@ -48,11 +48,11 @@ public final class Vec5D extends VecD<Five> {
             .mapAll(pair -> 
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
-        return DoubleField.INSTANCE.sumAll(OrdinalSet.FIVE_SET.stream().map(prod::at).toList());
+        return DoubleField.INSTANCE.sumAll(Ordinal.FIVE_SET.stream().map(prod::at).toList());
     }
 
     @Override
     public boolean equiv(final HomTuple<Five, Double> v1, final HomTuple<Five, Double> v2) {
-        return super.equalsVector(OrdinalSet.FIVE_SET, v1, v2);
+        return super.equalsVector(Ordinal.FIVE_SET, v1, v2);
     }
 }

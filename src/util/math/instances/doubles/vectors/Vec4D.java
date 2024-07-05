@@ -3,8 +3,8 @@ package util.math.instances.doubles.vectors;
 import java.util.List;
 
 import util.Preconditions;
-import util.counting.OrdinalSet;
-import util.counting.Ordinals.Four;
+import util.counting.Ordinal;
+import util.counting.Cardinals.Four;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
@@ -20,7 +20,7 @@ public final class Vec4D extends VecD<Four> {
     public static final HomTuple<Four, Double> UNIT_W = vector(0, 0, 0, 1);
 
     public static HomTuple<Four, Double> vector(final double x, final double y, final double z, final double w) {
-        return new HomTuple<>(OrdinalSet.fourHomo(x, y, z, w));
+        return new HomTuple<>(Ordinal.fourHomo(x, y, z, w));
     }
 
     public static boolean equalsVector(final HomTuple<Four, Double> v1, final HomTuple<Four, Double> v2) {
@@ -35,10 +35,10 @@ public final class Vec4D extends VecD<Four> {
     @Override
     public List<Prod<Double, HomTuple<Four, Double>>> decompose(final HomTuple<Four, Double> v) {
         return List.of(
-            Prod.pair(v.at(OrdinalSet.ZERO_4), UNIT_X),
-            Prod.pair(v.at(OrdinalSet.ONE_4), UNIT_Y),
-            Prod.pair(v.at(OrdinalSet.TWO_4), UNIT_Z),
-            Prod.pair(v.at(OrdinalSet.THREE_4), UNIT_W));
+            Prod.pair(v.at(Ordinal.ZERO_4), UNIT_X),
+            Prod.pair(v.at(Ordinal.ONE_4), UNIT_Y),
+            Prod.pair(v.at(Ordinal.TWO_4), UNIT_Z),
+            Prod.pair(v.at(Ordinal.THREE_4), UNIT_W));
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class Vec4D extends VecD<Four> {
             .mapAll(pair -> 
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
-        return DoubleField.INSTANCE.sumAll(OrdinalSet.FOUR_SET.stream().map(prod::at).toList());
+        return DoubleField.INSTANCE.sumAll(Ordinal.FOUR_SET.stream().map(prod::at).toList());
     }
 
     @Override
@@ -55,6 +55,6 @@ public final class Vec4D extends VecD<Four> {
         Preconditions.throwIfNull(v1, "v1");
         Preconditions.throwIfNull(v2, "v2");
 
-        return super.equalsVector(OrdinalSet.FOUR_SET, v1, v2);
+        return super.equalsVector(Ordinal.FOUR_SET, v1, v2);
     }
 }

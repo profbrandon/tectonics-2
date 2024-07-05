@@ -3,9 +3,9 @@ package util.math.instances.doubles.tensors;
 import java.util.List;
 
 import util.Preconditions;
-import util.counting.OrdinalSet;
-import util.counting.Ordinals.One;
-import util.counting.Ordinals.Zero;
+import util.counting.Ordinal;
+import util.counting.Cardinals.One;
+import util.counting.Cardinals.Zero;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
@@ -20,8 +20,8 @@ public class TensorD10 extends TensorD<One, Zero> {
     public static final TensorD<One, Zero> INSTANCE = new TensorD10();
 
     public static final Prod<HomTuple<One, Double>, HomTuple<Zero, Exp<Double, Double>>> UNIT = Prod.pair(
-        new HomTuple<>(OrdinalSet.one(DoubleField.INSTANCE.unit())),
-        new HomTuple<>(OrdinalSet.zero()));
+        new HomTuple<>(Ordinal.one(DoubleField.INSTANCE.unit())),
+        new HomTuple<>(Ordinal.zero()));
 
     @Override
     public Double evaluate(
@@ -29,7 +29,7 @@ public class TensorD10 extends TensorD<One, Zero> {
         final HomTuple<One, Exp<Double, Double>> dualVectors,
         final HomTuple<Zero, Double> vectors) {
             
-        return tensor.destroy(values -> invalid -> dualVectors.zip(values).mapAll(pair -> pair.first().apply(pair.second())).at(OrdinalSet.ZERO_1));
+        return tensor.destroy(values -> invalid -> dualVectors.zip(values).mapAll(pair -> pair.first().apply(pair.second())).at(Ordinal.ZERO_1));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class TensorD10 extends TensorD<One, Zero> {
     public List<Prod<Double, Prod<HomTuple<One, Double>, HomTuple<Zero, Exp<Double, Double>>>>> decompose(
             Prod<HomTuple<One, Double>, HomTuple<Zero, Exp<Double, Double>>> tensor) {
 
-        return List.of(Prod.pair(tensor.first().at(OrdinalSet.ZERO_1), UNIT));
+        return List.of(Prod.pair(tensor.first().at(Ordinal.ZERO_1), UNIT));
     }
 
     @Override

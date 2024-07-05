@@ -1,6 +1,6 @@
 package util.counting;
 
-public interface Prev<O extends Ordinal> extends Ordinal {
+public interface Prev<N extends Cardinal> extends Cardinal {
     
-    public O next();
+    public N next();
 }

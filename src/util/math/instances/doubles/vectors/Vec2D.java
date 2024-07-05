@@ -3,8 +3,8 @@ package util.math.instances.doubles.vectors;
 import java.util.List;
 
 import util.Preconditions;
-import util.counting.OrdinalSet;
-import util.counting.Ordinals.Two;
+import util.counting.Ordinal;
+import util.counting.Cardinals.Two;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
@@ -20,7 +20,7 @@ public final class Vec2D extends VecD<Two> {
     public static HomTuple<Two, Double> vector(final double x, final double y) {
         Preconditions.throwIfNull(x, "x");
         Preconditions.throwIfNull(y, "y");
-        return new HomTuple<>(OrdinalSet.twoHomo(x, y));
+        return new HomTuple<>(Ordinal.twoHomo(x, y));
     }
 
     public static boolean equalsVector(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
@@ -36,8 +36,8 @@ public final class Vec2D extends VecD<Two> {
     public List<Prod<Double, HomTuple<Two, Double>>> decompose(final HomTuple<Two, Double> v) {
         Preconditions.throwIfNull(v, "v");
         return List.of(
-            Prod.pair(v.at(OrdinalSet.ZERO_2), UNIT_X),
-            Prod.pair(v.at(OrdinalSet.ONE_2), UNIT_Y));
+            Prod.pair(v.at(Ordinal.ZERO_2), UNIT_X),
+            Prod.pair(v.at(Ordinal.ONE_2), UNIT_Y));
     }
 
     @Override
@@ -49,7 +49,7 @@ public final class Vec2D extends VecD<Two> {
             .mapAll(pair -> 
                 pair.destroy(a -> b -> DoubleField.INSTANCE.mult(a, b)));
 
-        return DoubleField.INSTANCE.sumAll(OrdinalSet.TWO_SET.stream().map(prod::at).toList());
+        return DoubleField.INSTANCE.sumAll(Ordinal.TWO_SET.stream().map(prod::at).toList());
     }
 
     @Override
@@ -57,6 +57,6 @@ public final class Vec2D extends VecD<Two> {
         Preconditions.throwIfNull(v1, "v1");
         Preconditions.throwIfNull(v2, "v2");
 
-        return super.equalsVector(OrdinalSet.TWO_SET, v1, v2);
+        return super.equalsVector(Ordinal.TWO_SET, v1, v2);
     }
 }

@@ -1,6 +1,6 @@
 package util.math.vectorspaces;
 
-import util.counting.Ordinals.One;
+import util.counting.Cardinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;

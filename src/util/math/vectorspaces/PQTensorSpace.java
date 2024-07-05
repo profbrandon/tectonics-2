@@ -1,15 +1,15 @@
 package util.math.vectorspaces;
 
 import util.Preconditions;
+import util.counting.Cardinal;
 import util.counting.Ordinal;
-import util.counting.OrdinalSet;
 import util.counting.Prev;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.Field;
 
-public abstract class PQTensorSpace<V, K, P extends Ordinal, Q extends Ordinal> 
+public abstract class PQTensorSpace<V, K, P extends Cardinal, Q extends Cardinal> 
     implements 
         TensorSpace<Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>>, V, K, P, Q> {
 
@@ -25,8 +25,8 @@ public abstract class PQTensorSpace<V, K, P extends Ordinal, Q extends Ordinal>
     }
 
     public Prod<HomTuple<Prev<P>, V>, HomTuple<Prev<Q>, Exp<V, K>>> contract(
-        final OrdinalSet<P> index1,
-        final OrdinalSet<Q> index2,
+        final Ordinal<P> index1,
+        final Ordinal<Q> index2,
         final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> tensor) {
 
         // TODO: Implement tensor contraction
@@ -56,8 +56,8 @@ public abstract class PQTensorSpace<V, K, P extends Ordinal, Q extends Ordinal>
     @Override
     public Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> zero() {
         return Prod.pair(
-                new HomTuple<>(OrdinalSet.populate(UNDERLYING_V.zero())), 
-                new HomTuple<>(OrdinalSet.populate(UNDERLYING_DUAL.zero())));
+                new HomTuple<>(Ordinal.populate(UNDERLYING_V.zero())), 
+                new HomTuple<>(Ordinal.populate(UNDERLYING_DUAL.zero())));
     }
 
     @Override

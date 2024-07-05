@@ -3,8 +3,8 @@ package util.math.instances.doubles.tensors;
 import java.util.List;
 
 import util.Preconditions;
-import util.counting.OrdinalSet;
-import util.counting.Ordinals.One;
+import util.counting.Ordinal;
+import util.counting.Cardinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
@@ -15,8 +15,8 @@ public class TensorD11 extends TensorD<One, One> {
     public static final TensorD<One, One> INSTANCE = new TensorD11();
 
     public static final Prod<HomTuple<One, Double>, HomTuple<One, Exp<Double, Double>>> UNIT = Prod.pair(
-        new HomTuple<>(OrdinalSet.one(DoubleField.INSTANCE.unit())),
-        new HomTuple<>(OrdinalSet.one(Exp.constant(DoubleField.INSTANCE.unit()))));
+        new HomTuple<>(Ordinal.one(DoubleField.INSTANCE.unit())),
+        new HomTuple<>(Ordinal.one(Exp.constant(DoubleField.INSTANCE.unit()))));
 
     @Override
     public Double evaluate(
@@ -28,10 +28,10 @@ public class TensorD11 extends TensorD<One, One> {
             DoubleField.INSTANCE.mult(
                 dualVectors.zip(values)
                     .mapAll(pair -> pair.first().apply(pair.second()))
-                    .at(OrdinalSet.ZERO_1),
+                    .at(Ordinal.ZERO_1),
                 maps.zip(vectors)
                     .mapAll(pair -> pair.first().apply(pair.second()))
-                    .at(OrdinalSet.ZERO_1)));
+                    .at(Ordinal.ZERO_1)));
     }
 
     @Override

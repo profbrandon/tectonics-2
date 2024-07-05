@@ -1,13 +1,13 @@
 package util.math.instances.doubles.vectors;
 
-import util.counting.Ordinal;
+import util.counting.Cardinal;
 import util.data.algebraic.HomTuple;
 import util.math.instances.doubles.DoubleField;
 import util.math.vectorspaces.FiniteVectorSpace;
 import util.math.vectorspaces.InnerProductSpace;
 import util.math.vectorspaces.NVectorSpace;
 
-public abstract class VecD<N extends Ordinal> 
+public abstract class VecD<N extends Cardinal> 
     extends 
         NVectorSpace<N, Double, Double> 
     implements 
