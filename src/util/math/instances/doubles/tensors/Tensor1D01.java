@@ -9,23 +9,23 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
-import util.math.instances.doubles.vectors.Vec1D;
+import util.math.instances.doubles.covectors.CoVec1D;
 
 /**
  * Class to represent the space of (0,1)-tensors over the space of doubles. This is equivalent to the
  * linear maps from Double -> Double and therefore is isomorphic to the space of doubles themselves.
  */
-public class TensorD01 extends TensorD<One, Zero, One> {
+public class Tensor1D01 extends TensorD<One, Zero, One> {
 
-    public static final TensorD<One, Zero, One> INSTANCE = new TensorD01();
+    public static final TensorD<One, Zero, One> INSTANCE = new Tensor1D01();
 
     public static final Prod<HomTuple<Zero, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> 
         UNIT = Prod.pair(
             HomTuple.tuple(),
             HomTuple.tuple(Exp.asExponential(a -> DoubleField.INSTANCE.unit())));
 
-    private TensorD01() {
-        super(Vec1D.INSTANCE);
+    private Tensor1D01() {
+        super(CoVec1D.INSTANCE);
     }
 
     @Override

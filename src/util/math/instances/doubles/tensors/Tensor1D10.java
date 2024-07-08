@@ -8,23 +8,24 @@ import util.counting.Cardinals.Zero;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.math.instances.doubles.covectors.CoVec1D;
 import util.math.instances.doubles.vectors.Vec1D;
 
 /**
  * Class to represent the space of (1,0)-tensors over the space of doubles. This is trivially isomorphic
  * to the space of doubles.
  */
-public class TensorD10 extends TensorD<One, One, Zero> {
+public class Tensor1D10 extends TensorD<One, One, Zero> {
 
-    public static final TensorD<One, One, Zero> INSTANCE = new TensorD10();
+    public static final TensorD<One, One, Zero> INSTANCE = new Tensor1D10();
 
     public static final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> 
         UNIT = Prod.pair(
             HomTuple.tuple(Vec1D.INSTANCE.basis().get(0)),
             HomTuple.tuple());
 
-    private TensorD10() {
-        super(Vec1D.INSTANCE);
+    private Tensor1D10() {
+        super(CoVec1D.INSTANCE);
     }
 
     @Override

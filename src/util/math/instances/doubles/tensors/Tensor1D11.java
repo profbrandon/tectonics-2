@@ -8,19 +8,20 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.instances.doubles.DoubleField;
+import util.math.instances.doubles.covectors.CoVec1D;
 import util.math.instances.doubles.vectors.Vec1D;
 
-public class TensorD11 extends TensorD<One, One, One> {
+public class Tensor1D11 extends TensorD<One, One, One> {
 
-    public static final TensorD<One, One, One> INSTANCE = new TensorD11();
+    public static final TensorD<One, One, One> INSTANCE = new Tensor1D11();
 
     public static final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> 
         UNIT = Prod.pair(
-            HomTuple.tuple(HomTuple.tuple(DoubleField.INSTANCE.unit())),
-            HomTuple.tuple(Exp.constant(DoubleField.INSTANCE.unit())));
+            HomTuple.tuple(Vec1D.INSTANCE.basis().get(0)),
+            HomTuple.tuple(CoVec1D.INSTANCE.basis().get(0)));
 
-    private TensorD11() {
-        super(Vec1D.INSTANCE);
+    private Tensor1D11() {
+        super(CoVec1D.INSTANCE);
     }
 
     @Override

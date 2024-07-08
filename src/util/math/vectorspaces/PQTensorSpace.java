@@ -13,15 +13,17 @@ public abstract class PQTensorSpace<V, K, P extends Cardinal, Q extends Cardinal
     implements 
         TensorSpace<Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>>, V, K, P, Q> {
 
-    protected final Field<K> UNDERLYING_F;
-    protected final VectorSpace<V, K> UNDERLYING_V;
-    protected final FieldValuedSpace<V, K> UNDERLYING_DUAL;
+    private final Field<K> UNDERLYING_F;
+    private final VectorSpace<V, K> UNDERLYING_V;
+    private final FieldValuedSpace<V, K> UNDERLYING_DUAL;
 
-    public PQTensorSpace(final VectorSpace<V, K> underlyingSpace, final Field<K> underlyingField) {
+    public PQTensorSpace(final FieldValuedSpace<V, K> underlyingDualSpace, final Field<K> underlyingField) {
+        Preconditions.throwIfNull(underlyingDualSpace, "underlyingDualSpace");
         Preconditions.throwIfNull(underlyingField, "underlyingField");
+
         this.UNDERLYING_F = underlyingField;
-        this.UNDERLYING_V = underlyingSpace;
-        this.UNDERLYING_DUAL = new FieldValuedSpace<>(underlyingSpace);
+        this.UNDERLYING_V = underlyingDualSpace.domainVectorSpace();
+        this.UNDERLYING_DUAL = underlyingDualSpace;
     }
 
     public Prod<HomTuple<Prev<P>, V>, HomTuple<Prev<Q>, Exp<V, K>>> contract(
