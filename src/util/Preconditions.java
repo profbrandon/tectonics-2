@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public final class Preconditions {
     
@@ -19,7 +20,15 @@ public final class Preconditions {
     }
 
     public static final <V> void throwIfDifferent(final V value1, final V value2, final String message) {
-        if (!value1.equals(value2)) {
+        throwIfSatisfies(value1, value2, a -> b -> !a.equals(b), message);
+    }
+
+    public static final <V> void throwIfEquals(final V value1, final V value2, final String message) {
+        throwIfSatisfies(value1, value2, a -> b -> a.equals(b), message);
+    }
+
+    public static final <V> void throwIfSatisfies(final V value1, final V value2, final Function<V, Function<V, Boolean>> equals, final String message) {
+        if (equals.apply(value1).apply(value2)) {
             throw new IllegalArgumentException(message);
         }
     }

@@ -28,16 +28,16 @@ public class EndoSpace<V, K> extends LinearMapSpace<V, V, K> implements Ring<Exp
         return r1.after(r2);
     }
     
-    public static <V, K> Prod<HomTuple<One, V>, HomTuple<One, Exp<V, K>>> toTensor(final Exp<V, V> linear) {
-        // TODO: Implement
-        return null;
-    }
-
     /**
      * Extremely weak form of equality
      */
     @Override
     public boolean equiv(final Exp<V, V> a1, final Exp<V, V> a2) {
         return a1.equalsExp(a2);
+    }
+
+    public static <V, K> Prod<HomTuple<One, V>, HomTuple<One, Exp<V, K>>> toTensor(final Exp<V, V> linear) {
+        // TODO: Implement
+        return null;
     }
 }
