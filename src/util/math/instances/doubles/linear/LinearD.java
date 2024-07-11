@@ -7,6 +7,10 @@ import util.math.instances.doubles.vectors.VecD;
 import util.math.vectorspaces.FiniteVectorSpace;
 import util.math.vectorspaces.LinearMapSpace;
 
+/**
+ * Class to represent linear transformations from a vector space of {@code N}-tuples of {@link Double}s to
+ * a space of {@code M}-tuples of {@link Double}s.
+ */
 public abstract class LinearD<N extends Cardinal, M extends Cardinal> 
     extends 
         LinearMapSpace<HomTuple<N, Double>, HomTuple<M, Double>, Double>

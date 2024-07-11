@@ -4,7 +4,7 @@ import java.util.List;
 
 import util.Preconditions;
 import util.counting.Ordinal;
-import util.counting.Prev;
+import util.counting.Pred;
 import util.counting.Cardinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
@@ -28,7 +28,7 @@ public class Tensor1D11 extends TensorD<One, One, One> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Prev<One>, HomTuple<One, Double>>, HomTuple<Prev<One>, Exp<HomTuple<One, Double>, Double>>>> contract(
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<One>, Exp<HomTuple<One, Double>, Double>>>> contract(
         final Ordinal<One> index1,
         final Ordinal<One> index2,
         final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {

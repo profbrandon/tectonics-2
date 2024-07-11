@@ -37,6 +37,7 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
      * @return whether the two tuple vectors are equivalent up to the provided indices
      */
     public boolean equalsVector(final Collection<Ordinal<N>> enumerated, final HomTuple<N, V> v1, final HomTuple<N, V> v2) {
+        Preconditions.throwIfNull(v1, "v1");
         return v1.equalsTuple(pair -> pair.destroy(a -> b -> UNDERLYING.equiv(a, b)), enumerated, v2);
     }
 
@@ -59,16 +60,20 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
 
     @Override
     public HomTuple<N, V> sum(final HomTuple<N, V> v1, final HomTuple<N, V> v2) {
+        Preconditions.throwIfNull(v1, "v1");
+        Preconditions.throwIfNull(v2, "v2");
         return v1.mapEach(n -> vn -> UNDERLYING.sum(vn, v2.at(n)));
     }
 
     @Override
     public HomTuple<N, V> neg(final HomTuple<N, V> v) {
+        Preconditions.throwIfNull(v, "v");
         return v.mapAll(a -> UNDERLYING.neg(a));
     }
 
     @Override
     public HomTuple<N, V> scale(final HomTuple<N, V> v, final K scalar) {
+        Preconditions.throwIfNull(v, "v");
         return v.mapAll(a -> UNDERLYING.scale(a, scalar));
     }
 }

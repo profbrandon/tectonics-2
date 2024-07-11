@@ -107,6 +107,8 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
     @Override
     public List<Prod<Double, Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>>> decompose(
         final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear) {
+
+        Preconditions.throwIfNull(linear, "linear");
         
         final HomTuple<Two, Double> v1 = linear.apply(Vec2D.UNIT_X);
         final HomTuple<Two, Double> v2 = linear.apply(Vec2D.UNIT_Y);
@@ -125,9 +127,12 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
 
     @Override
     public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> mult(
-        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> r1,
-        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> r2) {
+        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear1,
+        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear2) {
         
-        return r1.after(r2);
+        Preconditions.throwIfNull(linear1, "linear1");
+        Preconditions.throwIfNull(linear2, "linear2");
+        
+        return linear1.after(linear2);
     }
 }

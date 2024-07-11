@@ -3,8 +3,18 @@ package util.counting;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 
+/**
+ * Helper class that contains all of the cardinals (0, 1, 2, 3, 4, 5).
+ */
 public final class Cardinals {
 
+    /**
+     * Either creates the corresponding cardinal from the given integer or fails and returns a
+     * {@link Unit#unit()}.
+     * 
+     * @param size the cardinal as an integer
+     * @return either the corresponding {@link Cardinal} or {@link Unit#unit()}
+     */
     public static Sum<Unit, Cardinal> getCardinal(final int size) {
         switch (size) {
             case 0:
@@ -24,7 +34,10 @@ public final class Cardinals {
         }
     }
 
-    public static class Zero extends CardinalBase implements Prev<One> {
+    /**
+     * The 0th cardinal for sets of size 0.
+     */
+    public static class Zero extends CardinalBase implements Pred<One> {
 
         public static final Zero INSTANCE = new Zero();
 
@@ -43,7 +56,10 @@ public final class Cardinals {
         }
     }
 
-    public static class One extends CardinalBase implements Prev<Two>, Succ<Zero> {
+    /**
+     * The 1st cardinal for sets of size 1.
+     */
+    public static class One extends CardinalBase implements Pred<Two>, Succ<Zero> {
 
         public static final One INSTANCE = new One();
 
@@ -62,7 +78,10 @@ public final class Cardinals {
         }
     }
 
-    public static class Two extends CardinalBase implements Prev<Three>, Succ<One> {
+    /**
+     * The 2nd cardinal for sets of size 2.
+     */
+    public static class Two extends CardinalBase implements Pred<Three>, Succ<One> {
 
         public static final Two INSTANCE = new Two();
 
@@ -81,7 +100,10 @@ public final class Cardinals {
         }
     }
 
-    public static class Three extends CardinalBase implements Prev<Four>, Succ<Two> {
+    /**
+     * The 3rd cardinal for sets of size 3.
+     */
+    public static class Three extends CardinalBase implements Pred<Four>, Succ<Two> {
 
         public static final Three INSTANCE = new Three();
 
@@ -100,7 +122,10 @@ public final class Cardinals {
         }
     }
 
-    public static class Four extends CardinalBase implements Prev<Five>, Succ<Three> {
+    /**
+     * The 4th cardinal for sets of size 4.
+     */
+    public static class Four extends CardinalBase implements Pred<Five>, Succ<Three> {
 
         public static final Four INSTANCE = new Four();
 
@@ -119,6 +144,9 @@ public final class Cardinals {
         }
     }
 
+    /**
+     * The 5th cardinal for sets of size 5.
+     */
     public static class Five extends CardinalBase implements Succ<Four> {
         
         public static final Five INSTANCE = new Five();

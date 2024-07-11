@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import util.Preconditions;
 import util.counting.Ordinal;
-import util.counting.Prev;
+import util.counting.Pred;
 import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
@@ -32,7 +32,7 @@ public class Tensor2D11 extends TensorD<Two, One, One> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Prev<One>, HomTuple<Two, Double>>, HomTuple<Prev<One>, Exp<HomTuple<Two, Double>, Double>>>> contract(
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<Two, Double>>, HomTuple<Pred<One>, Exp<HomTuple<Two, Double>, Double>>>> contract(
         final Ordinal<One> index1,
         final Ordinal<One> index2,
         final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {

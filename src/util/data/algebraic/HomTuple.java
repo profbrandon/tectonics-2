@@ -159,6 +159,7 @@ public class HomTuple<N extends Cardinal, A> {
 
         Preconditions.throwIfNull(equality, "equality");
         Preconditions.throwIfNull(enumerated, "enumerated");
+        Preconditions.throwIfContainsNull(enumerated, "enumerated");
         Preconditions.throwIfNull(other, "other");
 
         for (final Ordinal<N> ord : enumerated) {

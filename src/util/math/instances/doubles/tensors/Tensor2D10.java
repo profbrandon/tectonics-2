@@ -7,7 +7,7 @@ import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.counting.Cardinals.Zero;
 import util.counting.Ordinal;
-import util.counting.Prev;
+import util.counting.Pred;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
@@ -23,7 +23,7 @@ public class Tensor2D10 extends TensorD<Two, One, Zero> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Prev<One>, HomTuple<Two, Double>>, HomTuple<Prev<Zero>, Exp<HomTuple<Two, Double>, Double>>>> contract(
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<Two, Double>>, HomTuple<Pred<Zero>, Exp<HomTuple<Two, Double>, Double>>>> contract(
         final Ordinal<One> index1, 
         final Ordinal<Zero> index2,
         final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<Zero, Exp<HomTuple<Two, Double>, Double>>> tensor) {

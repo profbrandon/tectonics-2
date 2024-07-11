@@ -3,7 +3,7 @@ package util.math.instances.doubles.tensors;
 import java.util.List;
 
 import util.counting.Ordinal;
-import util.counting.Prev;
+import util.counting.Pred;
 import util.Preconditions;
 import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
@@ -23,7 +23,7 @@ public class Tensor2D01 extends TensorD<Two, Zero, One> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Prev<Zero>, HomTuple<Two, Double>>, HomTuple<Prev<One>, Exp<HomTuple<Two, Double>, Double>>>> contract(
+    public Sum<Double, Prod<HomTuple<Pred<Zero>, HomTuple<Two, Double>>, HomTuple<Pred<One>, Exp<HomTuple<Two, Double>, Double>>>> contract(
         final Ordinal<Zero> index1,
         final Ordinal<One> index2,
         final Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {

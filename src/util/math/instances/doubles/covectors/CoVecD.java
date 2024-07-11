@@ -9,6 +9,9 @@ import util.data.algebraic.Prod;
 import util.math.instances.doubles.vectors.VecD;
 import util.math.vectorspaces.FiniteDualSpace;
 
+/**
+ * Class to represent {@code N}-tuple dual vectors over the {@link DoubleField}.
+ */
 public abstract class CoVecD<N extends Cardinal> extends FiniteDualSpace<HomTuple<N, Double>, Double> {
 
     protected CoVecD(final VecD<N> underlyingSpace) {

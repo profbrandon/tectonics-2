@@ -6,7 +6,7 @@ import java.util.function.Function;
 import util.Preconditions;
 import util.counting.Cardinal;
 import util.counting.Ordinal;
-import util.counting.Prev;
+import util.counting.Pred;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
@@ -30,7 +30,7 @@ public abstract class PQTensorSpace<V, K, P extends Cardinal, Q extends Cardinal
         this.UNDERLYING_DUAL = underlyingDualSpace;
     }
 
-    public abstract Sum<K, Prod<HomTuple<Prev<P>, V>, HomTuple<Prev<Q>, Exp<V, K>>>> contract(
+    public abstract Sum<K, Prod<HomTuple<Pred<P>, V>, HomTuple<Pred<Q>, Exp<V, K>>>> contract(
         final Ordinal<P> index1,
         final Ordinal<Q> index2,
         final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> tensor);
