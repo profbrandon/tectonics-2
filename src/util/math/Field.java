@@ -22,7 +22,7 @@ public interface Field<Q> extends Ring<Q>, VectorSpace<Q, Q> {
     /**
      * @return the Abelian (commutative) group of the nonzero elements under multiplication
      */
-    default AbelianGroup<NonZero<Q>> multiplicativeGroup() {
+    public default AbelianGroup<NonZero<Q>> multiplicativeGroup() {
         final Monoid<Q> monoid = this;
 
         return new AbelianGroup<NonZero<Q>>() {

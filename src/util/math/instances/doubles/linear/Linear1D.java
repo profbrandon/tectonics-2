@@ -7,7 +7,6 @@ import util.counting.Cardinals.One;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
-import util.math.instances.doubles.DoubleField;
 import util.math.instances.doubles.vectors.Vec1D;
 
 public class Linear1D extends LinearD<One, One> {
@@ -32,12 +31,4 @@ public class Linear1D extends LinearD<One, One> {
         
         return List.of(Prod.pair(v.apply(HomTuple.tuple(underlyingField().unit())).at(Ordinal.ZERO_1), UNIT));
     }
-
-    @Override
-    public boolean equiv(
-        final Exp<HomTuple<One, Double>, HomTuple<One, Double>> a1,
-        final Exp<HomTuple<One, Double>, HomTuple<One, Double>> a2) {
-        
-        return DoubleField.INSTANCE.equiv(decompose(a1).get(0).first(), decompose(a2).get(0).first());
-    }    
 }

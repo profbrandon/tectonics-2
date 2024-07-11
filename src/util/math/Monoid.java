@@ -1,5 +1,9 @@
 package util.math;
 
+import java.util.Collection;
+
+import util.Preconditions;
+
 /**
  * Interface to represent a mathematical monoid over the given datatype. Monoids come 
  * equipped with a zero object ({@link Monoid#zero()}) and an associative "addition"
@@ -27,4 +31,24 @@ public interface Monoid<M> extends Equiv<M> {
      * @return the resulting monoidal "sum" of the two objects
      */
     public M sum(final M m1, final M m2);
+
+    /**
+     * Uses the associative monoidal addition ({@link Monoid#sum(Object, Object)}) to sum an arbitrary
+     * number of elements. If no elements are provided it returns {@link Monoid#zero()}.
+     * 
+     * @param ms the elements to sum
+     * @return the sum of the elements
+     */
+    public default M sumAll(final Collection<M> ms) {
+        Preconditions.throwIfNull(ms, "ms");
+        Preconditions.throwIfContainsNull(ms, "ms");
+
+        M temp = zero();
+
+        for (final M v : ms) {
+            temp = sum(temp, v);
+        }
+
+        return temp;
+    }
 }

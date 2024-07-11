@@ -24,11 +24,6 @@ public class Vec1D extends VecD<One> {
     }
 
     @Override
-    public boolean equiv(final HomTuple<One, Double> a1, final HomTuple<One, Double> a2) {
-        return underlyingField().equiv(extract(a1), extract(a2));
-    }
-
-    @Override
     public List<HomTuple<One, Double>> basis() {
         return DoubleField.INSTANCE.basis().stream().map(v -> HomTuple.tuple(v)).toList();
     }

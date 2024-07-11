@@ -1,5 +1,9 @@
 package util.math;
 
+import java.util.Collection;
+
+import util.Preconditions;
+
 /**
  * Interface to represent a mathematical ring over the given datatype. Every {@link Ring} is
  * a group under "addition" and a monoid under "multiplication". The multiplication must
@@ -36,9 +40,29 @@ public interface Ring<R> extends AbelianGroup<R> {
     public R mult(final R r1, final R r2);
 
     /**
+     * Uses the associative ring multiplication ({@link Ring#mult(Object, Object)}) to multiply an arbitrary
+     * number of elements. If no elements are provided it returns {@link Ring#unit()}.
+     * 
+     * @param rs the elements to multiply
+     * @return the product of the elements
+     */
+    public default R multAll(final Collection<R> rs) {
+        Preconditions.throwIfNull(rs, "rs");
+        Preconditions.throwIfContainsNull(rs, "rs");
+
+        R temp = unit();
+
+        for (final R r : rs) {
+            temp = mult(temp, r);
+        }
+
+        return temp;
+    }
+
+    /**
      * @return the underlying multiplicative monoid (given by {@link Ring#unit()} and {@link Ring#mult(Object, Object)})
      */
-    default Monoid<NonZero<R>> multiplicativeMonoid() {
+    public default Monoid<NonZero<R>> multiplicativeMonoid() {
         final Monoid<R> monoid = this;
 
         return new Monoid<>() {

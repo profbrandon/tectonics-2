@@ -3,7 +3,6 @@ package util.math.vectorspaces;
 import java.util.List;
 
 import util.data.algebraic.Exp;
-import util.data.algebraic.Prod;
 import util.math.Field;
 
 public abstract class FiniteDualSpace<V, K> 
@@ -34,22 +33,6 @@ public abstract class FiniteDualSpace<V, K>
             .map(
                 this::covectorFromBasisVector)
             .toList();
-    }
-
-    @Override
-    public boolean equiv(final Exp<V, K> a1, final Exp<V, K> a2) {
-        final List<K> components1 = decompose(a1).stream().map(Prod::first).toList();
-        final List<K> components2 = decompose(a2).stream().map(Prod::first).toList();
-
-        if (components1.size() != components2.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < components1.size(); ++i) {
-            if (!underlyingField().equiv(components1.get(i), components2.get(i))) return false;
-        }
-
-        return true;
     }
 
     public V dualAsVector(final Exp<V, K> dualvector) {

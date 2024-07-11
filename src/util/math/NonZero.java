@@ -15,10 +15,11 @@ public class NonZero<A> {
      * @param a the value to wrap
      * @param monoid the {@link Monoid} to check against
      */
-    public NonZero(final A a, final Monoid<A> monoid) {
-        Preconditions.throwIfEquals(a, monoid.zero(), "Cannot instantiate a nonzero value with the zero value.");
-
-        this.VALUE = a;
+    public NonZero(final A value, final Monoid<A> monoid) {
+        Preconditions.throwIfNull(value, "value");
+        Preconditions.throwIfNull(monoid, "monoid");
+        Preconditions.throwIfEquals(value, monoid.zero(), "Cannot instantiate a nonzero value with the zero value.");
+        this.VALUE = value;
     }
 
     /**
