@@ -52,6 +52,24 @@ public abstract class FiniteDualSpace<V, K>
         return true;
     }
 
+    public V dualAsVector(final Exp<V, K> dualvector) {
+        return underlyingFiniteVectorSpace()
+            .sumAll(
+                underlyingFiniteVectorSpace()
+                    .basis()
+                    .stream()
+                    .map(b -> underlyingFiniteVectorSpace().scale(b, dualvector.apply(b)))
+                    .toList());
+    }
+
+    public V dualDualAsVector(final Exp<Exp<V, K>, K> ddvector) {
+        return underlyingFiniteVectorSpace()
+            .sumAll(
+                basis()
+                    .stream()
+                    .map(b -> underlyingFiniteVectorSpace().scale(dualAsVector(b), ddvector.apply(b))).toList());
+    }
+
     protected Exp<V, K> covectorFromBasisVector(final V b) {
         return Exp.<V, K>asExponential(
             v -> UNDERLYING_SPACE.decompose(v)

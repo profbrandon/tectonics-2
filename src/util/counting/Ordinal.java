@@ -14,6 +14,9 @@ import util.data.algebraic.Sum;
 
 public class Ordinal<N extends Cardinal> {
 
+    // { }
+    public static final Collection<Ordinal<Zero>> ZERO_SET = List.of();
+
     // { 0 }
     public static final Ordinal<One> ZERO_1 = inject(Zero.INSTANCE);
 

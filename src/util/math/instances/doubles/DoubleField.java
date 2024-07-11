@@ -1,7 +1,6 @@
 package util.math.instances.doubles;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import util.data.algebraic.Prod;
@@ -74,19 +73,6 @@ public final class DoubleField implements Field<Double>, FiniteVectorSpace<Doubl
 
     public Double sumAll(final Double...vs) {
         return sumAll(Arrays.asList(vs));
-    }
-
-    public Double sumAll(final Collection<Double> vs) {
-        if (vs.size() == 0) return zero();
-        else {
-            double accumulator = zero();
-
-            for (final double v : vs) {
-                accumulator = sum(accumulator, v);
-            }
-
-            return accumulator;
-        }
     }
 
     @Override

@@ -3,11 +3,14 @@ package util.math.instances.doubles.tensors;
 import java.util.List;
 
 import util.counting.Ordinal;
+import util.counting.Prev;
+import util.Preconditions;
 import util.counting.Cardinals.One;
 import util.counting.Cardinals.Zero;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.data.algebraic.Sum;
 import util.math.instances.doubles.covectors.CoVec1D;
 import util.math.instances.doubles.vectors.Vec1D;
 
@@ -26,6 +29,19 @@ public class Tensor1D10 extends TensorD<One, One, Zero> {
 
     private Tensor1D10() {
         super(CoVec1D.INSTANCE);
+    }
+
+    @Override
+    public Sum<Double, Prod<HomTuple<Prev<One>, HomTuple<One, Double>>, HomTuple<Prev<Zero>, Exp<HomTuple<One, Double>, Double>>>> contract(
+        final Ordinal<One> index1,
+        final Ordinal<Zero> index2,
+        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> tensor) {
+        
+        Preconditions.throwIfNull(index1, "index1");
+        Preconditions.throwIfNull(index2, "index2");
+        Preconditions.throwIfNull(tensor, "tensor");
+
+        throw new IllegalStateException("Somehow an instance of Ordinal<Zero> was provided"); 
     }
 
     @Override

@@ -91,6 +91,25 @@ public class HomTuple<N extends Cardinal, A> {
     }
 
     /**
+     * Maps this {@link HomTuple} to some other type by providing a seed and a folding function.
+     * 
+     * @param <U> the type to map to (accumulator)
+     * @param enumerated the ordinal tags of the elmenets to accumulate
+     * @param seed the seed value for the accumulator
+     * @param reduce the accumulator function
+     * @return the reduced value
+     */
+    public <U> U eliminate(final Collection<Ordinal<N>> enumerated, final U seed, final Function<Prod<U, A>, U> reduce) {
+        U value = seed;
+        
+        for (final Ordinal<N> ord : enumerated) {
+            value = reduce.apply(Prod.pair(value, this.at(ord)));    
+        }
+
+        return value;
+    }
+
+    /**
      * Zips the provided {@link HomTuple} together with this one to create a {@link HomTuple} of
      * {@link Prod} objects in the obvious way.<p/>
      * 
