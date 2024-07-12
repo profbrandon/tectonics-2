@@ -8,7 +8,7 @@ import util.math.instances.doubles.DoubleField;
 import util.math.instances.doubles.vectors.Vec2D;
 import util.testing.UnitTest;
 
-public class Vec2DTest extends UnitTest {
+public final class Vec2DTest extends UnitTest {
     
     private Vec2DTest() {
         super("Vec2D test");

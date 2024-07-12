@@ -7,7 +7,7 @@ import util.counting.Cardinals.Three;
 import util.data.algebraic.HomTuple;
 import util.testing.UnitTest;
 
-public class HomTupleTest extends UnitTest {
+public final class HomTupleTest extends UnitTest {
 
     private static final HomTuple<Two, Boolean> TUPLE_2 = new HomTuple<>(Ordinal.twoHomo(true, false));
     private static final HomTuple<Three, Character> TUPLE_3 = new HomTuple<>(Ordinal.threeHomo('a', 'b', 'c'));

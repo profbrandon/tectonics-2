@@ -6,37 +6,37 @@ import java.util.Optional;
 import util.data.algebraic.Sum;
 import util.testing.UnitTest;
 
-public final class EitherTest extends UnitTest {
+public final class SumTest extends UnitTest {
     
-    private EitherTest() {
-        super("Either Test");
+    private SumTest() {
+        super("Sum Type Test");
     }
 
     public static void main(final String[] args) {
-        final UnitTest unitTest = new EitherTest();
+        final UnitTest unitTest = new SumTest();
 
-        unitTest.addTest(EitherTest::leftNullFailure);
-        unitTest.addTest(EitherTest::rightNullFailure);
-        unitTest.addTest(EitherTest::leftCreationSuccess);
-        unitTest.addTest(EitherTest::rightCreationSuccess);
-        unitTest.addTest(EitherTest::leftCollapse);
-        unitTest.addTest(EitherTest::rightCollapse);
-        unitTest.addTest(EitherTest::leftMatchSuccess);
-        unitTest.addTest(EitherTest::rightMatchSuccess);
-        unitTest.addTest(EitherTest::forgetLeftSuccess);
-        unitTest.addTest(EitherTest::forgetRightSuccess);
-        unitTest.addTest(EitherTest::forgetLeftFailure);
-        unitTest.addTest(EitherTest::forgetRightFailure);
-        unitTest.addTest(EitherTest::mapLeftOnLeft);
-        unitTest.addTest(EitherTest::mapLeftOnRight);
-        unitTest.addTest(EitherTest::mapRightOnRight);
-        unitTest.addTest(EitherTest::mapRightOnLeft);
-        unitTest.addTest(EitherTest::leftEquality);
-        unitTest.addTest(EitherTest::rightEquality);
-        unitTest.addTest(EitherTest::leftDisequality);
-        unitTest.addTest(EitherTest::rightDisequality);
-        unitTest.addTest(EitherTest::mapOnLeft);
-        unitTest.addTest(EitherTest::mapOnRight);
+        unitTest.addTest(SumTest::leftNullFailure);
+        unitTest.addTest(SumTest::rightNullFailure);
+        unitTest.addTest(SumTest::leftCreationSuccess);
+        unitTest.addTest(SumTest::rightCreationSuccess);
+        unitTest.addTest(SumTest::leftCollapse);
+        unitTest.addTest(SumTest::rightCollapse);
+        unitTest.addTest(SumTest::leftMatchSuccess);
+        unitTest.addTest(SumTest::rightMatchSuccess);
+        unitTest.addTest(SumTest::forgetLeftSuccess);
+        unitTest.addTest(SumTest::forgetRightSuccess);
+        unitTest.addTest(SumTest::forgetLeftFailure);
+        unitTest.addTest(SumTest::forgetRightFailure);
+        unitTest.addTest(SumTest::mapLeftOnLeft);
+        unitTest.addTest(SumTest::mapLeftOnRight);
+        unitTest.addTest(SumTest::mapRightOnRight);
+        unitTest.addTest(SumTest::mapRightOnLeft);
+        unitTest.addTest(SumTest::leftEquality);
+        unitTest.addTest(SumTest::rightEquality);
+        unitTest.addTest(SumTest::leftDisequality);
+        unitTest.addTest(SumTest::rightDisequality);
+        unitTest.addTest(SumTest::mapOnLeft);
+        unitTest.addTest(SumTest::mapOnRight);
 
         unitTest.runTests();
     }

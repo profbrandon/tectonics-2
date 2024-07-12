@@ -10,7 +10,7 @@ import util.math.instances.doubles.linear.Linear2D;
 import util.math.instances.doubles.vectors.Vec2D;
 import util.testing.UnitTest;
 
-public class Linear2DTest extends UnitTest {
+public final class Linear2DTest extends UnitTest {
 
     private static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> LINEAR_1 =
         Linear2D.asLinearMap(3.0, -1.2, 7.79, -0.2);
