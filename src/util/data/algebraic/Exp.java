@@ -11,8 +11,6 @@ import util.Preconditions;
  * functions of products ({@link Prod}) into functions that produce exponentials ({@link Exp}).
  * Additionally, the static method {@link Exp#asExponential(Function)} is allowed to directly transform
  * normal Java functions into exponential objects.
- * 
- * TODO: Actually handle functional equality. This should be possible through currying and constant functions, but it might require disallowing instantiation from Java functions.
  */
 public final class Exp<A,B> implements Function<A,B> {
 
