@@ -15,18 +15,37 @@ import util.math.instances.doubles.vectors.Vec2D;
 /**
  * Class to represent the 2-dimensional linear endomorphisms on {@link Vec2D}.
  */
-public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>> {
+public class Linear2D 
+    extends
+        LinearD<Two, Two>
+    implements 
+        Ring<Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>> {
     
     public static final Linear2D INSTANCE = new Linear2D();
 
-    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> UNIT_1_1 =
-        Exp.asExponential(tuple -> HomTuple.tuple(tuple.at(Ordinal.ZERO_2), DoubleField.INSTANCE.zero()));
-    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> UNIT_1_2 =
-        Exp.asExponential(tuple -> HomTuple.tuple(tuple.at(Ordinal.ONE_2), DoubleField.INSTANCE.zero()));
-    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> UNIT_2_1 =
-        Exp.asExponential(tuple -> HomTuple.tuple(DoubleField.INSTANCE.zero(), tuple.at(Ordinal.ZERO_2)));
-    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> UNIT_2_2 =
-        Exp.asExponential(tuple -> HomTuple.tuple( DoubleField.INSTANCE.zero(), tuple.at(Ordinal.ONE_2)));
+    /**
+     * The linear transformation equivalent to the matrix [ 1 0, 0 0 ].
+     */
+    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        UNIT_1_1 = Exp.asExponential(tuple -> HomTuple.tuple(tuple.at(Ordinal.ZERO_2), DoubleField.INSTANCE.zero()));
+
+    /**
+     * The linear transformation equivalent to the matrix [ 0 1, 0 0 ].
+     */
+    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>
+        UNIT_1_2 = Exp.asExponential(tuple -> HomTuple.tuple(tuple.at(Ordinal.ONE_2), DoubleField.INSTANCE.zero()));
+
+    /**
+     * The linear transformation equivalent to the matrix [ 0 0, 1 0 ].
+     */
+    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        UNIT_2_1 = Exp.asExponential(tuple -> HomTuple.tuple(DoubleField.INSTANCE.zero(), tuple.at(Ordinal.ZERO_2)));
+
+    /**
+     * The linear transformation equivalent to the matrix [ 0 0, 0 1 ].
+     */
+    public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        UNIT_2_2 = Exp.asExponential(tuple -> HomTuple.tuple( DoubleField.INSTANCE.zero(), tuple.at(Ordinal.ONE_2)));
 
     /**
      * The linear map sending everything to zero.
@@ -34,12 +53,12 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
     public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> ZERO = INSTANCE.zero();
 
     /**
-     * The identity linear map sending each vector to itself
+     * The identity linear map sending each vector to itself.
      */
     public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> IDENTITY = INSTANCE.sumAll(List.of(UNIT_1_1, UNIT_2_2));
 
     /**
-     * The exchange linear map, flipping a 2-dimensional vector around the {@code x = y} axis.
+     * The exchange linear map flipping a 2-dimensional vector around the {@code x = y} axis.
      */
     public static final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> EXCHANGE = INSTANCE.sumAll(List.of(UNIT_1_2, UNIT_2_1));
 
@@ -56,11 +75,12 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
      * @param m22 the entry in the second row and second column
      * @return a linear map representation of the matrix
      */
-    public static Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> asLinearMap(
-        final double m11, 
-        final double m12, 
-        final double m21, 
-        final double m22) {
+    public static Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        asLinearMap(
+            final double m11, 
+            final double m12, 
+            final double m21, 
+            final double m22) {
 
         Preconditions.throwIfNull(m11, "m11");
         Preconditions.throwIfNull(m12, "m12");
@@ -105,8 +125,9 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
     }
 
     @Override
-    public List<Prod<Double, Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>>> decompose(
-        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear) {
+    public List<Prod<Double, Exp<HomTuple<Two, Double>, HomTuple<Two, Double>>>> 
+        decompose(
+            final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear) {
 
         Preconditions.throwIfNull(linear, "linear");
         
@@ -126,10 +147,11 @@ public class Linear2D extends LinearD<Two, Two> implements Ring<Exp<HomTuple<Two
     }
 
     @Override
-    public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> mult(
-        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear1,
-        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear2) {
-        
+    public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        mult(
+            final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear1,
+            final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear2) {
+            
         Preconditions.throwIfNull(linear1, "linear1");
         Preconditions.throwIfNull(linear2, "linear2");
         

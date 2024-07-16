@@ -1,17 +1,31 @@
 package util.math.vectorspaces;
 
 import util.data.algebraic.Exp;
+import util.math.Field;
 import util.math.Ring;
 
-public abstract class FieldValuedSpace<V, K> extends LinearMapSpace<V, K, K> implements Ring<Exp<V, K>> {
+/**
+ * Class to represent a {@link LinearMapSpace} that has a {@link Field} as its codomain. This implies
+ * that it is an instance of a {@link Ring}.
+ */
+public abstract class DualSpace<V, K> 
+    extends 
+        LinearMapSpace<V, K, K> 
+    implements 
+        Ring<Exp<V, K>> {
 
     /**
      * Creates a vector space of linear maps from a vector space to its underlying field.
      * 
      * @param underlyingSpace the vector space
      */
-    public FieldValuedSpace(final VectorSpace<V, K> underlyingSpace) {
+    public DualSpace(final VectorSpace<V, K> underlyingSpace) {
         super(underlyingSpace, underlyingSpace.underlyingField());
+    }
+
+    @Override
+    public Field<K> targetVectorSpace() {
+        return domainVectorSpace().underlyingField();
     }
 
     @Override

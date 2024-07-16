@@ -12,18 +12,28 @@ import util.math.Ring;
 import util.math.instances.doubles.vectors.Vec1D;
 
 /**
- * Class to represent the 1-dimensional linear endomorphisms on {@link Vec2D}. Note that this
+ * Class to represent the 1-dimensional linear endomorphisms on {@link Vec1D}. Note that this
  * is, in essence, isomorphic to {@link DoubleField} due to the restriction of linearity.
  */
-public class Linear1D extends LinearD<One, One> implements Ring<Exp<HomTuple<One, Double>, HomTuple<One, Double>>> {
+public class Linear1D 
+    extends
+        LinearD<One, One>
+    implements 
+        Ring<Exp<HomTuple<One, Double>, HomTuple<One, Double>>> {
 
     public static final LinearD<One, One> INSTANCE = new Linear1D();
 
     /**
-     * The unit value.
+     * The zero linear transformation over 1-dimensional double-valued vectors.
      */
-    public static final Exp<HomTuple<One, Double>, HomTuple<One, Double>> UNIT = 
-        Exp.constant(HomTuple.tuple(INSTANCE.underlyingField().unit()));
+    public static final Exp<HomTuple<One, Double>, HomTuple<One, Double>>
+        ZERO = INSTANCE.zero();
+
+    /**
+     * The unit linear transformation (the identity) over 1-dimensional double-valued vectors.
+     */
+    public static final Exp<HomTuple<One, Double>, HomTuple<One, Double>> 
+        UNIT = Exp.asExponential(tuple -> tuple);
     
     private Linear1D() {
         super(Vec1D.INSTANCE, Vec1D.INSTANCE);
@@ -39,7 +49,10 @@ public class Linear1D extends LinearD<One, One> implements Ring<Exp<HomTuple<One
         final Exp<HomTuple<One, Double>, HomTuple<One, Double>> linear) {
 
         Preconditions.throwIfNull(linear, "linear");
-        return List.of(Prod.pair(linear.apply(HomTuple.tuple(underlyingField().unit())).at(Ordinal.ZERO_1), UNIT));
+        return List.of(
+            Prod.pair(
+                linear.apply(HomTuple.tuple(underlyingField().unit())).at(Ordinal.ZERO_1), 
+                UNIT));
     }
 
     @Override

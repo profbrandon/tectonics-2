@@ -47,7 +47,6 @@ public interface Ring<R> extends AbelianGroup<R> {
      * @return the product of the elements
      */
     public default R multAll(final Collection<R> rs) {
-        Preconditions.throwIfNull(rs, "rs");
         Preconditions.throwIfContainsNull(rs, "rs");
 
         R temp = unit();

@@ -1,8 +1,9 @@
-package util.math.vectorspaces;
+package util.math.vectorspaces.finite;
 
 import java.util.List;
 
 import util.data.algebraic.Prod;
+import util.math.vectorspaces.VectorSpace;
 
 /**
  * Interface to represent a finite-dimensional {@link VectorSpace}. The set of
@@ -17,7 +18,9 @@ import util.data.algebraic.Prod;
  * In effect, this requires {@code decompose(zero()).stream().map(Prod::first) == [0, ...]} and
  * {@code v = sumAll(decompose(v).stream().map(pair -> destroy(vi -> b -> scale(b, vi))).toList())}
  */
-public interface FiniteVectorSpace<V, K> extends VectorSpace<V, K> {
+public interface FiniteVectorSpace<V, K> 
+    extends 
+        VectorSpace<V, K> {
     
     /**
      * @return the list of basis vectors

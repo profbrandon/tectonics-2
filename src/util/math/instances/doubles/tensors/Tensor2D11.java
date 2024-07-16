@@ -14,6 +14,9 @@ import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.math.instances.doubles.covectors.CoVec2D;
 
+/**
+ * Class to represent the space of (1,1)-tensors over the space of 2-dimensional double-valued vectors.
+ */
 public class Tensor2D11 extends TensorD<Two, One, One> {
     
     public static final TensorD<Two, One, One> INSTANCE = new Tensor2D11();
@@ -22,20 +25,29 @@ public class Tensor2D11 extends TensorD<Two, One, One> {
         super(CoVec2D.INSTANCE);
     }
 
-    public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> asLinearMap(
-        final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
+    /**
+     * Builds the linear map equivalent to the given (1,1)-tensor.
+     * 
+     * @param tensor the given (1,1)-tensor
+     * @return the linear map equivalent to the given tensor
+     */
+    public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+        asLinearMap(
+            final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
 
         return Exp.asExponential(
-            v -> underlyingDualSpace()
-                .dualDualAsVector(Exp.asExponential(
-                    dv -> evaluate(tensor, HomTuple.tuple(dv), HomTuple.tuple(v)))));
+            v -> 
+                underlyingDualSpace()
+                    .dualDualAsVector(Exp.asExponential(
+                        dv -> evaluate(tensor, HomTuple.tuple(dv), HomTuple.tuple(v)))));
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<Two, Double>>, HomTuple<Pred<One>, Exp<HomTuple<Two, Double>, Double>>>> contract(
-        final Ordinal<One> index1,
-        final Ordinal<One> index2,
-        final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<Two, Double>>, HomTuple<Pred<One>, Exp<HomTuple<Two, Double>, Double>>>> 
+        contract(
+            final Ordinal<One> index1,
+            final Ordinal<One> index2,
+            final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
         
         Preconditions.throwIfNull(index1, "index1");
         Preconditions.throwIfNull(index2, "index2");
@@ -59,10 +71,14 @@ public class Tensor2D11 extends TensorD<Two, One, One> {
     }
 
     @Override
-    public List<Prod<Double, Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>>>> decompose(
-        final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
+    public List<Prod<Double, Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>>>> 
+        decompose(
+            final Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
         
-        return basis().stream().map(b -> Prod.pair(evaluate(tensor, b.second(), b.first()), b)).toList();
+        return basis()
+            .stream()
+            .map(b -> Prod.pair(evaluate(tensor, b.second(), b.first()), b))
+            .toList();
     }
 
     @Override

@@ -4,8 +4,8 @@ import util.counting.Cardinal;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.math.instances.doubles.vectors.VecD;
-import util.math.vectorspaces.FiniteVectorSpace;
 import util.math.vectorspaces.LinearMapSpace;
+import util.math.vectorspaces.finite.FiniteVectorSpace;
 
 /**
  * Class to represent linear transformations from a vector space of {@code N}-tuples of {@link Double}s to

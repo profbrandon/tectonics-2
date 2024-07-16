@@ -25,6 +25,7 @@ public final class Vec2DTest extends UnitTest {
         unitTest.addTest(Vec2DTest::negateVector);
         unitTest.addTest(Vec2DTest::dotProductTest);
         unitTest.addTest(Vec2DTest::vectorDecomposition);
+        unitTest.addTest(Vec2DTest::vectorBasis);
 
         unitTest.runTests();
     }
@@ -92,5 +93,15 @@ public final class Vec2DTest extends UnitTest {
                     DoubleField.INSTANCE.equiv(9.102, doubles.get(1));
             },
             () -> Vec2D.INSTANCE.decompose(Vec2D.vector(-7.4, 9.102)));
+    }
+
+    private static boolean vectorBasis() {
+        return UnitTest.checkValue(
+            "Enumerate basis",
+            bs -> 
+                bs.size() == 2 &&
+                Vec2D.equalsVector(bs.get(0), Vec2D.UNIT_X) &&
+                Vec2D.equalsVector(bs.get(1), Vec2D.UNIT_Y),
+            () -> Vec2D.INSTANCE.basis());
     }
 }

@@ -1,19 +1,35 @@
 package util.math.instances.doubles;
 
-import java.util.Arrays;
 import java.util.List;
 
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 import util.math.Field;
-import util.math.vectorspaces.FiniteVectorSpace;
+import util.math.vectorspaces.finite.FiniteVectorSpace;
 
-public final class DoubleField implements Field<Double>, FiniteVectorSpace<Double, Double> {
+/**
+ * Class to represent a mathematical {@link Field} of {@link Double} values. Equality between
+ * double values is considered up to one-onebillionth.
+ */
+public final class DoubleField 
+    implements 
+        Field<Double>, 
+        FiniteVectorSpace<Double, Double> {
 
-    private static final Double TOLERANCE = 1e-10;
+    private static final Double TOLERANCE = 1e-9;
 
     public static final DoubleField INSTANCE = new DoubleField();
+
+    /**
+     * The zero double (0.0).
+     */
+    public static final Double ZERO = INSTANCE.zero();
+
+    /**
+     * The unit double (1.0).
+     */
+    public static final Double UNIT = INSTANCE.unit();
 
     private DoubleField() {};
 
@@ -70,10 +86,6 @@ public final class DoubleField implements Field<Double>, FiniteVectorSpace<Doubl
     public Double scale(final Double v, final Double scalar) {
         return this.mult(v, scalar);
     }   
-
-    public Double sumAll(final Double...vs) {
-        return sumAll(Arrays.asList(vs));
-    }
 
     @Override
     public boolean equiv(final Double a1, final Double a2) {

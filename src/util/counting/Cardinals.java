@@ -54,6 +54,11 @@ public final class Cardinals {
         public Zero prev() {
             return Zero.INSTANCE;
         }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
+        }
     }
 
     /**
@@ -75,6 +80,11 @@ public final class Cardinals {
         @Override
         public Zero prev() {
             return Zero.INSTANCE;
+        }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
         }
     }
 
@@ -98,6 +108,11 @@ public final class Cardinals {
         public One prev() {
             return One.INSTANCE;
         }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
+        }
     }
 
     /**
@@ -119,6 +134,11 @@ public final class Cardinals {
         @Override
         public Two prev() {
             return Two.INSTANCE;
+        }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
         }
     }
 
@@ -142,6 +162,11 @@ public final class Cardinals {
         public Three prev() {
             return Three.INSTANCE;
         }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
+        }
     }
 
     /**
@@ -163,6 +188,11 @@ public final class Cardinals {
         @Override
         public Four prev() {
             return Four.INSTANCE;
+        }
+
+        @Override
+        public Cardinal instance() {
+            return INSTANCE;
         }
     }
 

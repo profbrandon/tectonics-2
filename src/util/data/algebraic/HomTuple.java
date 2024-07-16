@@ -99,11 +99,11 @@ public class HomTuple<N extends Cardinal, A> {
      * @param reduce the accumulator function
      * @return the reduced value
      */
-    public <U> U eliminate(final Collection<Ordinal<N>> enumerated, final U seed, final Function<Prod<U, A>, U> reduce) {
+    public <U> U eliminate(final Collection<Ordinal<N>> enumerated, final U seed, final Function<Ordinal<N>, Function<Prod<U, A>, U>> reduce) {
         U value = seed;
         
         for (final Ordinal<N> ord : enumerated) {
-            value = reduce.apply(Prod.pair(value, this.at(ord)));    
+            value = reduce.apply(ord).apply(Prod.pair(value, this.at(ord)));    
         }
 
         return value;
@@ -158,7 +158,6 @@ public class HomTuple<N extends Cardinal, A> {
         final HomTuple<N, A> other) {
 
         Preconditions.throwIfNull(equality, "equality");
-        Preconditions.throwIfNull(enumerated, "enumerated");
         Preconditions.throwIfContainsNull(enumerated, "enumerated");
         Preconditions.throwIfNull(other, "other");
 
@@ -185,6 +184,10 @@ public class HomTuple<N extends Cardinal, A> {
         final Function<String, String> wrapper = v -> "(" + v + ")";
 
         return wrapper.apply(enumerated.stream().map(ord -> tuple.at(ord).toString()).reduce((a, b) -> a + ", " + b).get());
+    }
+
+    public static <N extends Cardinal, A> HomTuple<N, A> all(final A value) {
+        return new HomTuple<>(Ordinal.populate(value));
     }
 
     public static <A> HomTuple<Zero, A> tuple() {

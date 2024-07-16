@@ -113,7 +113,6 @@ public class List<A> {
     }
 
     public static <A> List<A> list(final Collection<A> as) {
-        Preconditions.throwIfNull(as, "as");
         Preconditions.throwIfContainsNull(as, "as");
 
         Sum<Unit, Prod<A, List<A>>> temp = generateEmpty();

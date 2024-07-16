@@ -19,4 +19,9 @@ public interface Cardinal {
      * @return the previous cardinal
      */
     public Cardinal prev();
+
+    /**
+     * @return this cardinal
+     */
+    public Cardinal instance();
 }

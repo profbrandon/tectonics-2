@@ -18,10 +18,15 @@ import util.math.instances.doubles.vectors.Vec1D;
  * Class to represent the space of (1,0)-tensors over the space of doubles. This is trivially isomorphic
  * to the space of doubles.
  */
-public class Tensor1D10 extends TensorD<One, One, Zero> {
+public class Tensor1D10 
+    extends 
+        TensorD<One, One, Zero> {
 
     public static final TensorD<One, One, Zero> INSTANCE = new Tensor1D10();
 
+    /**
+     * The unit (1,0)-tensor over the 1-dimensional vector space of doubles, i.e., the {@link Double} value 1.0.
+     */
     public static final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> 
         UNIT = Prod.pair(
             HomTuple.tuple(Vec1D.INSTANCE.basis().get(0)),
@@ -32,10 +37,11 @@ public class Tensor1D10 extends TensorD<One, One, Zero> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<Zero>, Exp<HomTuple<One, Double>, Double>>>> contract(
-        final Ordinal<One> index1,
-        final Ordinal<Zero> index2,
-        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> tensor) {
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<Zero>, Exp<HomTuple<One, Double>, Double>>>>
+        contract(
+            final Ordinal<One> index1,
+            final Ordinal<Zero> index2,
+            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> tensor) {
         
         Preconditions.throwIfNull(index1, "index1");
         Preconditions.throwIfNull(index2, "index2");
@@ -50,7 +56,12 @@ public class Tensor1D10 extends TensorD<One, One, Zero> {
         final HomTuple<One, Exp<HomTuple<One, Double>, Double>> dualVectors,
         final HomTuple<Zero, HomTuple<One, Double>> vectors) {
             
-        return tensor.destroy(values -> invalid -> dualVectors.zip(values).mapAll(pair -> pair.first().apply(pair.second())).at(Ordinal.ZERO_1));
+        return tensor.destroy(
+            values ->
+                invalid -> 
+                    dualVectors
+                        .zip(values)
+                        .mapAll(pair -> pair.first().apply(pair.second())).at(Ordinal.ZERO_1));
     }
 
     @Override
@@ -59,9 +70,12 @@ public class Tensor1D10 extends TensorD<One, One, Zero> {
     }
 
     @Override
-    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>>>> decompose(
-        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> tensor) {
+    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>>>>
+        decompose(
+            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<Zero, Exp<HomTuple<One, Double>, Double>>> tensor) {
 
-        return List.of(Prod.pair(Vec1D.extract(tensor.first().at(Ordinal.ZERO_1)), UNIT));
+        return List.of(
+            Prod.pair(Vec1D.extract(tensor.first().at(Ordinal.ZERO_1)),
+            UNIT));
     }
 }

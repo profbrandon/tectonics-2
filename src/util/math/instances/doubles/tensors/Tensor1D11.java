@@ -14,10 +14,18 @@ import util.math.instances.doubles.DoubleField;
 import util.math.instances.doubles.covectors.CoVec1D;
 import util.math.instances.doubles.vectors.Vec1D;
 
-public class Tensor1D11 extends TensorD<One, One, One> {
+/**
+ * Class to represent the space of (1,1)-tensors over the space of doubles.
+ */
+public class Tensor1D11 
+    extends 
+        TensorD<One, One, One> {
 
     public static final TensorD<One, One, One> INSTANCE = new Tensor1D11();
 
+    /**
+     * The unit (1,1)-tensor over the 1-dimensional vector space of doubles, i.e., the identity linear transformation.
+     */
     public static final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> 
         UNIT = Prod.pair(
             HomTuple.tuple(Vec1D.INSTANCE.basis().get(0)),
@@ -28,10 +36,11 @@ public class Tensor1D11 extends TensorD<One, One, One> {
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<One>, Exp<HomTuple<One, Double>, Double>>>> contract(
-        final Ordinal<One> index1,
-        final Ordinal<One> index2,
-        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
+    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<One>, Exp<HomTuple<One, Double>, Double>>>> 
+        contract(
+            final Ordinal<One> index1,
+            final Ordinal<One> index2,
+            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
         
         Preconditions.throwIfNull(index1, "index1");
         Preconditions.throwIfNull(index2, "index2");
@@ -62,9 +71,12 @@ public class Tensor1D11 extends TensorD<One, One, One> {
     }
 
     @Override
-    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>>> decompose(
+    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>>>
+        decompose(
             final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
         
-        return List.of(Prod.pair(evaluate(tensor, UNIT.second(), UNIT.first()), UNIT));
+        return List.of(Prod.pair(
+            this.evaluate(tensor, UNIT.second(), UNIT.first()), 
+            UNIT));
     }
 }

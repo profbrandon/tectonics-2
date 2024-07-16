@@ -13,32 +13,29 @@ import util.math.Field;
  * vector space over the same field. There are no other conditions besides the smaller space being a
  * vector space. All of the vector space operations are defined pointwise.
  */
-public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSpace<HomTuple<N, V>, K> {
+public class NVectorSpace<N extends Cardinal, V, K> 
+    implements 
+        VectorSpace<HomTuple<N, V>, K> {
 
+    protected final Collection<Ordinal<N>> ENUMERATED;
     private final VectorSpace<V, K> UNDERLYING;
     
     /**
      * Builds an {@code N}-dimensional vector space with the information contained in the underlying
      * {@link VectorSpace}.
      * 
+     * @param enumerated the set of ordinals of the corresponding cardinality
      * @param underlyingSpace the underlying vector space
      */
-    public NVectorSpace(final VectorSpace<V, K> underlyingSpace) {
-        Preconditions.throwIfNull(underlyingSpace, "underlyingSpace");
-        this.UNDERLYING = underlyingSpace;
-    }
+    public NVectorSpace(final Collection<Ordinal<N>> enumerated, final VectorSpace<V, K> underlyingSpace) {
 
-    /**
-     * Tests whether the given vectors are equivalent (up to the enumerated indices).
-     * 
-     * @param enumerated the enumerated indices to check for equality
-     * @param v1 the first tuple vector
-     * @param v2 the second tuple vector
-     * @return whether the two tuple vectors are equivalent up to the provided indices
-     */
-    public boolean equalsVector(final Collection<Ordinal<N>> enumerated, final HomTuple<N, V> v1, final HomTuple<N, V> v2) {
-        Preconditions.throwIfNull(v1, "v1");
-        return v1.equalsTuple(pair -> pair.destroy(a -> b -> UNDERLYING.equiv(a, b)), enumerated, v2);
+        // TODO: I would like to check that enumerated is exhaustive
+
+        Preconditions.throwIfContainsNull(enumerated, "enumerated");
+        Preconditions.throwIfNull(underlyingSpace, "underlyingSpace");
+
+        this.ENUMERATED = enumerated;
+        this.UNDERLYING = underlyingSpace;
     }
 
     /**
@@ -48,6 +45,13 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
         return this.UNDERLYING;
     }
 
+    /**
+     * @return the underlying collection of {@link Ordinal}s used to enumerate the tuples
+     */
+    public Collection<Ordinal<N>> underlyingOrdinalSet() {
+        return this.ENUMERATED;
+    }
+
     @Override
     public Field<K> underlyingField() {
         return UNDERLYING.underlyingField();
@@ -55,13 +59,12 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
 
     @Override
     public HomTuple<N, V> zero() {
-        return new HomTuple<>(Ordinal.populate(UNDERLYING.zero()));
+        return HomTuple.all(underlyingVectorSpace().zero());
     }
 
     @Override
     public HomTuple<N, V> sum(final HomTuple<N, V> v1, final HomTuple<N, V> v2) {
         Preconditions.throwIfNull(v1, "v1");
-        Preconditions.throwIfNull(v2, "v2");
         return v1.mapEach(n -> vn -> UNDERLYING.sum(vn, v2.at(n)));
     }
 
@@ -75,5 +78,13 @@ public abstract class NVectorSpace<N extends Cardinal, V, K> implements VectorSp
     public HomTuple<N, V> scale(final HomTuple<N, V> v, final K scalar) {
         Preconditions.throwIfNull(v, "v");
         return v.mapAll(a -> UNDERLYING.scale(a, scalar));
+    }
+
+    @Override
+    public boolean equiv(final HomTuple<N, V> a1, final HomTuple<N, V> a2) {
+        return a1.equalsTuple(
+            pair -> pair.destroy(x1 -> x2 -> underlyingVectorSpace().equiv(x1, x2)), 
+            ENUMERATED, 
+            a2);
     }
 }

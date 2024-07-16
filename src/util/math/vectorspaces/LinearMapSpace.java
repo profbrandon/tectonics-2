@@ -14,7 +14,9 @@ import util.math.Field;
  *   <li>{@code l(v + w) = l(v) + l(w)}</li>
  * </ul>
  */
-public abstract class LinearMapSpace<V, W, K> implements VectorSpace<Exp<V, W>, K> {
+public abstract class LinearMapSpace<V, W, K> 
+    implements 
+        VectorSpace<Exp<V, W>, K> {
 
     private final VectorSpace<V, K> DOMAIN;
     private final VectorSpace<W, K> TARGET;

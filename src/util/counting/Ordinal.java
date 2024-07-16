@@ -11,6 +11,7 @@ import util.counting.Cardinals.Four;
 import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.counting.Cardinals.Three;
+import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 
 /**
@@ -180,6 +181,11 @@ public class Ordinal<N extends Cardinal> {
         return this.underlyingCardinal().getInteger() == other.underlyingCardinal().getInteger();
     }
 
+    public boolean lessThanEqualOrdinal(final Ordinal<N> other) {
+        Preconditions.throwIfNull(other, "other");
+        return this.underlyingCardinal().getInteger() <= other.underlyingCardinal().getInteger();
+    }
+
     /**
      * Determines if this ordinal is loosely equal to the given one. This means that if they
      * both represent the same elemental order (0th, 1st, 2nd, 3rd, etc.) but does not care about
@@ -305,5 +311,42 @@ public class Ordinal<N extends Cardinal> {
     public static <N extends Cardinal, A> Function<Ordinal<N>, A> populate(final A value) {
         Preconditions.throwIfNull(value, "value");
         return ordSet -> value;
+    }
+
+    /**
+     * Creates a function that partitions the ordinals into two groups: below or equal to some {@link Ordinal}
+     * or above it. Each group is mapped to their own partition.
+     * 
+     * @param <N> the cardinality of the ordinal set
+     * @param <A> the type to map to
+     * @param testOrd the ordinal to test against (i.e., above, below, equal)
+     * @param equalOrBelow the value of the lower partition
+     * @param above the value of the upper partition
+     * @return a partition function
+     */
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> partition(final Ordinal<N> testOrd, final A equalOrBelow, final A above) {
+        return ord -> ord.lessThanEqualOrdinal(testOrd) ? equalOrBelow : above;
+    }
+
+    /**
+     * Creates a function in which there are as many partitions as there are distinct elements in the first part of the
+     * {@code enumerated}. If there are as many distinct elements as the cardinality {@code N}, then enumerated builds
+     * a function in which each ordinal is mapped to the corresponding element of {@code A}. In that case, it acts
+     * exactly like converting a map or "dictionary" to a function.
+     * 
+     * @param <N> the cardinality of the {@link Ordinal}s to accept as arguments
+     * @param <A> the output type
+     * @param enumerated the enumerated pairs of items
+     * @return
+     */
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> buildPartition(final List<Prod<Ordinal<N>, A>> enumerated) {
+        if (enumerated.size() == 1) {
+            return populate(enumerated.get(0).second());
+        } else {
+            return ord -> partition(
+                enumerated.get(0).first(), 
+                enumerated.get(0).second(), 
+                buildPartition(enumerated.stream().skip(1).toList()).apply(ord)).apply(ord);
+        }
     }
 }

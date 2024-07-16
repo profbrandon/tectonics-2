@@ -40,7 +40,6 @@ public interface Monoid<M> extends Equiv<M> {
      * @return the sum of the elements
      */
     public default M sumAll(final Collection<M> ms) {
-        Preconditions.throwIfNull(ms, "ms");
         Preconditions.throwIfContainsNull(ms, "ms");
 
         M temp = zero();
