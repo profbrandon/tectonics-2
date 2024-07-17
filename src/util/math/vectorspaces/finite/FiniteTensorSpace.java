@@ -14,7 +14,7 @@ import util.math.vectorspaces.ProductSpace;
 import util.math.vectorspaces.TensorSpace;
 
 /**
- * Class to represent a {@link TensorSpace} that is also a {@link FiniteVectorSpace}, meaining
+ * Class to represent a {@link TensorSpace} that is also a {@link FiniteVectorSpace}, meaning
  * it derives its basis from the finite basis of the underlying {@link FiniteVectorSpace}.
  */
 public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
@@ -29,6 +29,14 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
     private final FiniteNDualSpace<P, V, K> P_DUAL_SPACE;
     private final FiniteNSpace<Q, V, K> Q_VECTOR_SPACE;
 
+    /**
+     * Constructs a finite tensor space from the given dimensional information and the
+     * underlying dual space.
+     * 
+     * @param pEnumerated the collection of (exhaustive) ordinals for the covariant dimension
+     * @param qEnumerated the collection of (exhaustive) ordinals for the contravariant dimension
+     * @param dualSpace the underlying dual space
+     */
     public FiniteTensorSpace(
         final Collection<Ordinal<P>> pEnumerated, 
         final Collection<Ordinal<Q>> qEnumerated,
@@ -43,6 +51,12 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         this.CONTRA_PRODUCT_SPACE    = new FiniteNDualSpace<>(qEnumerated, dualSpace);
     }
 
+    /**
+     * Creates the tensor product version of the given multilinear map tensor.
+     * 
+     * @param tensor the multilinear map to convert to a tensor product
+     * @return the tensor product version of the given tensor
+     */
     public Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> 
         toTensorProduct(
             final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
@@ -67,6 +81,12 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
                 .toList());
     }
 
+    /**
+     * Creates the multilinear map version of the given tensor product.
+     * 
+     * @param tProd the tensor product
+     * @return the multilinear map version of the given tensor
+     */
     public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
         fromTensorProduct(
             final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> tProd) {
@@ -74,8 +94,8 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         return Exp.asExponential(pair -> pair.destroy(
             dv ->
                 v -> underlyingField().mult(
-                    underlyingLeftSpace().tensorProduct(dv).apply(tProd.first()),
-                    CONTRA_PRODUCT_SPACE.tensorProduct(tProd.second()).apply(v))));
+                    underlyingLeftSpace().buildTensorFromProduct(dv).apply(tProd.first()),
+                    CONTRA_PRODUCT_SPACE.buildTensorFromProduct(tProd.second()).apply(v))));
     }
 
     @Override

@@ -3,6 +3,7 @@ package util.math.vectorspaces.finite;
 import java.util.List;
 
 import util.data.algebraic.Exp;
+import util.data.algebraic.Prod;
 import util.math.Field;
 import util.math.vectorspaces.DualSpace;
 
@@ -30,7 +31,7 @@ public abstract class FiniteDualSpace<V, K>
     }
 
     /**
-     * A messy isomorphism that maps dual vectors to covectors by mapping the components
+     * A messy isomorphism that maps dual vectors to vectors by mapping the components
      * over the dual basis vectors to the components over the basis vectors, i.e., this
      * satisfies:
      * 
@@ -49,6 +50,13 @@ public abstract class FiniteDualSpace<V, K>
                     .toList());
     }
 
+    /**
+     * A messy isomorphism that maps vectors to dual vectors by mapping the components
+     * over the dual basis vectors to the components over the basis vectors.
+     * 
+     * @param v the vector to translate into a dual vector
+     * @return a dual vector representation of the vector
+     */
     public Exp<V, K> vectorAsDual(final V v) {
         return Exp.asExponential(
             w -> util.data.algebraic.List.list(
@@ -91,6 +99,15 @@ public abstract class FiniteDualSpace<V, K>
         return UNDERLYING_SPACE.basis()
             .stream()
             .map(this::covectorFromBasisVector)
+            .toList();
+    }
+
+    @Override
+    public List<Prod<K, Exp<V, K>>> decompose(Exp<V, K> v) {
+        return domainVectorSpace()
+            .basis()
+            .stream()
+            .map(b -> Prod.pair(transform(v, b), covectorFromBasisVector(b)))
             .toList();
     }
 

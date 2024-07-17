@@ -37,6 +37,9 @@ public abstract class BilinearMapSpace<V, W, U, K>
         final VectorSpace<W, K> rightVectorSpace,
         final VectorSpace<U, K> targetVectorSpace) {
 
+        Preconditions.throwIfNull(leftVectorSpace, "leftVectorSpace");
+        Preconditions.throwIfNull(rightVectorSpace, "rightVectorSpace");
+        Preconditions.throwIfNull(targetVectorSpace, "targetVectorSpace");
         Preconditions.throwIfDifferent(
             leftVectorSpace.underlyingField(), 
             rightVectorSpace.underlyingField(), 
@@ -63,22 +66,47 @@ public abstract class BilinearMapSpace<V, W, U, K>
         return bilinear.apply(Prod.pair(v, w));
     }
 
+    /**
+     * Converts the given bilinear map to a linear map from the left space to the target.
+     * The way this is done is throught partial application of the bilinear map.
+     * 
+     * @param bilinear the bilinear map
+     * @param w the element of the right space to hold fixed
+     * @return a linear map
+     */
     public Exp<V, U> leftLinearMap(final Exp<Prod<V, W>, U> bilinear, final W w) {
         return Exp.asExponential(v -> evaluate(bilinear, v, w));
     }
 
+    /**
+     * Converts the given bilinear map to a linear map from the right space to the target.
+     * The way this is done is throught partial application of the bilinear map.
+     * 
+     * @param bilinear the bilinear map
+     * @param v the element of the left space to hold fixed
+     * @return a linear map
+     */
     public Exp<W, U> rightLinearMap(final Exp<Prod<V, W>, U> bilinear, final V v) {
         return Exp.asExponential(w -> evaluate(bilinear, v, w));
     }
 
+    /**
+     * @return the underlying left domain vector space
+     */
     public VectorSpace<V, K> underlyingLeftSpace() {
         return LEFT_SPACE;
     }
 
+    /**
+     * @return the underlying right domain vector space
+     */
     public VectorSpace<W, K> underlyingRightSpace() {
         return RIGHT_SPACE;
     }
 
+    /**
+     * @return the underlying target vector space
+     */
     public VectorSpace<U, K> underlyingTargetSpace() {
         return TARGET_SPACE;
     }
