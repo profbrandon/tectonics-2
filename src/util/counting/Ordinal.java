@@ -303,7 +303,7 @@ public class Ordinal<N extends Cardinal> {
     /**
      * Creates a constant function that returns the given value upon all provided ordinals.
      * 
-     * @param <N> the size of the ordinal set
+     * @param <N> the cardinality of the input
      * @param <A> the target value's type
      * @param value the target value
      * @return a constant function that returns the given value
@@ -317,7 +317,7 @@ public class Ordinal<N extends Cardinal> {
      * Creates a function that partitions the ordinals into two groups: below or equal to some {@link Ordinal}
      * or above it. Each group is mapped to their own partition.
      * 
-     * @param <N> the cardinality of the ordinal set
+     * @param <N> the cardinality of the input
      * @param <A> the type to map to
      * @param testOrd the ordinal to test against (i.e., above, below, equal)
      * @param equalOrBelow the value of the lower partition
@@ -334,7 +334,7 @@ public class Ordinal<N extends Cardinal> {
      * a function in which each ordinal is mapped to the corresponding element of {@code A}. In that case, it acts
      * exactly like converting a map or "dictionary" to a function.
      * 
-     * @param <N> the cardinality of the {@link Ordinal}s to accept as arguments
+     * @param <N> the cardinality of the input
      * @param <A> the output type
      * @param enumerated the enumerated pairs of items
      * @return
@@ -350,7 +350,52 @@ public class Ordinal<N extends Cardinal> {
         }
     }
 
+    /**
+     * Create an ordinal map that outputs a value on a specific ordinal and another value on every other ordinal, i.e.,
+     * 
+     * <ul>
+     *   <li>{@code only(ord, x, y)(ord) == x}</li>
+     *   <li>{@code only(ord, x, y)(other) == y} for any {@code other != ord}</li>
+     * </ul>
+     * 
+     * @param <N> the cardinality of the input
+     * @param <A> the target value
+     * @param ord the ordinal to specifically map to a particular object
+     * @param onOrdinal the object to map to on the specified ordinal
+     * @param otherwise the object to map to on every other oridinal
+     * @return a map satisfying the above
+     */
     public static <N extends Cardinal, A> Function<Ordinal<N>, A> only(final Ordinal<N> ord, final A onOrdinal, final A otherwise) {
         return otherOrd -> ord.equalsOrdinal(otherOrd) ? onOrdinal : otherwise;
+    }
+
+    /**
+     * Replaces the element at the specified index with the given one.
+     * 
+     * @param <N> the cardinality of the input
+     * @param <A> the output type
+     * @param fun the indexing function on which the replacement will be done
+     * @param ord the ordinal index that will be remapped
+     * @param onOrdinal the value that will be placed at the given ordinal
+     * @return a new indexing function
+     */
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> replace(final Function<Ordinal<N>, A> fun, final Ordinal<N> ord, final A onOrdinal) {
+        return x -> only(ord, onOrdinal, fun.apply(x)).apply(x);
+    }
+
+    /**
+     * Swaps the elements at the specified indices.
+     * 
+     * @param <N> the cardinality of the input
+     * @param <A> the output type
+     * @param fun a function whose indices will be swapped
+     * @param ord1 the first ordinal
+     * @param ord2 the second ordinal
+     * @return an indexing function with the given elements swapped
+     */
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> swap(final Function<Ordinal<N>, A> fun, final Ordinal<N> ord1, final Ordinal<N> ord2) {
+        return fun
+            .compose(replace(x -> x, ord1, ord2))
+            .compose(replace(x -> x, ord2, ord1));
     }
 }

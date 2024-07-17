@@ -8,7 +8,10 @@ import util.Preconditions;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 
-public class Combinatorics {
+/**
+ * Utility class for storing functions related to generating combinations of objects.
+ */
+public final class Combinatorics {
     
     /**
      * Function to compute the collection of ordered n-tuples given a finite list of elements to choose from.
@@ -92,6 +95,15 @@ public class Combinatorics {
         return xs;
     }
 
+    /**
+     * Builds the cartesian product of two lists (i.e. all possible pairs of elements of both lists).
+     * 
+     * @param <A> the type of elements present in the first list
+     * @param <B> the type of elements present in the second list
+     * @param as the first list
+     * @param bs the second list
+     * @return the cartesian product list
+     */
     public static <A, B> List<Prod<A, B>> cartesianProduct(final List<A> as, final List<B> bs) {
         final List<Prod<A, B>> xs = new ArrayList<>();
 
