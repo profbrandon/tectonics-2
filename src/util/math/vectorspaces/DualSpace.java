@@ -23,6 +23,17 @@ public abstract class DualSpace<V, K>
         super(underlyingSpace, underlyingSpace.underlyingField());
     }
 
+    /**
+     * The natural transformation from a vector space {@code V} to its double dual {@code V**}
+     * defined by {@code (w : V -> K) -> w(v) : (V -> K) -> K} for the given vector {@code v}.
+     * 
+     * @param v the vector to transform
+     * @return the vector's double-dual vector
+     */
+    public Exp<Exp<V, K>, K> asDualDual(final V v) {
+        return Exp.asExponential(w -> w.apply(v));
+    }
+
     @Override
     public Field<K> targetVectorSpace() {
         return domainVectorSpace().underlyingField();

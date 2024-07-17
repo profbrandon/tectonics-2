@@ -26,7 +26,7 @@ public class Combinatorics {
      * @param as the collection of elements to populate the tuples with
      * @return a list of n-tuples of elements of the provided list
      */
-    public static final <A, N extends Cardinal> List<HomTuple<N, A>> nProduct(final List<Ordinal<N>> enumerated, final List<A> as) {
+    public static <A, N extends Cardinal> List<HomTuple<N, A>> nProduct(final List<Ordinal<N>> enumerated, final List<A> as) {
         return nProduct(enumerated.size(), as)
             .stream()
             .map(xs -> 
@@ -53,7 +53,7 @@ public class Combinatorics {
      * @param as the collection of elements to populate the tuples with
      * @return a list of n-tuples of elements of the provided list
      */
-    public static final <A> List<List<A>> nProduct(final int n, final List<A> as) {
+    public static <A> List<List<A>> nProduct(final int n, final List<A> as) {
         Preconditions.throwIfSatisfies(n, x -> x < 0, "Negative argument");
         switch (n) {
             case 0:
@@ -82,11 +82,23 @@ public class Combinatorics {
      * @param as the original list
      * @return a list satisfying the above for all indices
      */
-    public static final <A> List<Prod<Integer, A>> withIndex(final List<A> as) {
+    public static <A> List<Prod<Integer, A>> withIndex(final List<A> as) {
         final List<Prod<Integer, A>> xs = new ArrayList<>();
         
         for (int i = 0; i < as.size(); ++i) {
             xs.add(Prod.pair(i, as.get(i)));
+        }
+
+        return xs;
+    }
+
+    public static <A, B> List<Prod<A, B>> cartesianProduct(final List<A> as, final List<B> bs) {
+        final List<Prod<A, B>> xs = new ArrayList<>();
+
+        for (final A a : as) {
+            for (final B b : bs) {
+                xs.add(Prod.pair(a, b));
+            }
         }
 
         return xs;

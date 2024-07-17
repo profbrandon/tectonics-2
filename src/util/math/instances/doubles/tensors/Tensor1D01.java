@@ -1,7 +1,5 @@
 package util.math.instances.doubles.tensors;
 
-import java.util.List;
-
 import util.Preconditions;
 import util.counting.Ordinal;
 import util.counting.Pred;

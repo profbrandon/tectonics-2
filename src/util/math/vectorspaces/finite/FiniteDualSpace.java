@@ -40,17 +40,28 @@ public abstract class FiniteDualSpace<V, K>
      * @return a vector representation of the dual vector
      */
     public V dualAsVector(final Exp<V, K> dualvector) {
-        return this.domainVectorSpace()
+        return domainVectorSpace()
             .sumAll(
-                this.domainVectorSpace()
+                domainVectorSpace()
                     .basis()
                     .stream()
-                    .map(b -> this.domainVectorSpace().scale(b, dualvector.apply(b)))
+                    .map(b -> domainVectorSpace().scale(b, dualvector.apply(b)))
                     .toList());
     }
 
+    public Exp<V, K> vectorAsDual(final V v) {
+        return Exp.asExponential(
+            w -> util.data.algebraic.List.list(
+                domainVectorSpace().decompose(v)).zip(
+                    util.data.algebraic.List.list(domainVectorSpace().decompose(w)))
+                        .map(pair -> pair.destroy(
+                            left ->
+                                right -> underlyingField().mult(left.first(), right.first())))
+                        .foldr(underlyingField().zero(), a -> b -> underlyingField().sum(a, b)));
+    }
+
     /**
-     * The natural (in the category theoretic sense) isomorphism between a vector space and its
+     * The natural (in the category theoretic sense) isomorphism between a finite vector space and its
      * double-dual. {@code ddv == ddv(db)b}
      * 
      * @param ddvector the double-dual vector

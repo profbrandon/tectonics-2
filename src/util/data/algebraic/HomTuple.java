@@ -190,6 +190,10 @@ public class HomTuple<N extends Cardinal, A> {
         return new HomTuple<>(Ordinal.populate(value));
     }
 
+    public static <N extends Cardinal, A> HomTuple<N, A> only(final Ordinal<N> ord, final A value, final A otherwise) {
+        return new HomTuple<>(Ordinal.only(ord, value, otherwise));
+    }
+
     public static <A> HomTuple<Zero, A> tuple() {
         return new HomTuple<>(Ordinal.zero());
     }

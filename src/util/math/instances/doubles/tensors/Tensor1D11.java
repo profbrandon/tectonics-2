@@ -1,7 +1,7 @@
 package util.math.instances.doubles.tensors;
 
-import java.util.List;
 
+import util.Functional;
 import util.Preconditions;
 import util.counting.Ordinal;
 import util.counting.Pred;
@@ -10,7 +10,6 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
-import util.math.instances.doubles.DoubleField;
 import util.math.instances.doubles.covectors.CoVec1D;
 import util.math.instances.doubles.vectors.Vec1D;
 
@@ -32,51 +31,22 @@ public class Tensor1D11
             HomTuple.tuple(CoVec1D.INSTANCE.basis().get(0)));
 
     private Tensor1D11() {
-        super(CoVec1D.INSTANCE);
+        super(Ordinal.ONE_SET, Ordinal.ONE_SET, CoVec1D.INSTANCE);
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Pred<One>, HomTuple<One, Double>>, HomTuple<Pred<One>, Exp<HomTuple<One, Double>, Double>>>> 
+    public Sum<Double, Exp<Prod<HomTuple<Pred<One>, Exp<HomTuple<One, Double>, Double>>, HomTuple<Pred<One>, HomTuple<One, Double>>>, Double>> 
         contract(
-            final Ordinal<One> index1,
-            final Ordinal<One> index2,
-            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
+            final Ordinal<One> index, 
+            final Ordinal<One> coindex,
+            final Exp<Prod<HomTuple<One, Exp<HomTuple<One, Double>, Double>>, HomTuple<One, HomTuple<One, Double>>>, Double> tensor) {
         
-        Preconditions.throwIfNull(index1, "index1");
-        Preconditions.throwIfNull(index2, "index2");
+        Preconditions.throwIfNull(index, "index");
+        Preconditions.throwIfNull(coindex, "coindex");
         Preconditions.throwIfNull(tensor, "tensor");
 
-        return Sum.left(tensor.destroy(v -> dv -> dv.at(index2).apply(v.at(index1))));
-    }
-
-    @Override
-    public Double evaluate(
-        final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor,
-        final HomTuple<One, Exp<HomTuple<One, Double>, Double>> dualVectors,
-        final HomTuple<One, HomTuple<One, Double>> vectors) {
-
-        return tensor.destroy(values -> maps -> 
-            DoubleField.INSTANCE.mult(
-                dualVectors.zip(values)
-                    .mapAll(pair -> pair.first().apply(pair.second()))
-                    .at(Ordinal.ZERO_1),
-                maps.zip(vectors)
-                    .mapAll(pair -> pair.first().apply(pair.second()))
-                    .at(Ordinal.ZERO_1)));
-    }
-
-    @Override
-    public List<Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>> basis() {
-        return List.of(UNIT);
-    }
-
-    @Override
-    public List<Prod<Double, Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>>>>
-        decompose(
-            final Prod<HomTuple<One, HomTuple<One, Double>>, HomTuple<One, Exp<HomTuple<One, Double>, Double>>> tensor) {
-        
-        return List.of(Prod.pair(
-            this.evaluate(tensor, UNIT.second(), UNIT.first()), 
-            UNIT));
+        return Sum.left(
+            Functional.let(toTensorProduct(tensor), tProd 
+                -> tProd.second().at(coindex).apply(tProd.first().at(index))));
     }
 }

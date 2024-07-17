@@ -1,7 +1,5 @@
 package util.math.instances.doubles.tensors;
 
-import java.util.List;
-
 import util.counting.Ordinal;
 import util.counting.Pred;
 import util.Preconditions;
@@ -40,51 +38,20 @@ public class Tensor2D01
             HomTuple.tuple(CoVec2D.UNIT_Y));
 
     private Tensor2D01() {
-        super(CoVec2D.INSTANCE);
+        super(Ordinal.ZERO_SET, Ordinal.ONE_SET, CoVec2D.INSTANCE);
     }
 
     @Override
-    public Sum<Double, Prod<HomTuple<Pred<Zero>, HomTuple<Two, Double>>, HomTuple<Pred<One>, Exp<HomTuple<Two, Double>, Double>>>>
+    public Sum<Double, Exp<Prod<HomTuple<Pred<Zero>, Exp<HomTuple<Two, Double>, Double>>, HomTuple<Pred<One>, HomTuple<Two, Double>>>, Double>> 
         contract(
-            final Ordinal<Zero> index1,
-            final Ordinal<One> index2,
-            final Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor) {
+            final Ordinal<Zero> index, 
+            final Ordinal<One> coindex,
+            final Exp<Prod<HomTuple<Zero, Exp<HomTuple<Two, Double>, Double>>, HomTuple<One, HomTuple<Two, Double>>>, Double> tensor) {
         
-        Preconditions.throwIfNull(index1, "index1");
-        Preconditions.throwIfNull(index2, "index2");
+        Preconditions.throwIfNull(index, "index");
+        Preconditions.throwIfNull(coindex, "coindex");
         Preconditions.throwIfNull(tensor, "tensor");
 
         throw new IllegalStateException("Somehow an instance of Ordinal<Zero> was provided"); 
-    }
-
-    @Override
-    public List<Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>>> basis() {
-        return underlyingDualSpace()
-            .basis()
-            .stream()
-            .map(b -> Prod.pair(
-                HomTuple.<HomTuple<Two, Double>>tuple(),
-                HomTuple.tuple(b)))
-            .toList();
-    }
-
-    @Override
-    public List<Prod<Double, Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>>>> 
-        decompose(
-            final Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> v) {
-        
-        return List.of(
-            Prod.pair(
-                underlyingDualSpace().decompose(v.second().at(Ordinal.ZERO_1)).get(0).first(),
-                basis().get(0)));
-    }
-
-    @Override
-    public Double evaluate(
-        final Prod<HomTuple<Zero, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>> tensor,
-        final HomTuple<Zero, Exp<HomTuple<Two, Double>, Double>> dualVectors,
-        final HomTuple<One, HomTuple<Two, Double>> vectors) {
-            
-        return evaluate(Ordinal.ZERO_SET, Ordinal.ONE_SET, tensor, dualVectors, vectors);
     }
 }

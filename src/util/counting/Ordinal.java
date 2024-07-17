@@ -349,4 +349,8 @@ public class Ordinal<N extends Cardinal> {
                 buildPartition(enumerated.stream().skip(1).toList()).apply(ord)).apply(ord);
         }
     }
+
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> only(final Ordinal<N> ord, final A onOrdinal, final A otherwise) {
+        return otherOrd -> ord.equalsOrdinal(otherOrd) ? onOrdinal : otherwise;
+    }
 }

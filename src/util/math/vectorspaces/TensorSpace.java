@@ -9,6 +9,7 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
+import util.math.Field;
 
 /**
  * Interface to represent a mathematical (p,q)-tensor space of tensor values over the given {@link VectorSpace}.
@@ -87,4 +88,9 @@ public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
             final Ordinal<P> index,
             final Ordinal<Q> coindex,
             final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor);
+
+    @Override
+    public Field<K> underlyingTargetSpace() {
+        return underlyingField();
+    }
 }
