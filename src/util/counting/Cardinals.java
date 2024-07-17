@@ -4,7 +4,7 @@ import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
 
 /**
- * Helper class that contains all of the cardinals (0, 1, 2, 3, 4, 5).
+ * Helper class that contains all implemented cardinals (0, 1, 2, 3, 4, 5).
  */
 public final class Cardinals {
 
@@ -91,7 +91,7 @@ public final class Cardinals {
     /**
      * The 2nd cardinal for sets of size 2.
      */
-    public static class Two extends CardinalBase implements Pred<Three>, Succ<One> {
+    public static class Two extends CardinalBase implements Pred<Three>, Succ<One>, Prime {
 
         public static final Two INSTANCE = new Two();
 
@@ -118,7 +118,7 @@ public final class Cardinals {
     /**
      * The 3rd cardinal for sets of size 3.
      */
-    public static class Three extends CardinalBase implements Pred<Four>, Succ<Two> {
+    public static class Three extends CardinalBase implements Pred<Four>, Succ<Two>, Prime {
 
         public static final Three INSTANCE = new Three();
 
@@ -145,7 +145,7 @@ public final class Cardinals {
     /**
      * The 4th cardinal for sets of size 4.
      */
-    public static class Four extends CardinalBase implements Pred<Five>, Succ<Three> {
+    public static class Four extends CardinalBase implements Pred<Five>, Succ<Three>, Composite {
 
         public static final Four INSTANCE = new Four();
 
@@ -172,7 +172,7 @@ public final class Cardinals {
     /**
      * The 5th cardinal for sets of size 5.
      */
-    public static class Five extends CardinalBase implements Succ<Four> {
+    public static class Five extends CardinalBase implements Succ<Four>, Prime {
         
         public static final Five INSTANCE = new Five();
 
