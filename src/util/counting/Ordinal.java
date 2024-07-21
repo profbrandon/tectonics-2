@@ -394,8 +394,13 @@ public class Ordinal<N extends Cardinal> {
      * @return an indexing function with the given elements swapped
      */
     public static <N extends Cardinal, A> Function<Ordinal<N>, A> swap(final Function<Ordinal<N>, A> fun, final Ordinal<N> ord1, final Ordinal<N> ord2) {
-        return fun
-            .compose(replace(x -> x, ord1, ord2))
-            .compose(replace(x -> x, ord2, ord1));
+        return fun.compose(
+            replace(
+                replace(
+                    x -> x, 
+                    ord2, 
+                    ord1), 
+                ord1, 
+                ord2));
     }
 }
