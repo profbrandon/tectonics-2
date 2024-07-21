@@ -130,6 +130,17 @@ public class HomTuple<N extends Cardinal, A> {
     }
 
     /**
+     * Swaps the elements at the given indices.
+     * 
+     * @param ord1 the first ordinal
+     * @param ord2 the second ordinal
+     * @return a new {@link HomTuple} with the elements at the specified indices exchanged
+     */
+    public HomTuple<N, A> swap(final Ordinal<N> ord1, final Ordinal<N> ord2) {
+        return new HomTuple<>(Ordinal.swap(elements, ord1, ord2));
+    }
+
+    /**
      * Tests the provided {@link HomTuple} for equality against this one. Note that it only checks the
      * provided indices in the {@link Ordinal} collection argument. The underlying type is checked
      * for equality via the {@link Object#equals(Object)} method.

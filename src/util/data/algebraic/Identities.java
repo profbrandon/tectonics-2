@@ -136,4 +136,8 @@ public final class Identities {
     public static <A, B, C> Exp<A, Exp<B, C>> expOfExpInverse(final Exp<Prod<A, B>, C> exp) {
         return Exp.asExponential(a -> Exp.asExponential(b -> Exp.eval(exp, Prod.pair(a, b))));
     }
+
+    public static <A, B, C> Exp<Prod<B, A>, C> expCommuteArgs(final Exp<Prod<A, B>, C> exp) {
+        return Exp.asExponential(pair -> exp.apply(prodCommute(pair)));
+    }
 }

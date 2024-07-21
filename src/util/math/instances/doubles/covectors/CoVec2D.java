@@ -1,5 +1,7 @@
 package util.math.instances.doubles.covectors;
 
+import java.util.List;
+
 import util.counting.Ordinal;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
@@ -34,5 +36,18 @@ public class CoVec2D
 
     private CoVec2D() {
         super(Vec2D.INSTANCE);
+    }
+
+    /**
+     * Creates a covector with the given components.
+     * 
+     * @param x the "x" component
+     * @param y the "y" component
+     * @return the corresponding dual vector
+     */
+    public static Exp<HomTuple<Two, Double>, Double> covector(final double x, final double y) {
+        return INSTANCE.sumAll(List.of(
+            INSTANCE.scale(UNIT_X, x), 
+            INSTANCE.scale(UNIT_Y, y)));
     }
 }

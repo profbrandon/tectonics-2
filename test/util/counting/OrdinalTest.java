@@ -5,6 +5,8 @@ import java.util.function.Function;
 
 import util.counting.Ordinal;
 import util.counting.Cardinals.Five;
+import util.counting.Cardinals.Four;
+import util.counting.Cardinals.Three;
 import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
@@ -30,6 +32,7 @@ public class OrdinalTest extends UnitTest {
         unitTest.addTest(OrdinalTest::testOnly);
         unitTest.addTest(OrdinalTest::testReplace);
         unitTest.addTest(OrdinalTest::testSwap);
+        unitTest.addTest(OrdinalTest::testDropLast);
 
         unitTest.runTests();
     }
@@ -211,5 +214,17 @@ public class OrdinalTest extends UnitTest {
             a -> b -> a == b,
             Object::toString,
             () -> Ordinal.FIVE_SET.stream().map(index).toList());
+    }
+
+    public static boolean testDropLast() {
+        final Function<Ordinal<Four>, Integer> temp = Ordinal.fourHomo(1, 2, 3, 4);
+        final Function<Ordinal<Three>, Integer> index = ord -> Ordinal.dropLast(temp).apply(ord);
+
+        return UnitTest.checkAllValues(
+            "Test index replacement",
+            List.of(1, 2, 3),
+            a -> b -> a == b,
+            Object::toString,
+            () -> Ordinal.THREE_SET.stream().map(index).toList());
     }
 }

@@ -15,7 +15,7 @@ public final class Combinatorics {
     
     /**
      * Function to compute the collection of ordered n-tuples given a finite list of elements to choose from.
-     * Technically this computes the following:<p/>
+     * Technically this computes all such tuples:<p/>
      * 
      * {@code (a_i)_(i=0)^n } such that {@code a_i in as}
      * 

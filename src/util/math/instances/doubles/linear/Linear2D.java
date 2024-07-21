@@ -2,8 +2,10 @@ package util.math.instances.doubles.linear;
 
 import java.util.List;
 
+import util.Functional;
 import util.Preconditions;
 import util.counting.Ordinal;
+import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
@@ -117,6 +119,21 @@ public class Linear2D
     public static Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> getScale(final double scalar) {
         Preconditions.throwIfNull(scalar, "scalar");
         return INSTANCE.scale(IDENTITY, scalar);
+    }
+
+    public static Exp<Prod<HomTuple<One, Exp<HomTuple<Two, Double>, Double>>, HomTuple<One, HomTuple<Two, Double>>>, Double> 
+        as11Tensor(
+            final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear) {
+
+        return Exp.asExponential(pair -> pair.destroy(
+            dv -> v -> 
+                dv.at(Ordinal.ZERO_1)
+                    .apply(linear.apply(v.at(Ordinal.ZERO_1)))));
+    }
+
+    public static Double trace(final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear) {
+        return Functional.let(INSTANCE.decompose(linear), components ->
+            components.get(0).first() + components.get(3).first());
     }
 
     @Override

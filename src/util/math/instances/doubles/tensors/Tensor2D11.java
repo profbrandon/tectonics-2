@@ -8,6 +8,7 @@ import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.math.instances.doubles.covectors.CoVec2D;
@@ -31,16 +32,19 @@ public class Tensor2D11
      * @param tensor the given (1,1)-tensor
      * @return the linear map equivalent to the given tensor
      */
-    public Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
+    public static Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> 
         asLinearMap(
-            final Exp<Prod<HomTuple<One, HomTuple<Two, Double>>, HomTuple<One, Exp<HomTuple<Two, Double>, Double>>>, Double> tensor) {
+            final Exp<Prod<HomTuple<One, Exp<HomTuple<Two, Double>, Double>>, HomTuple<One, HomTuple<Two, Double>>>, Double> tensor) {
 
         return Exp.asExponential(
-            v -> 
-                CoVec2D.INSTANCE.dualDualAsVector(Exp.asExponential(
-                    w -> Exp.curry(tensor)
-                        .apply(HomTuple.tuple(v))
-                        .apply(HomTuple.tuple(w)))));
+            v -> INSTANCE
+                .underlyingLeftSpace()
+                .underlyingVectorSpace()
+                .dualDualAsVector(Exp.asExponential(
+                    w -> 
+                        Exp.curry(Identities.expCommuteArgs(tensor))
+                            .apply(HomTuple.tuple(v))
+                            .apply(HomTuple.tuple(w)))));
     }
 
     @Override

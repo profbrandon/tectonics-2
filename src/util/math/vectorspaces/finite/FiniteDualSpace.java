@@ -98,7 +98,7 @@ public abstract class FiniteDualSpace<V, K>
     public List<Exp<V, K>> basis() {
         return UNDERLYING_SPACE.basis()
             .stream()
-            .map(this::covectorFromBasisVector)
+            .map(this::vectorAsDual)
             .toList();
     }
 
@@ -107,27 +107,7 @@ public abstract class FiniteDualSpace<V, K>
         return domainVectorSpace()
             .basis()
             .stream()
-            .map(b -> Prod.pair(transform(v, b), covectorFromBasisVector(b)))
+            .map(b -> Prod.pair(transform(v, b), vectorAsDual(b)))
             .toList();
-    }
-
-    /**
-     * Creates the given covector from the given basis vector.
-     * 
-     * @param b the basis vector to rebuild as a covector
-     * @return the corresponding covector
-     */
-    protected Exp<V, K> covectorFromBasisVector(final V b) {
-        return Exp.<V, K>asExponential(
-            v -> 
-                UNDERLYING_SPACE
-                    .decompose(v)
-                    .stream()
-                    .map(pair -> pair.destroy(
-                        vi -> 
-                            bi -> 
-                                bi.equals(b) ? this.targetVectorSpace().zero() : vi))
-                    .reduce(this.targetVectorSpace()::sum)
-                    .get());
     }
 }

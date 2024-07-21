@@ -15,9 +15,10 @@ import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 
 /**
- * Class to represent ordinal numbers, meaning elements of sets like { }, { 0th }, { 0th, 1st }, etc.
- * In other words, they are elements of sets with the given cardinality of their {@link Cardinal}. Their
- * primary use is for indexing types that have some type-dependence on a finite collection of items.
+ * Class to represent ordinal numbers, meaning elements of sets like { }, { 0th }, 
+ * { 0th, 1st }, etc. In other words, they are elements of sets with the given 
+ * cardinality of their {@link Cardinal}. Their primary use is for types that have 
+ * some type-dependence on a finite collection of items (Pi-types over the naturals).
  */
 public class Ordinal<N extends Cardinal> {
 
@@ -124,7 +125,12 @@ public class Ordinal<N extends Cardinal> {
     /**
      * The 5-set { 0, 1, 2, 3, 4, 5 }.
      */
-    public static final Collection<Ordinal<Five>> FIVE_SET = List.of(ZERO_5, ONE_5, TWO_5, THREE_5, FOUR_5);
+    public static final Collection<Ordinal<Five>> FIVE_SET = List.of(
+        ZERO_5, 
+        ONE_5, 
+        TWO_5, 
+        THREE_5, 
+        FOUR_5);
 
     private final Sum<Pred<N>, Ordinal<? extends Pred<N>>> ordinal;
 
@@ -159,7 +165,11 @@ public class Ordinal<N extends Cardinal> {
         return ord -> value;
     }
 
-    private static <N extends Cardinal, A> Function<Ordinal<N>, A> liftFun(final A higherValue, final Function<Ordinal<? extends Pred<N>>, A> lowerValues) {
+    private static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        liftFun(
+            final A higherValue, 
+            final Function<Ordinal<? extends Pred<N>>, A> lowerValues) {
+
         Preconditions.throwIfNull(higherValue, "higherValue");
         Preconditions.throwIfNull(lowerValues, "lowerValues");
         return 
@@ -181,6 +191,13 @@ public class Ordinal<N extends Cardinal> {
         return this.underlyingCardinal().getInteger() == other.underlyingCardinal().getInteger();
     }
 
+    /**
+     * Determines if this ordinal is less than or equal to the given one. Note that this can
+     * only compare ordinals of the same {@link Cardinal}.
+     * 
+     * @param other the other ordinal
+     * @return whether this ordinal is less than or equal to the given one
+     */
     public boolean lessThanEqualOrdinal(final Ordinal<N> other) {
         Preconditions.throwIfNull(other, "other");
         return this.underlyingCardinal().getInteger() <= other.underlyingCardinal().getInteger();
@@ -207,7 +224,9 @@ public class Ordinal<N extends Cardinal> {
      * @return a function from the zero ordinal to the target type
      */
     public static <A> Function<Ordinal<Zero>, A> zero() {
-        return ordSet -> { throw new IllegalStateException("Somehow supplied an object of type OrdinalSet<Zero>."); };
+        return ordSet -> { 
+            throw new IllegalStateException("Somehow supplied an object of type OrdinalSet<Zero>."); 
+        };
     }
 
     /**
@@ -243,7 +262,12 @@ public class Ordinal<N extends Cardinal> {
      * @param value2 the target value for {@link Ordinal#TWO_3}
      * @return a function from the 3-set to the provided type
      */
-    public static <A> Function<Ordinal<Three>, A> threeHomo(final A value0, final A value1, final A value2) {
+    public static <A> Function<Ordinal<Three>, A> 
+        threeHomo(
+            final A value0, 
+            final A value1, 
+            final A value2) {
+
         Preconditions.throwIfNull(value0, "value0");
         Preconditions.throwIfNull(value1, "value1");
         return liftFun(value2, ordQ -> twoHomo(value0, value1).apply(
@@ -262,7 +286,13 @@ public class Ordinal<N extends Cardinal> {
      * @param value3 the target value for {@link Ordinal#THREE_4}
      * @return a function from the 4-set to the provided type
      */
-    public static <A> Function<Ordinal<Four>, A> fourHomo(final A value0, final A value1, final A value2, final A value3) {
+    public static <A> Function<Ordinal<Four>, A> 
+        fourHomo(
+            final A value0, 
+            final A value1, 
+            final A value2, 
+            final A value3) {
+
         Preconditions.throwIfNull(value0, "value0");
         Preconditions.throwIfNull(value1, "value1");
         Preconditions.throwIfNull(value2, "value2");
@@ -285,7 +315,14 @@ public class Ordinal<N extends Cardinal> {
      * @param value4 the target value for {@link Ordinal#FOUR_5}
      * @return a function from the 5-set to the provided type
      */
-    public static <A> Function<Ordinal<Five>, A> fiveHomo(final A value0, final A value1, final A value2, final A value3, final A value4) {
+    public static <A> Function<Ordinal<Five>, A> 
+        fiveHomo(
+            final A value0, 
+            final A value1, 
+            final A value2, 
+            final A value3, 
+            final A value4) {
+
         Preconditions.throwIfNull(value0, "value0");
         Preconditions.throwIfNull(value1, "value1");
         Preconditions.throwIfNull(value2, "value2");
@@ -314,8 +351,8 @@ public class Ordinal<N extends Cardinal> {
     }
 
     /**
-     * Creates a function that partitions the ordinals into two groups: below or equal to some {@link Ordinal}
-     * or above it. Each group is mapped to their own partition.
+     * Creates a function that partitions the ordinals into two groups: below or equal to some 
+     * {@link Ordinal} or above it. Each group is mapped to their own partition.
      * 
      * @param <N> the cardinality of the input
      * @param <A> the type to map to
@@ -324,22 +361,35 @@ public class Ordinal<N extends Cardinal> {
      * @param above the value of the upper partition
      * @return a partition function
      */
-    public static <N extends Cardinal, A> Function<Ordinal<N>, A> partition(final Ordinal<N> testOrd, final A equalOrBelow, final A above) {
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        partition(
+            final Ordinal<N> testOrd, 
+            final A equalOrBelow, 
+            final A above) {
+
+        Preconditions.throwIfNull(equalOrBelow, "equalOrBelow");
+        Preconditions.throwIfNull(above, "above");
         return ord -> ord.lessThanEqualOrdinal(testOrd) ? equalOrBelow : above;
     }
 
     /**
-     * Creates a function in which there are as many partitions as there are distinct elements in the first part of the
-     * {@code enumerated}. If there are as many distinct elements as the cardinality {@code N}, then enumerated builds
-     * a function in which each ordinal is mapped to the corresponding element of {@code A}. In that case, it acts
-     * exactly like converting a map or "dictionary" to a function.
+     * Creates a function in which there are as many partitions as there are distinct elements
+     * in the first part of the {@code enumerated}. If there are as many distinct elements as 
+     * the cardinality {@code N}, then enumerated builds a function in which each ordinal is 
+     * mapped to the corresponding element of {@code A}. In that case, it acts exactly like 
+     * converting a map or "dictionary" to a function.
      * 
      * @param <N> the cardinality of the input
      * @param <A> the output type
      * @param enumerated the enumerated pairs of items
      * @return
      */
-    public static <N extends Cardinal, A> Function<Ordinal<N>, A> buildPartition(final List<Prod<Ordinal<N>, A>> enumerated) {
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        buildPartition(
+            final List<Prod<Ordinal<N>, A>> enumerated) {
+
+        Preconditions.throwIfContainsNull(enumerated, "enumerated");
+
         if (enumerated.size() == 1) {
             return populate(enumerated.get(0).second());
         } else {
@@ -351,7 +401,8 @@ public class Ordinal<N extends Cardinal> {
     }
 
     /**
-     * Create an ordinal map that outputs a value on a specific ordinal and another value on every other ordinal, i.e.,
+     * Create an ordinal map that outputs a value on a specific ordinal and another value on 
+     * every other ordinal, i.e.,
      * 
      * <ul>
      *   <li>{@code only(ord, x, y)(ord) == x}</li>
@@ -365,7 +416,16 @@ public class Ordinal<N extends Cardinal> {
      * @param otherwise the object to map to on every other oridinal
      * @return a map satisfying the above
      */
-    public static <N extends Cardinal, A> Function<Ordinal<N>, A> only(final Ordinal<N> ord, final A onOrdinal, final A otherwise) {
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        only(
+            final Ordinal<N> ord, 
+            final A onOrdinal, 
+            final A otherwise) {
+
+        Preconditions.throwIfNull(ord, "ord");
+        Preconditions.throwIfNull(onOrdinal, "onOrdinal");
+        Preconditions.throwIfNull(otherwise, "otherwise");
+
         return otherOrd -> ord.equalsOrdinal(otherOrd) ? onOrdinal : otherwise;
     }
 
@@ -379,7 +439,13 @@ public class Ordinal<N extends Cardinal> {
      * @param onOrdinal the value that will be placed at the given ordinal
      * @return a new indexing function
      */
-    public static <N extends Cardinal, A> Function<Ordinal<N>, A> replace(final Function<Ordinal<N>, A> fun, final Ordinal<N> ord, final A onOrdinal) {
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        replace(
+            final Function<Ordinal<N>, A> fun, 
+            final Ordinal<N> ord, 
+            final A onOrdinal) {
+
+        Preconditions.throwIfNull(fun, "fun");
         return x -> only(ord, onOrdinal, fun.apply(x)).apply(x);
     }
 
@@ -393,7 +459,13 @@ public class Ordinal<N extends Cardinal> {
      * @param ord2 the second ordinal
      * @return an indexing function with the given elements swapped
      */
-    public static <N extends Cardinal, A> Function<Ordinal<N>, A> swap(final Function<Ordinal<N>, A> fun, final Ordinal<N> ord1, final Ordinal<N> ord2) {
+    public static <N extends Cardinal, A> Function<Ordinal<N>, A> 
+        swap(
+            final Function<Ordinal<N>, A> fun, 
+            final Ordinal<N> ord1, 
+            final Ordinal<N> ord2) {
+
+        Preconditions.throwIfNull(fun, "fun");
         return fun.compose(
             replace(
                 replace(
@@ -402,5 +474,21 @@ public class Ordinal<N extends Cardinal> {
                     ord1), 
                 ord1, 
                 ord2));
+    }
+
+    /**
+     * Drops the last index.
+     * 
+     * @param <N> the cardinality of the input
+     * @param <A> the type of element to index over
+     * @param fun the initial indexing function
+     * @return an indexing function with the last index dropped
+     */
+    public static <N extends Cardinal, A> Function<Ordinal<? extends Pred<N>>, A> 
+        dropLast(
+            final Function<Ordinal<N>, A> fun) {
+
+        Preconditions.throwIfNull(fun, "fun");
+        return pred -> fun.apply(lift(pred));
     }
 }

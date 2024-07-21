@@ -5,6 +5,7 @@ import java.util.List;
 import util.counting.Combinatorics;
 import util.counting.Ordinal;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
 public final class CombinatoricsTest extends UnitTest {
@@ -21,6 +22,7 @@ public final class CombinatoricsTest extends UnitTest {
         unitTest.addTest(CombinatoricsTest::nProductInteger3On2);
         unitTest.addTest(CombinatoricsTest::nProductInteger2On3);
         unitTest.addTest(CombinatoricsTest::nProductOrdinal2On3);
+        unitTest.addTest(CombinatoricsTest::cartesianProduct);
 
         unitTest.runTests();
     }
@@ -100,5 +102,21 @@ public final class CombinatoricsTest extends UnitTest {
             l1 -> l2 -> l1.equalsTuple(Ordinal.TWO_SET, l2),
             Object::toString,
             () -> Combinatorics.nProduct(List.copyOf(Ordinal.TWO_SET), List.of(0, 1, 2)));
+    }
+
+    public static boolean cartesianProduct() {
+        return UnitTest.checkAllValues(
+            "Check the cartesian product",
+            List.of(
+                Prod.pair(1, true),
+                Prod.pair(1, false),
+                Prod.pair(2, true),
+                Prod.pair(2, false),
+                Prod.pair(3, true),
+                Prod.pair(3, false)
+            ),
+            a -> b -> a.equalsProd(b),
+            Object::toString,
+            () -> Combinatorics.cartesianProduct(List.of(1, 2, 3), List.of(true, false)));
     }
 }

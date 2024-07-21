@@ -73,11 +73,10 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
                 .stream()
                 .map(pair -> pair.destroy(
                     dv -> 
-                    v -> Functional.let(
-                        tensor.apply(Prod.pair(dv, v)), 
-                        k -> Prod.pair(
-                            COVARIANT_PRODUCT_SPACE.scale(dv.mapAll(underlyingLeftSpace().underlyingVectorSpace()::dualAsVector), k),
-                            CONTRA_PRODUCT_SPACE.scale(v.mapAll(underlyingLeftSpace().underlyingVectorSpace()::vectorAsDual), k)))))
+                        v -> Functional.let(tensor.apply(Prod.pair(dv, v)), k -> 
+                            Prod.pair(
+                                COVARIANT_PRODUCT_SPACE.scale(dv.mapAll(underlyingLeftSpace().underlyingVectorSpace()::dualAsVector), k),
+                                v.mapAll(underlyingLeftSpace().underlyingVectorSpace()::vectorAsDual)))))
                 .toList());
     }
 
