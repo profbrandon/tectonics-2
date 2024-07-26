@@ -8,7 +8,6 @@ import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
-import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.math.instances.doubles.covectors.CoVec2D;
@@ -38,13 +37,13 @@ public class Tensor2D11
 
         return Exp.asExponential(
             v -> INSTANCE
-                .underlyingLeftSpace()
-                .underlyingVectorSpace()
+                .underlyingContravariantSpace()
                 .dualDualAsVector(Exp.asExponential(
                     w -> 
-                        Exp.curry(Identities.expCommuteArgs(tensor))
-                            .apply(HomTuple.tuple(v))
-                            .apply(HomTuple.tuple(w)))));
+                        Exp.curry(tensor)
+                            .apply(w)
+                            .apply(HomTuple.tuple(v))))
+                .at(Ordinal.ZERO_1));
     }
 
     @Override

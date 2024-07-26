@@ -1,9 +1,10 @@
 package util.math.vectorspaces.finite;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
+import util.Functional;
 import util.counting.Cardinal;
 import util.counting.Ordinal;
 import util.data.algebraic.HomTuple;
@@ -45,41 +46,31 @@ public class FiniteNSpace<N extends Cardinal, V, K>
 
     @Override
     public List<HomTuple<N, V>> basis() {
-        return underlyingVectorSpace()
-            .basis()
+        return ENUMERATED
             .stream()
-            .flatMap(
-                b -> ENUMERATED
+            .flatMap(ord ->
+                underlyingVectorSpace()
+                    .basis()
                     .stream()
-                    .map(
-                        ord1 -> 
-                            new HomTuple<N, V>(
-                                ord2 -> 
-                                    ord1.equalsOrdinal(ord2) ? b : underlyingVectorSpace().zero())))
+                    .map(b -> HomTuple.only(ord, b, underlyingVectorSpace().zero())))
             .toList();
     }
 
     @Override
     public List<Prod<K, HomTuple<N, V>>> decompose(final HomTuple<N, V> nVector) {
-        return nVector.eliminate(
-            ENUMERATED, 
-            new ArrayList<Prod<K, HomTuple<N, V>>>(), 
-            ord1 -> 
-                lv -> lv.destroy(
-                    l -> 
-                        v -> {
-                            l.addAll(underlyingVectorSpace()
-                                .decompose(v)
-                                .stream()
-                                .map(kb -> kb.destroy(
-                                    k -> 
-                                        b -> Prod.pair(
-                                            k, 
-                                            new HomTuple<N, V>(
-                                                ord2 -> 
-                                                    ord1.equalsOrdinal(ord2) ? b : underlyingVectorSpace().zero()))))
-                                .toList());
-                            return l;
-                        }));
+        return nVector
+            .eliminate(
+                ENUMERATED,
+                Stream.<Prod<K, HomTuple<N, V>>>empty(),
+                ord -> pair -> pair.destroy(
+                    stream ->
+                        v -> Functional.let(underlyingVectorSpace().decompose(v), components ->
+                            Stream.concat(
+                                stream, 
+                                components
+                                    .stream()
+                                    .map(kb -> Prod.mapSecond(kb, 
+                                        b -> HomTuple.only(ord, b, underlyingVectorSpace().zero())))))))
+            .toList();
     }
 }

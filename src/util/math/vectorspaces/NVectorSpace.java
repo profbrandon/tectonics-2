@@ -65,7 +65,9 @@ public class NVectorSpace<N extends Cardinal, V, K>
     @Override
     public HomTuple<N, V> sum(final HomTuple<N, V> v1, final HomTuple<N, V> v2) {
         Preconditions.throwIfNull(v1, "v1");
-        return v1.mapEach(n -> vn -> UNDERLYING.sum(vn, v2.at(n)));
+        return new HomTuple<>(
+            ord -> underlyingVectorSpace()
+                .sum(v1.at(ord), v2.at(ord)));
     }
 
     @Override

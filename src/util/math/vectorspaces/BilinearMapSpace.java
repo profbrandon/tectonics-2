@@ -133,6 +133,6 @@ public abstract class BilinearMapSpace<V, W, U, K>
 
     @Override
     public Exp<Prod<V, W>, U> scale(final Exp<Prod<V, W>, U> v, final K scalar) {
-        return Exp.asExponential(pair -> evaluate(v, underlyingLeftSpace().scale(pair.first(), scalar), pair.second()));
+        return Exp.asExponential(pair -> underlyingTargetSpace().scale(evaluate(v, pair.first(), pair.second()), scalar));
     }
 }

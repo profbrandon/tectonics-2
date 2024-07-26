@@ -1,9 +1,9 @@
 package test.util.math.instances.doubles.tensors;
 
-import java.util.List;
-
 import util.Functional;
 import util.counting.Ordinal;
+import util.counting.Cardinals.Two;
+import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
@@ -56,28 +56,33 @@ public final class Tensor2D11Test extends UnitTest {
     }
 
     private static boolean tensorProductTest() {
-        return UnitTest.checkAllValues(
+        return UnitTest.checkValue(
             "Send tensor to product",
-            List.of(1.0, 0.0, 0.0, -1.0),
-            a -> b -> DoubleField.INSTANCE.equiv(a, b),
-            Object::toString,
+            pair -> 
+                Vec2D.INSTANCE.equiv(
+                    pair.first().at(Ordinal.ZERO_1), 
+                    Vec2D.vector(1, 0)) && 
+                CoVec2D.INSTANCE.equiv(
+                    pair.second().at(Ordinal.ZERO_1), 
+                    CoVec2D.covector(1, 0)),
+            pair -> "(" + 
+                HomTuple.toString(Ordinal.TWO_SET, pair.first().at(Ordinal.ZERO_1))+  ", " + 
+                CoVec2D.INSTANCE.decompose(pair.second().at(Ordinal.ZERO_1)).stream().map(Prod::first).toList() + ")",
             () -> 
-                Tensor2D11.INSTANCE.decompose(
+                Tensor2D11.INSTANCE.toTensorProduct(
                     Tensor2D11.INSTANCE.tensor(
                         HomTuple.tuple(Vec2D.vector(1, 0)), 
-                        HomTuple.tuple(CoVec2D.covector(0, -1))))
-                    .stream()
-                    .map(Prod::first)
-                    .toList());
+                        HomTuple.tuple(CoVec2D.covector(1, 0)))));
     }
 
     private static boolean traceTest() {
-        final double trace = Linear2D.trace(Linear2D.getRotation(Math.PI / 6.0));
+        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> linear = Linear2D.getRotation(Math.PI / 3.0);
+        final double trace = Linear2D.trace(linear);
         return UnitTest.checkValue(
             "Check trace (=" + trace + ")", 
             a -> DoubleField.INSTANCE.equiv(a, trace), 
             () ->
-                Functional.let(Linear2D.as11Tensor(Linear2D.getRotation(Math.PI / 6.0)), tensor ->
+                Functional.let(Linear2D.as11Tensor(linear), tensor ->
                     Sum.match(Tensor2D11.INSTANCE.contract(Ordinal.ZERO_1, Ordinal.ZERO_1, tensor),
                         d -> d,
                         __ -> 0.0)));

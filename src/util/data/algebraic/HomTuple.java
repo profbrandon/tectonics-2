@@ -228,4 +228,8 @@ public class HomTuple<N extends Cardinal, A> {
     public static <A> HomTuple<Five, A> tuple(final A v0, final A v1, final A v2, final A v3, final A v4) {
         return new HomTuple<>(Ordinal.fiveHomo(v0, v1, v2, v3, v4));
     }
+
+    public static <A> Prod<A, A> toProd(final HomTuple<Two, A> tuple) {
+        return Prod.pair(tuple.at(Ordinal.ZERO_2), tuple.at(Ordinal.ONE_2));
+    }
 }

@@ -12,7 +12,7 @@ import util.math.vectorspaces.DualSpace;
  * Note that all of the necessary information in the dual space is contained within the parent
  * vector space.
  */
-public abstract class FiniteDualSpace<V, K> 
+public class FiniteDualSpace<V, K> 
     extends
         DualSpace<V, K> 
     implements

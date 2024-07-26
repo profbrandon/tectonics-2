@@ -142,7 +142,7 @@ public class Ordinal<N extends Cardinal> {
         this.ordinal = Sum.right(prevOrdinal);
     }
 
-    private Cardinal underlyingCardinal() {
+    public Cardinal underlyingCardinal() {
         return this.ordinal.match(
             prev -> prev,
             ord  -> ord.underlyingCardinal());

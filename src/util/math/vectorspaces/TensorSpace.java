@@ -1,7 +1,6 @@
 package util.math.vectorspaces;
 
-import java.util.Collection;
-
+import util.Preconditions;
 import util.counting.Cardinal;
 import util.counting.Ordinal;
 import util.counting.Pred;
@@ -17,11 +16,13 @@ import util.math.Field;
  * underlying field.
  */
 public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal> 
-    extends
-        BilinearMapSpace<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>, K, K> {
+    implements
+        VectorSpace<Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>, K> {
 
-    private final Collection<Ordinal<P>> P_ENUMERATED;
-    private final Collection<Ordinal<Q>> Q_ENUMERATED;
+    private final MultilinearNFormSpace<P, Exp<V, K>, K> COVARIANT_SPACE;
+    private final MultilinearNFormSpace<Q, V, K>         CONTRAVARIANT_SPACE;
+
+    private final DualSpace<V, K> DUAL_SPACE;
 
     /**
      * Creates a (p,q)-tensor space given a {@link DualSpace} (which contains the underlying vector space).
@@ -31,46 +32,55 @@ public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
      * @param dualSpace the dual space to use in constructing the tensor space
      */
     public TensorSpace(
-        final Collection<Ordinal<P>> pEnumerated,
-        final Collection<Ordinal<Q>> qEnumerated,
-        final DualSpace<V, K> dualSpace) {
-        super(
-            new NVectorSpace<>(pEnumerated, dualSpace), 
-            new NVectorSpace<>(qEnumerated, dualSpace.domainVectorSpace()),
-            dualSpace.underlyingField());
+        final MultilinearNFormSpace<P, Exp<V, K>, K> covariantSpace, 
+        final MultilinearNFormSpace<Q, V, K> contravariantSpace,
+        final DualSpace<V, K> underlyingDual) {
 
-        this.P_ENUMERATED = pEnumerated;
-        this.Q_ENUMERATED = qEnumerated;
+        Preconditions.throwIfNull(covariantSpace, "covariantSpace");
+        Preconditions.throwIfNull(contravariantSpace, "contravariantSpace");
+        Preconditions.throwIfDifferent(
+            covariantSpace.underlyingField(), 
+            contravariantSpace.underlyingField(), 
+            "The covariant and contravariant spaces must agree on the underlying field.");
+
+        this.COVARIANT_SPACE     = covariantSpace;
+        this.CONTRAVARIANT_SPACE = contravariantSpace;
+
+        this.DUAL_SPACE = underlyingDual;
     }
 
-    /**
-     * Builds a tensor from the given vectors and covectors. {@code (v, dw)(du, t) = du(v) * dw(t)}.
-     * 
-     * @param vectors the vectors
-     * @param covectors the covectors
-     * @return a tensor whose action is defined by the given vectors and covectors.
-     */
+    public MultilinearNFormSpace<P, Exp<V, K>, K> underlyingCovariantSpace() {
+        return COVARIANT_SPACE;
+    }
+
+    public MultilinearNFormSpace<Q, V, K> underlyingContravariantSpace() {
+        return CONTRAVARIANT_SPACE;
+    }
+
+    public DualSpace<V, K> underlyingDualSpace() {
+        return DUAL_SPACE;
+    }
+
     public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
-        tensor(
-            final HomTuple<P, V> vectors, 
-            final HomTuple<Q, Exp<V, K>> covectors) {
-    
+        fromLinear(
+            final HomTuple<P, Exp<Exp<V, K>, K>> left, 
+            final HomTuple<Q, Exp<V, K>> right) {
+
         return Exp.asExponential(pair -> pair.destroy(
-            ps -> 
-                qs ->
+            leftTuple ->
+                rightTuple ->
                     underlyingField().mult(
-                        ps.zip(vectors)
-                            .mapAll(pair0 -> pair0.first().apply(pair0.second()))
-                            .eliminate(
-                                P_ENUMERATED, 
-                                underlyingField().unit(), 
-                                __ -> pair0 -> underlyingField().mult(pair0.first(), pair0.second())),
-                        qs.zip(covectors)
-                            .mapAll(pair0 -> pair0.second().apply(pair0.first()))
-                            .eliminate(
-                                Q_ENUMERATED,
-                                underlyingField().unit(),
-                                __ -> pair0 -> underlyingField().mult(pair0.first(), pair0.second())))));
+                        underlyingCovariantSpace().fromLinear(left).apply(leftTuple),
+                        underlyingContravariantSpace().fromLinear(right).apply(rightTuple))));
+    }
+
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
+        fromTensorProduct(
+            final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> product) {
+
+        return fromLinear(
+            product.first().mapAll(underlyingDualSpace()::asDualDual),
+            product.second());
     }
 
     /**
@@ -90,7 +100,37 @@ public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
             final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor);
 
     @Override
-    public Field<K> underlyingTargetSpace() {
-        return underlyingField();
+    public Field<K> underlyingField() {
+        return COVARIANT_SPACE.underlyingField();
+    }
+
+    @Override
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
+        neg(
+            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> g) {
+                
+        return Exp.asExponential(pair -> underlyingField().neg(g.apply(pair)));
+    }
+
+    @Override
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> zero() {
+        return Exp.constant(underlyingField().zero());
+    }
+
+    @Override
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
+        sum(
+            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> m1,
+            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> m2) {
+        
+        return Exp.asExponential(pair -> underlyingField().sum(m1.apply(pair), m2.apply(pair)));
+    }
+
+    @Override
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
+        scale(
+            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> v, K scalar) {
+        
+        return Exp.asExponential(pair -> underlyingField().mult(v.apply(pair), scalar));
     }
 }

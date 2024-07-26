@@ -1,16 +1,13 @@
 package util.math.vectorspaces.finite;
 
-import java.util.Collection;
 import java.util.List;
 
-import util.Functional;
 import util.counting.Cardinal;
 import util.counting.Combinatorics;
-import util.counting.Ordinal;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
-import util.math.vectorspaces.ProductSpace;
 import util.math.vectorspaces.TensorSpace;
 
 /**
@@ -23,11 +20,8 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
     implements
         FiniteVectorSpace<Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>, K> {
 
-    private final FiniteNSpace<P, V, K> COVARIANT_PRODUCT_SPACE;
-    private final FiniteNDualSpace<Q, V, K> CONTRA_PRODUCT_SPACE;
-
-    private final FiniteNDualSpace<P, V, K> P_DUAL_SPACE;
-    private final FiniteNSpace<Q, V, K> Q_VECTOR_SPACE;
+    private final FiniteMultilinearNFormSpace<P, Exp<V, K>, K> COVARIANT_PRODUCT_SPACE;
+    private final FiniteMultilinearNFormSpace<Q, V, K> CONTRA_PRODUCT_SPACE;
 
     /**
      * Constructs a finite tensor space from the given dimensional information and the
@@ -38,46 +32,24 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
      * @param dualSpace the underlying dual space
      */
     public FiniteTensorSpace(
-        final Collection<Ordinal<P>> pEnumerated, 
-        final Collection<Ordinal<Q>> qEnumerated,
-        final FiniteDualSpace<V, K> dualSpace) {
+        final FiniteMultilinearNFormSpace<P, Exp<V, K>, K> covariantSpace,
+        final FiniteMultilinearNFormSpace<Q, V, K> contravariantSpace) {
 
-        super(pEnumerated, qEnumerated, dualSpace);
+        super(
+            covariantSpace, 
+            contravariantSpace, 
+            contravariantSpace.underlyingDualSpace());
 
-        this.P_DUAL_SPACE   = new FiniteNDualSpace<>(pEnumerated, dualSpace);
-        this.Q_VECTOR_SPACE = new FiniteNSpace<>(qEnumerated, dualSpace.domainVectorSpace());
-
-        this.COVARIANT_PRODUCT_SPACE = new FiniteNSpace<>(pEnumerated, dualSpace.domainVectorSpace());
-        this.CONTRA_PRODUCT_SPACE    = new FiniteNDualSpace<>(qEnumerated, dualSpace);
+        this.COVARIANT_PRODUCT_SPACE = covariantSpace;
+        this.CONTRA_PRODUCT_SPACE    = contravariantSpace;
     }
 
-    /**
-     * Creates the tensor product version of the given multilinear map tensor.
-     * 
-     * @param tensor the multilinear map to convert to a tensor product
-     * @return the tensor product version of the given tensor
-     */
-    public Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> 
-        toTensorProduct(
-            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
+    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
+        tensor(
+            final HomTuple<P, V> vectors, 
+            final HomTuple<Q, Exp<V, K>> covectors) {
 
-        return new ProductSpace<>(COVARIANT_PRODUCT_SPACE, CONTRA_PRODUCT_SPACE).sumAll(
-            // We need the cartesian product of all combinations of the two sets of bases to feed to the tensor
-            Combinatorics.cartesianProduct(
-                    Combinatorics.nProduct(
-                        List.copyOf(underlyingLeftSpace().underlyingOrdinalSet()), 
-                        underlyingLeftSpace().underlyingVectorSpace().basis()),
-                    Combinatorics.nProduct(
-                        List.copyOf(underlyingRightSpace().underlyingOrdinalSet()), 
-                        underlyingRightSpace().underlyingVectorSpace().basis()))
-                .stream()
-                .map(pair -> pair.destroy(
-                    dv -> 
-                        v -> Functional.let(tensor.apply(Prod.pair(dv, v)), k -> 
-                            Prod.pair(
-                                COVARIANT_PRODUCT_SPACE.scale(dv.mapAll(underlyingLeftSpace().underlyingVectorSpace()::dualAsVector), k),
-                                v.mapAll(underlyingLeftSpace().underlyingVectorSpace()::vectorAsDual)))))
-                .toList());
+        return fromTensorProduct(Prod.pair(vectors, covectors));
     }
 
     /**
@@ -90,26 +62,80 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         fromTensorProduct(
             final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> tProd) {
 
-        return Exp.asExponential(pair -> pair.destroy(
-            dv ->
-                v -> underlyingField().mult(
-                    underlyingLeftSpace().buildTensorFromProduct(dv).apply(tProd.first()),
-                    CONTRA_PRODUCT_SPACE.buildTensorFromProduct(tProd.second()).apply(v))));
+        return Exp.asExponential(pair -> pair.<K>destroy(
+            dv -> v ->
+                underlyingField().mult(
+                    underlyingField().multAll(
+                        underlyingCovariantSpace().underlyingOrdinalSet()
+                            .stream()
+                            .map(ord -> dv.at(ord).apply(tProd.first().at(ord)))
+                            .toList()),
+                    underlyingField().multAll(
+                        underlyingContravariantSpace().underlyingOrdinalSet()
+                            .stream()
+                            .map(ord -> tProd.second().at(ord).apply(v.at(ord)))
+                            .toList()))));
+    }
+
+    public Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> 
+        toTensorProduct(
+            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
+
+        final List<HomTuple<P, Exp<V, K>>> leftBasis = underlyingCovariantSpace().basis()
+            .stream()
+            .map(b -> underlyingCovariantSpace().dualAsVector(b))
+            .toList();
+
+        final List<HomTuple<Q, V>> rightBasis = underlyingContravariantSpace().basis()
+            .stream()
+            .map(b -> underlyingContravariantSpace().dualAsVector(b))
+            .toList();
+
+        final HomTuple<P, V> left = rightBasis
+            .stream()
+            .map(b -> 
+                underlyingCovariantSpace()
+                    .dualAsVector(
+                        Exp.curry(Identities.expCommuteArgs(tensor))
+                            .apply(b)))
+            .map(v -> v.mapAll(f -> underlyingDualSpace().dualAsVector(f)))
+            .reduce(
+                HomTuple.all(underlyingDualSpace().domainVectorSpace().zero()),
+                (tuple1, tuple2) -> new HomTuple<>(ord -> underlyingDualSpace().domainVectorSpace().sum(tuple1.at(ord), tuple2.at(ord))));
+
+        final HomTuple<Q, Exp<V, K>> right = leftBasis
+            .stream()
+            .map(b ->
+                underlyingContravariantSpace()
+                    .dualAsVector(
+                        Exp.curry(tensor)
+                            .apply(b)))
+            .map(v -> underlyingContravariantSpace().vectorAsDual(v))
+            .map(v -> underlyingContravariantSpace().toLinear(v))
+            .reduce(
+                HomTuple.all(underlyingDualSpace().zero()),
+                (tuple1, tuple2) -> new HomTuple<>(ord -> underlyingDualSpace().sum(tuple1.at(ord), tuple2.at(ord))));
+
+        return Prod.pair(left, right);
     }
 
     @Override
     public List<Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>> basis() {
         return 
             Combinatorics.cartesianProduct(
-                Combinatorics.nProduct(
-                    List.copyOf(COVARIANT_PRODUCT_SPACE.underlyingOrdinalSet()), 
-                    COVARIANT_PRODUCT_SPACE.underlyingVectorSpace().basis()), 
-                Combinatorics.nProduct(
-                    List.copyOf(CONTRA_PRODUCT_SPACE.underlyingOrdinalSet()),
-                    CONTRA_PRODUCT_SPACE.underlyingVectorSpace().basis()))
-            .stream()
-            .map(this::fromTensorProduct)
-            .toList();
+                    underlyingCovariantSpace().basis(), 
+                    underlyingContravariantSpace().basis())
+                .stream()
+                .<Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>>map(
+                    funPair -> 
+                        Exp.asExponential(
+                            pair ->
+                                pair.destroy(
+                                    dv -> v -> 
+                                        underlyingField().mult(
+                                            funPair.first().apply(dv), 
+                                            funPair.second().apply(v)))))
+                .toList();
     }
 
     @Override
@@ -117,24 +143,21 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         decompose(
             final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
         
-        return basis()
-            .stream()
-            .map(b -> Functional.let(toTensorProduct(b), bProd ->
-                Prod.pair(
-                    tensor.apply(Prod.map(bProd, 
-                        tuple -> tuple.mapAll(v -> underlyingLeftSpace().underlyingVectorSpace().vectorAsDual(v)),
-                        tuple -> tuple.mapAll(dv -> underlyingLeftSpace().underlyingVectorSpace().dualAsVector(dv)))), 
-                    b)))
-            .toList();
+        return null;
     }
 
     @Override
-    public FiniteNDualSpace<P, V, K> underlyingLeftSpace() {
-        return P_DUAL_SPACE;
+    public FiniteDualSpace<V, K> underlyingDualSpace() {
+        return underlyingContravariantSpace().underlyingDualSpace();
+    }
+    
+    @Override
+    public FiniteMultilinearNFormSpace<P, Exp<V, K>, K> underlyingCovariantSpace() {
+        return COVARIANT_PRODUCT_SPACE;
     }
 
     @Override
-    public FiniteNSpace<Q, V, K> underlyingRightSpace() {
-        return Q_VECTOR_SPACE;
+    public FiniteMultilinearNFormSpace<Q, V, K> underlyingContravariantSpace() {
+        return CONTRA_PRODUCT_SPACE;
     }
 }
