@@ -43,7 +43,7 @@ public final class CoVec2DTest extends UnitTest {
             a -> b -> DoubleField.INSTANCE.equiv(a, b),
             Object::toString,
             () -> 
-                Functional.let(CoVec2D.INSTANCE.asDualDual(Vec2D.vector(2.0, 3.0)), dd -> 
+                Functional.let(CoVec2D.INSTANCE.vectorAsDualDual(Vec2D.vector(2.0, 3.0)), dd -> 
                     Vec2D.INSTANCE.basis()
                         .stream()
                         .map(b -> 
@@ -58,6 +58,6 @@ public final class CoVec2DTest extends UnitTest {
             v -> HomTuple.toString(Ordinal.TWO_SET, v),
             () -> 
                 CoVec2D.INSTANCE.dualDualAsVector(
-                    CoVec2D.INSTANCE.asDualDual(Vec2D.vector(2, 3))));
+                    CoVec2D.INSTANCE.vectorAsDualDual(Vec2D.vector(2, 3))));
     }
 }

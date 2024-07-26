@@ -1,6 +1,5 @@
 package util.math.instances.doubles.tensors;
 
-
 import util.Functional;
 import util.Preconditions;
 import util.counting.Ordinal;
@@ -46,7 +45,17 @@ public class Tensor1D11
         Preconditions.throwIfNull(tensor, "tensor");
 
         return Sum.left(
-            Functional.let(toTensorProduct(tensor), tProd 
-                -> tProd.second().at(coindex).apply(tProd.first().at(index))));
+            underlyingField().sumAll(
+                Functional.let(decompose(tensor), components ->
+                    components
+                        .stream()
+                        .map(pair -> pair.destroy(
+                            component -> b ->
+                                underlyingField().mult(
+                                    component, 
+                                    b.apply(Prod.pair(
+                                        HomTuple.tuple(CoVec1D.INSTANCE.basis().get(0)), 
+                                        HomTuple.tuple(Vec1D.INSTANCE.basis().get(0)))))))
+                        .toList())));
     }
 }

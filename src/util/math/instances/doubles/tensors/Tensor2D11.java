@@ -1,5 +1,8 @@
 package util.math.instances.doubles.tensors;
 
+
+import java.util.List;
+
 import util.Functional;
 import util.Preconditions;
 import util.counting.Ordinal;
@@ -8,6 +11,7 @@ import util.counting.Cardinals.One;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.math.instances.doubles.covectors.CoVec2D;
@@ -36,14 +40,13 @@ public class Tensor2D11
             final Exp<Prod<HomTuple<One, Exp<HomTuple<Two, Double>, Double>>, HomTuple<One, HomTuple<Two, Double>>>, Double> tensor) {
 
         return Exp.asExponential(
-            v -> INSTANCE
-                .underlyingContravariantSpace()
-                .dualDualAsVector(Exp.asExponential(
-                    w -> 
-                        Exp.curry(tensor)
-                            .apply(w)
-                            .apply(HomTuple.tuple(v))))
-                .at(Ordinal.ZERO_1));
+            v -> 
+                INSTANCE.underlyingDualSpace().dualDualAsVector(
+                    Exp.asExponential(
+                        w -> 
+                            Exp.curry(Identities.expCommuteArgs(tensor))
+                                .apply(HomTuple.tuple(v))
+                                .apply(HomTuple.tuple(w)))));
     }
 
     @Override
@@ -58,7 +61,8 @@ public class Tensor2D11
         Preconditions.throwIfNull(tensor, "tensor");
 
         return Sum.left(
-            Functional.let(toTensorProduct(tensor), tProd 
-                -> tProd.second().at(coindex).apply(tProd.first().at(index))));
+            underlyingField().sumAll(
+                Functional.let(decompose(tensor).stream().map(Prod::first).toList(), components 
+                    -> List.of(components.get(0), components.get(3)))));
     }
 }

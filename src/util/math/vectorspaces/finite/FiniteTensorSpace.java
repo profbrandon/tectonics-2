@@ -6,7 +6,6 @@ import util.counting.Cardinal;
 import util.counting.Combinatorics;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
-import util.data.algebraic.Identities;
 import util.data.algebraic.Prod;
 import util.math.vectorspaces.TensorSpace;
 
@@ -44,79 +43,19 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         this.CONTRA_PRODUCT_SPACE    = contravariantSpace;
     }
 
+    /**
+     * Builds a tensor out of the given vectors and covectors.
+     * 
+     * @param vectors the covariant component
+     * @param covectors the contravariant component
+     * @return a (p,q)-tensor
+     */
     public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
         tensor(
             final HomTuple<P, V> vectors, 
             final HomTuple<Q, Exp<V, K>> covectors) {
 
         return fromTensorProduct(Prod.pair(vectors, covectors));
-    }
-
-    /**
-     * Creates the multilinear map version of the given tensor product.
-     * 
-     * @param tProd the tensor product
-     * @return the multilinear map version of the given tensor
-     */
-    public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
-        fromTensorProduct(
-            final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> tProd) {
-
-        return Exp.asExponential(pair -> pair.<K>destroy(
-            dv -> v ->
-                underlyingField().mult(
-                    underlyingField().multAll(
-                        underlyingCovariantSpace().underlyingOrdinalSet()
-                            .stream()
-                            .map(ord -> dv.at(ord).apply(tProd.first().at(ord)))
-                            .toList()),
-                    underlyingField().multAll(
-                        underlyingContravariantSpace().underlyingOrdinalSet()
-                            .stream()
-                            .map(ord -> tProd.second().at(ord).apply(v.at(ord)))
-                            .toList()))));
-    }
-
-    public Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> 
-        toTensorProduct(
-            final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
-
-        final List<HomTuple<P, Exp<V, K>>> leftBasis = underlyingCovariantSpace().basis()
-            .stream()
-            .map(b -> underlyingCovariantSpace().dualAsVector(b))
-            .toList();
-
-        final List<HomTuple<Q, V>> rightBasis = underlyingContravariantSpace().basis()
-            .stream()
-            .map(b -> underlyingContravariantSpace().dualAsVector(b))
-            .toList();
-
-        final HomTuple<P, V> left = rightBasis
-            .stream()
-            .map(b -> 
-                underlyingCovariantSpace()
-                    .dualAsVector(
-                        Exp.curry(Identities.expCommuteArgs(tensor))
-                            .apply(b)))
-            .map(v -> v.mapAll(f -> underlyingDualSpace().dualAsVector(f)))
-            .reduce(
-                HomTuple.all(underlyingDualSpace().domainVectorSpace().zero()),
-                (tuple1, tuple2) -> new HomTuple<>(ord -> underlyingDualSpace().domainVectorSpace().sum(tuple1.at(ord), tuple2.at(ord))));
-
-        final HomTuple<Q, Exp<V, K>> right = leftBasis
-            .stream()
-            .map(b ->
-                underlyingContravariantSpace()
-                    .dualAsVector(
-                        Exp.curry(tensor)
-                            .apply(b)))
-            .map(v -> underlyingContravariantSpace().vectorAsDual(v))
-            .map(v -> underlyingContravariantSpace().toLinear(v))
-            .reduce(
-                HomTuple.all(underlyingDualSpace().zero()),
-                (tuple1, tuple2) -> new HomTuple<>(ord -> underlyingDualSpace().sum(tuple1.at(ord), tuple2.at(ord))));
-
-        return Prod.pair(left, right);
     }
 
     @Override
@@ -127,14 +66,11 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
                     underlyingContravariantSpace().basis())
                 .stream()
                 .<Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>>map(
-                    funPair -> 
-                        Exp.asExponential(
-                            pair ->
-                                pair.destroy(
-                                    dv -> v -> 
-                                        underlyingField().mult(
-                                            funPair.first().apply(dv), 
-                                            funPair.second().apply(v)))))
+                    funPair -> Exp.asExponential(pair -> pair.destroy(
+                        dv -> v -> 
+                            underlyingField().mult(
+                                funPair.first().apply(dv), 
+                                funPair.second().apply(v)))))
                 .toList();
     }
 
@@ -143,7 +79,27 @@ public abstract class FiniteTensorSpace<V, K, P extends Cardinal, Q extends Card
         decompose(
             final Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> tensor) {
         
-        return null;
+        return 
+            Combinatorics.cartesianProduct(
+                    underlyingCovariantSpace().basisDualVectors(), 
+                    underlyingContravariantSpace().basisDualVectors())
+                .stream()
+                .<Prod<K, Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K>>>map(
+                    basisVectors -> basisVectors.destroy(
+                        leftBasis -> rightBasis ->
+                            Prod.pair(
+                                tensor.apply(Prod.pair(
+                                    leftBasis
+                                        .mapAll(underlyingDualSpace()::dualDualAsVector)
+                                        .mapAll(underlyingDualSpace()::vectorAsDual),
+                                    rightBasis
+                                        .mapAll(underlyingDualSpace()::dualAsVector))), 
+                                Exp.asExponential(pair -> pair.destroy(
+                                    dv -> v -> 
+                                        underlyingField().mult(
+                                            underlyingCovariantSpace().fromLinearMaps(leftBasis).apply(dv), 
+                                            underlyingContravariantSpace().fromLinearMaps(rightBasis).apply(v)))))))
+                .toList();
     }
 
     @Override

@@ -9,6 +9,11 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
 import util.math.Field;
 
+/**
+ * Class to represent a space of multilinear {@code N}-forms over some vector space to another
+ * target vector space. In other words, it is the set of all multilinear functions from {@code N} 
+ * copies of the underlying domain vector space to the target space.
+ */
 public abstract class MultilinearNMapSpace<N extends Cardinal, V, U, K>
     implements 
         VectorSpace<Exp<HomTuple<N, V>, U>, K> {
@@ -17,6 +22,13 @@ public abstract class MultilinearNMapSpace<N extends Cardinal, V, U, K>
     private final VectorSpace<V, K> DOMAIN_SPACE;
     private final VectorSpace<U, K> TARGET_SPACE;
 
+    /**
+     * Creates a multilinear map space from {@code N} copies of the domain to the target.
+     * 
+     * @param enumerated the enumerated indices (should be exhaustive)
+     * @param underlyingDomainSpace the underlying domain vector space
+     * @param underlyingTargetSpace the underlying target vector space
+     */
     public MultilinearNMapSpace(
         final Collection<Ordinal<N>> enumerated,
         final VectorSpace<V, K> underlyingDomainSpace,
@@ -35,14 +47,23 @@ public abstract class MultilinearNMapSpace<N extends Cardinal, V, U, K>
         this.TARGET_SPACE = underlyingTargetSpace;
     }
 
+    /**
+     * @return the underlying domain space
+     */
     public VectorSpace<V, K> underlyingDomainSpace() {
         return DOMAIN_SPACE;
     }
 
+    /**
+     * @return the underlying target space
+     */
     public VectorSpace<U, K> underlyingTargetSpace() {
         return TARGET_SPACE;
     }
 
+    /**
+     * @return the underlying collection of ordinals
+     */
     public Collection<Ordinal<N>> underlyingOrdinalSet() {
         return ENUMERATED;
     }

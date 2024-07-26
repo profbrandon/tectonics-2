@@ -11,6 +11,9 @@ import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.math.vectorspaces.MultilinearNFormSpace;
 
+/**
+ * The finite-dimensional counterpart to {@link MultilinearNFormSpace}.
+ */
 public class FiniteMultilinearNFormSpace<N extends Cardinal, V, K>
     extends
         MultilinearNFormSpace<N, V, K>
@@ -19,6 +22,12 @@ public class FiniteMultilinearNFormSpace<N extends Cardinal, V, K>
 
     private final FiniteDualSpace<V, K> FINITE_DUAL;
 
+    /**
+     * Constructs a finite-dimensional multilinear {@code N}-form space.
+     * 
+     * @param enumerated the enumerated indices (should be exhaustive)
+     * @param finiteDualSpace the underlying finite dual space.
+     */
     public FiniteMultilinearNFormSpace(
         final Collection<Ordinal<N>> enumerated,
         final FiniteDualSpace<V, K> finiteDualSpace) {
@@ -28,52 +37,34 @@ public class FiniteMultilinearNFormSpace<N extends Cardinal, V, K>
         this.FINITE_DUAL = finiteDualSpace;
     }
 
-    public HomTuple<N, V> dualDualAsVector(final Exp<HomTuple<N, Exp<V, K>>, K> dualDual) {
-        final List<HomTuple<N, Exp<V, K>>> multiDualBasis = Combinatorics.nProduct(
+    /**
+     * Transforms {@code nV -> K} into {@code nV** -> K}.
+     */
+    public Exp<HomTuple<N, Exp<Exp<V, K>, K>>, K> vectorAsDualDual(final Exp<HomTuple<N, V>, K> vector) {
+        return Exp.asExponential(tuple -> vector.apply(tuple.mapAll(underlyingDualSpace()::dualDualAsVector)));
+    }
+
+    /**
+     * Transforms {@code nV -> K} into {@code nV* -> K} using a messy isomorphism.
+     */
+    public Exp<HomTuple<N, Exp<V, K>>, K> vectorAsDual(final Exp<HomTuple<N, V>, K> vector) {
+        return Exp.asExponential(tuple -> vector.apply(tuple.mapAll(underlyingDualSpace()::dualAsVector)));
+    }
+
+    /**
+     * Transforms {@code nV* -> K} into {@code nV -> K} using a messy isomorphism.
+     */
+    public Exp<HomTuple<N, V>, K> dualAsVector(final Exp<HomTuple<N, Exp<V, K>>, K> covector) {
+        return Exp.asExponential(tuple -> covector.apply(tuple.mapAll(underlyingDualSpace()::vectorAsDual)));
+    }
+
+    /**
+     * @return the linear map version of the basis
+     */
+    public List<HomTuple<N, Exp<V, K>>> basisDualVectors() {
+        return Combinatorics.nProduct(
             List.copyOf(underlyingOrdinalSet()), 
             underlyingDualSpace().basis());
-
-        return multiDualBasis
-            .stream()
-            .map(tuple -> 
-                tuple
-                    .mapAll(underlyingDualSpace()::dualAsVector)
-                    .mapAll(b -> underlyingDomainSpace().scale(b, dualDual.apply(tuple))))
-            .reduce(
-                HomTuple.all(underlyingDomainSpace().zero()), 
-                (tuple1, tuple2) -> 
-                    new HomTuple<>(ord -> underlyingDomainSpace().sum(tuple1.at(ord), tuple2.at(ord))));
-    }
-
-    public Exp<HomTuple<N, V>, K> vectorAsDual(final HomTuple<N, V> vector) {
-        final List<HomTuple<N, Exp<V, K>>> multiDualBasis = Combinatorics.nProduct(
-            List.copyOf(underlyingOrdinalSet()), 
-            underlyingDualSpace().basis());
-
-        return sumAll(
-            multiDualBasis
-                .stream()
-                .map(tuple -> 
-                    scale(fromLinear(tuple), fromLinear(tuple).apply(vector)))
-                .toList());
-    }
-
-    public HomTuple<N, V> dualAsVector(final Exp<HomTuple<N, V>, K> dual) {
-        final List<HomTuple<N, V>> multiBasis = Combinatorics.nProduct(
-            List.copyOf(underlyingOrdinalSet()), 
-            underlyingDomainSpace().basis());
-
-        return multiBasis
-            .stream()
-            .map(b -> b.mapAll(v -> underlyingDomainSpace().scale(v, dual.apply(b))))
-            .reduce(
-                HomTuple.all(underlyingDomainSpace().zero()),
-                (tuple1, tuple2) -> 
-                    new HomTuple<>(ord -> underlyingDomainSpace().sum(tuple1.at(ord), tuple2.at(ord))));
-    }
-
-    public HomTuple<N, Exp<V, K>> toLinear(final Exp<HomTuple<N, V>, K> dual) {
-        return dualAsVector(dual).mapAll(underlyingDualSpace()::vectorAsDual);
     }
 
     @Override
@@ -88,13 +79,10 @@ public class FiniteMultilinearNFormSpace<N extends Cardinal, V, K>
 
     @Override
     public List<Exp<HomTuple<N, V>, K>> basis() {
-        return 
-            Combinatorics.nProduct(
-                    List.copyOf(underlyingOrdinalSet()), 
-                    underlyingDualSpace().basis())
-                .stream()
-                .map(this::fromLinear)
-                .toList();
+        return basisDualVectors()
+            .stream()
+            .map(this::fromLinearMaps)
+            .toList();
     }
 
     @Override
@@ -108,7 +96,7 @@ public class FiniteMultilinearNFormSpace<N extends Cardinal, V, K>
                     baseTuple -> 
                         Prod.pair(
                             v.apply(baseTuple), 
-                            fromLinear(baseTuple.mapAll(underlyingDualSpace()::vectorAsDual))))
+                            fromLinearMaps(baseTuple.mapAll(underlyingDualSpace()::vectorAsDual))))
                 .toList();
     }
 }

@@ -49,20 +49,36 @@ public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
         this.DUAL_SPACE = underlyingDual;
     }
 
+    /**
+     * @return the underlying covariant space of (p,0)-tensors
+     */
     public MultilinearNFormSpace<P, Exp<V, K>, K> underlyingCovariantSpace() {
         return COVARIANT_SPACE;
     }
 
+    /**
+     * @return the underlying contravariant space of (0,q)-tensors
+     */
     public MultilinearNFormSpace<Q, V, K> underlyingContravariantSpace() {
         return CONTRAVARIANT_SPACE;
     }
 
+    /**
+     * @return the underlying dual vector space
+     */
     public DualSpace<V, K> underlyingDualSpace() {
         return DUAL_SPACE;
     }
 
+    /**
+     * Creates a multilinear map from the two tuples of linear maps from {@code V* -> K} and {@code V -> K}.
+     * 
+     * @param left the tuple of covariant linear maps {@code V* -> K}
+     * @param right the tuple of contravariant linear maps {@code V -> K}
+     * @return a (p,q)-tensor with the given covariant and contravariant components
+     */
     public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
-        fromLinear(
+        fromLinearMaps(
             final HomTuple<P, Exp<Exp<V, K>, K>> left, 
             final HomTuple<Q, Exp<V, K>> right) {
 
@@ -70,16 +86,22 @@ public abstract class TensorSpace<V, K, P extends Cardinal, Q extends Cardinal>
             leftTuple ->
                 rightTuple ->
                     underlyingField().mult(
-                        underlyingCovariantSpace().fromLinear(left).apply(leftTuple),
-                        underlyingContravariantSpace().fromLinear(right).apply(rightTuple))));
+                        underlyingCovariantSpace().fromLinearMaps(left).apply(leftTuple),
+                        underlyingContravariantSpace().fromLinearMaps(right).apply(rightTuple))));
     }
 
+    /**
+     * Creates a tensor from the given "tensor product" of vectors and covectors.
+     * 
+     * @param product the tensor product
+     * @return the corresponding tensor
+     */
     public Exp<Prod<HomTuple<P, Exp<V, K>>, HomTuple<Q, V>>, K> 
         fromTensorProduct(
             final Prod<HomTuple<P, V>, HomTuple<Q, Exp<V, K>>> product) {
 
-        return fromLinear(
-            product.first().mapAll(underlyingDualSpace()::asDualDual),
+        return fromLinearMaps(
+            product.first().mapAll(underlyingDualSpace()::vectorAsDualDual),
             product.second());
     }
 

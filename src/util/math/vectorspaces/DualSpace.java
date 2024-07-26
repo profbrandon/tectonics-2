@@ -30,7 +30,7 @@ public abstract class DualSpace<V, K>
      * @param v the vector to transform
      * @return the vector's double-dual vector
      */
-    public Exp<Exp<V, K>, K> asDualDual(final V v) {
+    public Exp<Exp<V, K>, K> vectorAsDualDual(final V v) {
         return Exp.asExponential(w -> w.apply(v));
     }
 

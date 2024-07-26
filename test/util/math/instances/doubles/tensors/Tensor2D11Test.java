@@ -5,10 +5,8 @@ import util.counting.Ordinal;
 import util.counting.Cardinals.Two;
 import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
-import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.math.instances.doubles.DoubleField;
-import util.math.instances.doubles.covectors.CoVec2D;
 import util.math.instances.doubles.linear.Linear2D;
 import util.math.instances.doubles.tensors.Tensor2D11;
 import util.math.instances.doubles.vectors.Vec2D;
@@ -25,8 +23,6 @@ public final class Tensor2D11Test extends UnitTest {
 
         unitTest.addTest(Tensor2D11Test::linearAndBack);
         unitTest.addTest(Tensor2D11Test::traceTest);
-        unitTest.addTest(Tensor2D11Test::tensorProductAndBack);
-        unitTest.addTest(Tensor2D11Test::tensorProductTest);
 
         unitTest.runTests();
     }
@@ -40,39 +36,6 @@ public final class Tensor2D11Test extends UnitTest {
                 Functional.let(Linear2D.as11Tensor(Linear2D.getRotation(Math.PI / 6.0)), tensor ->
                     Functional.let(Tensor2D11.asLinearMap(tensor), linear ->
                         linear.apply(Vec2D.vector(1.0, 0)))));
-    }
-
-    private static boolean tensorProductAndBack() {
-        return UnitTest.checkValue(
-            "Send tensor to product and back",
-            v -> Vec2D.equalsVector(v, Vec2D.vector(Math.sqrt(3) / 2.0, 0.5)),
-            v -> HomTuple.toString(Ordinal.TWO_SET, v),
-            () -> 
-                Functional.let(Linear2D.as11Tensor(Linear2D.getRotation(Math.PI / 6.0)), tensor ->
-                    Functional.let(Tensor2D11.INSTANCE.toTensorProduct(tensor), product ->
-                        Functional.let(Tensor2D11.INSTANCE.fromTensorProduct(product), newTensor ->
-                            Functional.let(Tensor2D11.asLinearMap(newTensor), linear ->
-                                linear.apply(Vec2D.vector(1.0, 0)))))));
-    }
-
-    private static boolean tensorProductTest() {
-        return UnitTest.checkValue(
-            "Send tensor to product",
-            pair -> 
-                Vec2D.INSTANCE.equiv(
-                    pair.first().at(Ordinal.ZERO_1), 
-                    Vec2D.vector(1, 0)) && 
-                CoVec2D.INSTANCE.equiv(
-                    pair.second().at(Ordinal.ZERO_1), 
-                    CoVec2D.covector(1, 0)),
-            pair -> "(" + 
-                HomTuple.toString(Ordinal.TWO_SET, pair.first().at(Ordinal.ZERO_1))+  ", " + 
-                CoVec2D.INSTANCE.decompose(pair.second().at(Ordinal.ZERO_1)).stream().map(Prod::first).toList() + ")",
-            () -> 
-                Tensor2D11.INSTANCE.toTensorProduct(
-                    Tensor2D11.INSTANCE.tensor(
-                        HomTuple.tuple(Vec2D.vector(1, 0)), 
-                        HomTuple.tuple(CoVec2D.covector(1, 0)))));
     }
 
     private static boolean traceTest() {
