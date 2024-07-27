@@ -6,7 +6,7 @@ import util.data.algebraic.Exp;
 import util.data.algebraic.Prod;
 import util.testing.UnitTest;
 
-public class ExpTest extends UnitTest {
+public final class ExpTest extends UnitTest {
 
     private ExpTest() {
         super("Algebraic Exponential Test");

@@ -9,7 +9,7 @@ import util.data.algebraic.Sum;
 import util.data.trees.DistinguishedTree;
 import util.testing.UnitTest;
 
-public class DistinguishedTreeTest extends UnitTest {
+public final class DistinguishedTreeTest extends UnitTest {
 
     private static final DistinguishedTree<Integer, String> EXAMPLE_TREE = new DistinguishedTree<>(
         -1,

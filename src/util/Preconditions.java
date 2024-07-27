@@ -1,7 +1,7 @@
 package util;
 
 import java.util.Collection;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 public final class Preconditions {
     
@@ -19,9 +19,17 @@ public final class Preconditions {
         }
     }
 
-    public static final <V> void throwIfSatisfied(final V value, final String argumentName, final String conditionDescription, final Predicate<V> condition) {
-        if (condition.test(value)) {
-            throw new IllegalArgumentException("Argument '" + argumentName + "' satisfied the condition: " + conditionDescription);
+    public static final <V> void throwIfDifferent(final V value1, final V value2, final String message) {
+        throwIfSatisfies(value1, a -> !a.equals(value2), message);
+    }
+
+    public static final <V> void throwIfEquals(final V value1, final V value2, final String message) {
+        throwIfSatisfies(value1, a -> a.equals(value2), message);
+    }
+
+    public static final <V> void throwIfSatisfies(final V value, final Function<V, Boolean> predicate, final String message) {
+        if (predicate.apply(value)) {
+            throw new IllegalArgumentException(message);
         }
     }
 }

@@ -2,6 +2,8 @@ package util.testing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -77,11 +79,39 @@ public class UnitTest {
     }
 
     public static <V> boolean checkValue(final String testName, final Predicate<V> check, final Supplier<V> test) {
+        return checkValue(testName, check, v -> v.toString(), test);
+    }
+
+    public static <V> boolean checkValue(final String testName, final Predicate<V> check, final Function<V, String> toString, final Supplier<V> test) {
         printTest(testName);
 
         final V testValue = test.get();
 
-        return wrapOutcome(check.test(testValue), "test value did not pass the check. Supplied value is " + testValue.toString());
+        return wrapOutcome(check.test(testValue), "test value did not pass the check. Supplied value is " + toString.apply(testValue));
+    }
+
+    public static <V> boolean checkAllValues(
+        final String testName, 
+        final List<V> values, 
+        final Function<V, Function<V, Boolean>> equality, 
+        final Function<V, String> toString,
+        final Supplier<List<V>> test) {
+
+        printTest(testName);
+
+        final List<V> testValues = test.get();
+
+        if (testValues.size() != values.size()) {
+            return wrapOutcome(false, "test value did not have enough values. Supplied value is " + testValues.stream().map(toString).toList());
+        }
+
+        boolean check = true;
+
+        for (int i = 0; i < testValues.size(); ++i) {
+            if (!equality.apply(testValues.get(i)).apply(values.get(i))) check = false;
+        }
+
+        return wrapOutcome(check, "test value did not pass the check. Supplied value is " + testValues.stream().map(toString).toList());
     }
 
     private static void printSuccess() {

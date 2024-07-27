@@ -5,7 +5,7 @@ import java.util.List;
 import util.data.trees.HomogeneousTree;
 import util.testing.UnitTest;
 
-public class HomogeneousTreeTest extends UnitTest {
+public final class HomogeneousTreeTest extends UnitTest {
 
     private static final List<HomogeneousTree<Integer>> EXAMPLE_SUBTREES_1 = List.of(
         new HomogeneousTree<>(1),
