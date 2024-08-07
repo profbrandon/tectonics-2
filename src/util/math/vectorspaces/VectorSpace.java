@@ -1,5 +1,6 @@
 package util.math.vectorspaces;
 
+import util.math.AbelianGroup;
 import util.math.Field;
 import util.math.Group;
 
@@ -15,7 +16,7 @@ import util.math.Group;
  *   <li>Vector Distributivity - {@code (a + b)v = av + bv}</li>
  * </ul>
  */
-public interface VectorSpace<V, K> extends Group<V> {
+public interface VectorSpace<V, K> extends AbelianGroup<V> {
     
     /**
      * @return the underlying {@link Field} of the vector space
