@@ -1,8 +1,11 @@
 package util.math.vectorspaces;
 
+import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Sum;
 import util.data.algebraic.Unit;
+import util.counting.Ordinal;
+import util.counting.Cardinals.Three;
 import util.math.Field;
 import util.math.fields.Complex;
 
@@ -52,6 +55,18 @@ public class Quaternions<R>
         return QUATERNIONS.complex(COMPLEX.complex(a, b), COMPLEX.complex(c, d));
     }
 
+    public Prod<Prod<R, R>, Prod<R, R>> fromReal(final R a) {
+        return quaternion(a, FIELD.zero(), FIELD.zero(), FIELD.zero());
+    }
+
+    public Prod<Prod<R, R>, Prod<R, R>> fromVector(final HomTuple<Three, R> vector) {
+        return quaternion(
+            FIELD.zero(), 
+            vector.at(Ordinal.ZERO_3), 
+            vector.at(Ordinal.ONE_3), 
+            vector.at(Ordinal.TWO_3));
+    }
+
     /**
      * Extracts the real number part of the quaternion.
      */
@@ -78,6 +93,10 @@ public class Quaternions<R>
      */
     public R k(final Prod<Prod<R, R>, Prod<R, R>> q) {
         return COMPLEX.imaginary(QUATERNIONS.imaginary(q));
+    }
+
+    public HomTuple<Three, R> vectorPart(final Prod<Prod<R, R>, Prod<R, R>> q) {
+        return HomTuple.tuple(i(q), j(q), k(q));
     }
 
     /**
