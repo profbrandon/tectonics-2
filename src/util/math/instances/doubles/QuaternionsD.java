@@ -6,8 +6,12 @@ import util.Functional;
 import util.counting.Cardinals.Three;
 import util.data.algebraic.HomTuple;
 import util.data.algebraic.Prod;
+import util.math.instances.doubles.vectors.Vec3D;
 import util.math.vectorspaces.Quaternions;
 
+/**
+ * Class to represent the space of quaternions over the field of doubles.
+ */
 public class QuaternionsD
     extends
         Quaternions<Double> {
@@ -59,7 +63,7 @@ public class QuaternionsD
                 Functional.let(
                     INSTANCE.sum(
                         INSTANCE.fromReal(Math.cos(angle / 2.0)), 
-                        INSTANCE.scale(INSTANCE.fromVector(axis), Math.sin(angle / 2.0))), 
+                        INSTANCE.scale(INSTANCE.fromVector(Vec3D.INSTANCE.normalize(axis)), Math.sin(angle / 2.0))), 
                     qAxis ->
                         Functional.let(
                             normalize(qAxis), 
