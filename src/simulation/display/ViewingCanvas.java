@@ -1,112 +1,170 @@
 package simulation.display;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
+import util.Functional;
+import util.counting.Cardinals.Two;
+import util.data.algebraic.HomTuple;
+import util.math.instances.doubles.linear.Linear2D;
+import util.math.instances.doubles.vectors.Vec2D;
 
 public class ViewingCanvas implements NodeInterpretable {
 
-    private final double actualWidth;
-    private final double actualHeight;
-
-    private double centerX;
-    private double centerY;
+    private double zoom = 0.0;
     private double width;
     private double height;
-    private double zoom;
+
+    private HomTuple<Two, Double> lowerLeft;
+    private HomTuple<Two, Double> upperRight;
+
+    // The center in coordinate space
+    private HomTuple<Two, Double> center = Vec2D.ZERO;
+
+    // The offset of the center in canvas space
+    private final HomTuple<Two, Double> offset;
 
     private final Canvas canvas;
+    private final GraphicsContext context;
 
     public ViewingCanvas(final double actualWidth, final double actualHeight) {
+        this.offset = Vec2D.vector(actualWidth / 2.0, actualHeight / 2.0);
         this.canvas = new Canvas(actualWidth, actualHeight);
-        this.actualWidth = actualWidth;
-        this.actualHeight = actualHeight;
-        this.width = actualWidth;
-        this.height = actualHeight;
-        this.centerX = 0;
-        this.centerY = 0;
-        this.zoom = 0;
+        this.context = this.canvas.getGraphicsContext2D();
+
+        setBounds(actualWidth, actualHeight);
+    }
+
+    public void setBounds(final double width, final double height) {
+        this.width      = width;
+        this.height     = height;
+        this.upperRight = Vec2D.vector(width / 2.0, height / 2.0);
+        this.lowerLeft  = Vec2D.INSTANCE.neg(this.upperRight);
         clear();
         drawBounds();
     }
-    
-    public void setCenterX(final double centerX) {
-        this.centerX = centerX;
-        this.clear();
-        this.drawBounds();
-    }
-
-    public void setCenterY(final double centerY) {
-        this.centerY = centerY;
-        this.clear();
-        this.drawBounds();
-    }
 
     public void setWidth(final double width) {
-        this.width = width;
-        this.clear();
-        this.drawBounds();
+        setBounds(width, this.height);
     }
 
     public void setHeight(final double height) {
-        this.height = height;
-        this.clear();
-        this.drawBounds();
+        setBounds(this.width, height);
     }
 
     public void setZoom(final double zoom) {
         this.zoom = zoom;
-        this.clear();
-        this.drawBounds();
+        clear();
+        drawBounds();
     }
 
-    public void drawImage(final WritableImage image) {
-        this.canvas.getGraphicsContext2D().drawImage(image, 0, 0);
+    public void clear() {
+        this.context.setFill(
+            Functional.let(this.context.getFill(), oldFill -> {
+                this.context.setFill(Color.BLACK);
+                this.context.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+                return oldFill;
+            }));
+    }
+
+    public void setCenter(final HomTuple<Two, Double> center) {
+        this.center = center;
+        clear();
+        drawBounds();
+    }
+
+    public void setCenterX(final double x) {
+        setCenter(HomTuple.tuple(
+            x, 
+            Vec2D.y(this.center)));
+    }
+
+    public void setCenterY(final double y) {
+        setCenter(HomTuple.tuple(
+            Vec2D.x(this.center), 
+            y));
+    }
+
+    public void drawLine(final HomTuple<Two, Double> start, final HomTuple<Two, Double> end, final Color color) {
+        this.context.setStroke(
+            Functional.let(this.context.getStroke(), oldStroke ->
+            Functional.let(toCanvasCoords(start), realStart ->
+            Functional.let(toCanvasCoords(end), realEnd -> {
+                this.context.setStroke(color);
+                this.context.strokeLine(
+                    Vec2D.x(realStart), Vec2D.y(realStart), 
+                    Vec2D.x(realEnd), Vec2D.y(realEnd));
+                return oldStroke;
+            }))));
+    }
+
+    public void drawRect(final HomTuple<Two, Double> lowerLeft, final HomTuple<Two, Double> upperRight, final Color strokeColor) {
+        this.context.setStroke(
+            Functional.let(this.context.getStroke(), oldStroke ->
+            Functional.let(toCanvasCoords(lowerLeft), realLowerLeft ->
+            Functional.let(toCanvasCoords(upperRight), realUpperRight ->
+            Functional.let(Vec2D.INSTANCE.subVec(toCanvasCoords(upperRight), toCanvasCoords(lowerLeft)), widthAndHeight -> {
+                this.context.setStroke(strokeColor);
+                this.context.strokeRect(
+                    Vec2D.x(realLowerLeft), Vec2D.y(realUpperRight),
+                    Math.abs(Vec2D.x(widthAndHeight)), Math.abs(Vec2D.y(widthAndHeight)));
+                return oldStroke;
+            })))));
+    }
+
+    public void fillRect(final HomTuple<Two, Double> lowerLeft, final HomTuple<Two, Double> upperRight, final Color fillColor) {
+        this.context.setFill(
+            Functional.let(this.context.getFill(), oldFill ->
+            Functional.let(toCanvasCoords(lowerLeft), realLowerLeft ->
+            Functional.let(toCanvasCoords(upperRight), realUpperRight ->
+            Functional.let(Vec2D.INSTANCE.subVec(toCanvasCoords(upperRight), toCanvasCoords(lowerLeft)), widthAndHeight -> {
+                this.context.setFill(fillColor);
+                this.context.fillRect(
+                    Vec2D.x(realLowerLeft), Vec2D.y(realUpperRight),
+                    Math.abs(Vec2D.x(widthAndHeight)), Math.abs(Vec2D.y(widthAndHeight)));
+                return oldFill;
+            })))));
+    }
+
+    public void drawCircle(final HomTuple<Two, Double> center, final double radius, final Color strokeColor) {
+        this.context.setStroke(
+            Functional.let(this.context.getStroke(), oldStroke -> 
+            Functional.let(toCanvasCoords(center), realCenter ->
+            Functional.let(toCanvasCoords(Vec2D.INSTANCE.sum(center, HomTuple.tuple(-radius, radius))), upperLeft ->
+            Functional.let(Vec2D.x(Vec2D.INSTANCE.subVec(realCenter, upperLeft)), realRadius -> {
+                this.context.setStroke(strokeColor);
+                this.context.strokeOval(Vec2D.x(upperLeft), Vec2D.y(upperLeft), 2 * realRadius, 2 * realRadius);
+                return oldStroke;
+            })))));
+    }
+
+    public void fillCircle(final HomTuple<Two, Double> center, final double radius, final Color fillColor) {
+        this.context.setFill(
+            Functional.let(this.context.getFill(), oldFill -> 
+            Functional.let(toCanvasCoords(center), realCenter ->
+            Functional.let(toCanvasCoords(Vec2D.INSTANCE.sum(center, HomTuple.tuple(-radius, radius))), upperLeft ->
+            Functional.let(Vec2D.x(Vec2D.INSTANCE.subVec(realCenter, upperLeft)), realRadius -> {
+                this.context.setFill(fillColor);
+                this.context.fillOval(Vec2D.x(upperLeft), Vec2D.y(upperLeft), 2 * realRadius, 2 * realRadius);
+                return oldFill;
+            })))));
     }
 
     private void drawBounds() {
-        final GraphicsContext context = this.canvas.getGraphicsContext2D();
-
-        context.setTransform(new Affine(getTransform()));
-
-        context.setStroke(Color.GRAY);
-        context.strokeRect(0, 0, this.width, this.height);
-
-        System.out.println("Top Left: " + getTransform().deltaTransform(new Point2D(0, 0)));
-        System.out.println("Lower Right: " + getTransform().deltaTransform(new Point2D(this.width, this.height)));
+        drawRect(this.lowerLeft, this.upperRight, Color.GRAY);
+        drawLine(this.lowerLeft, this.upperRight, Color.GRAY);
+        drawCircle(Vec2D.ZERO, Math.sqrt(this.width * this.width + this.height * this.height) / 2.0, Color.GRAY);
     }
 
-    private double getInternalCanvasWidth() {
-        return this.actualWidth / getZoomScalar();
-    }
-
-    private double getInternalCanvasHeight() {
-        return this.actualHeight / getZoomScalar();
-    }
-
-    private double getZoomScalar() {
-        return Math.pow(2, this.zoom);
-    }
-
-    private Transform getTransform() {
-        final double scaleValue = getZoomScalar();
-        return new Translate(-this.width / 2, -this.height / 2)
-            .createConcatenation(new Scale(scaleValue, scaleValue));
-            //.createConcatenation(new Translate(scaleValue * this.width / 2, scaleValue * this.height / 2));
-    }
-
-    private void clear() {
-        final GraphicsContext context = this.canvas.getGraphicsContext2D();
-        context.setFill(Color.BLACK);
-        context.setTransform(new Affine());
-        context.fillRect(0, 0, this.actualWidth, this.actualHeight);
+    private HomTuple<Two, Double> toCanvasCoords(final HomTuple<Two, Double> vector) {
+        return
+            Vec2D.INSTANCE.sum(
+                Linear2D.asLinearMap(1, 0, 0, -1).apply(
+                    Vec2D.INSTANCE.subVec(
+                        Vec2D.INSTANCE.scale(vector, Math.pow(2, this.zoom)),
+                        this.center)),
+                offset);
     }
 
     @Override

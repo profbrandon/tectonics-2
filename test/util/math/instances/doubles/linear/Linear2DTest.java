@@ -30,6 +30,7 @@ public final class Linear2DTest extends UnitTest {
         unitTest.addTest(Linear2DTest::testMult1);
         unitTest.addTest(Linear2DTest::testMult2);
         unitTest.addTest(Linear2DTest::scaling);
+        unitTest.addTest(Linear2DTest::flipY);
 
         unitTest.runTests();
     }
@@ -108,5 +109,12 @@ public final class Linear2DTest extends UnitTest {
                     Linear2D.getScale(4.0),
                     Linear2D.getRotation(Math.PI / 6.0)),
                 Vec2D.UNIT_X));
+    }
+
+    private static boolean flipY() {
+        return UnitTest.checkValue(
+            "Test flip y value", 
+            v -> Vec2D.equalsVector(v, Vec2D.vector(2, 2)), 
+            () -> Linear2D.asLinearMap(1, 0, 0, -1).apply(Vec2D.vector(2, -2)));
     }
 }

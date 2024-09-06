@@ -32,4 +32,15 @@ public interface VectorSpace<V, K> extends AbelianGroup<V> {
      * @return the stretched vector
      */
     public V scale(final V v, final K scalar);
+
+    /**
+     * Subtracts two vectors using the addition and negation.
+     * 
+     * @param v1 the minuend
+     * @param v2 the subtrahend
+     * @return the difference
+     */
+    public default V subVec(final V v1, final V v2) {
+        return sum(v1, neg(v2));
+    }
 }

@@ -48,10 +48,6 @@ public class SimulationScene {
 
         this.scene = new Scene(borderPane);
 
-        this.canvas.setZoom(-2);
-        this.canvas.setCenterX(MAX_SIMULATION_WIDTH / 2);
-        this.canvas.setCenterY(MAX_SIMULATION_HEIGHT / 2);
-
         center.getChildren().add(this.canvas.asNode());
 
         bottom.setMinHeight(BOTTOM_BAR_HEIGHT);
@@ -112,8 +108,8 @@ public class SimulationScene {
             "Z", 
             "The zoom-level of the map. If z is the zoom value, then magnification is 2^z.", 
             0f, 
-            -10f, 
-            10f);
+            -7f, 
+            7f);
 
         zoomParameter.addUpdateListener(zoom -> this.canvas.setZoom(zoom));
 
@@ -121,23 +117,21 @@ public class SimulationScene {
             "Center X", 
             "CX", 
             "The center's x coordinate.", 
-            (float) (MAX_SIMULATION_WIDTH / 2),
             0f,
-            (float) MAX_SIMULATION_WIDTH);
+            - MAX_SIMULATION_WIDTH / 2.0f,
+            MAX_SIMULATION_WIDTH / 2.0f);
 
         centerXParameter.addUpdateListener(centerX -> this.canvas.setCenterX(centerX));
-        centerXParameter.setEnabled(false);
 
         final FloatParameter centerYParameter = new FloatParameter(
             "Center Y", 
             "CY", 
             "The center's y coordinate.", 
-            (float) (MAX_SIMULATION_HEIGHT / 2),
             0f,
-            (float) MAX_SIMULATION_HEIGHT);
+            - MAX_SIMULATION_HEIGHT / 2.0f,
+            MAX_SIMULATION_HEIGHT / 2.0f);
 
         centerYParameter.addUpdateListener(centerY -> this.canvas.setCenterY(centerY));
-        centerYParameter.setEnabled(false);
 
         return new DistinguishedTree<>(
             "Viewing Parameters",
