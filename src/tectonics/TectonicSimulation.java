@@ -1,6 +1,7 @@
 package tectonics;
 
 import java.util.Collection;
+import java.util.List;
 
 import simulation.Simulation;
 import simulation.SimulationListener;
@@ -12,7 +13,7 @@ public class TectonicSimulation implements Simulation<TectonicSimulationMode> {
 
     @Override
     public DistinguishedTree<String, SimulationParameterGroup> getParameters() {
-        return null;
+        return new DistinguishedTree<>("No Parameters", List.of());
     }
 
     @Override

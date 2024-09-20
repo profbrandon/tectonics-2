@@ -33,13 +33,15 @@ public class SimulationScene {
 
     private final ParameterSelectionMenu windowParametersMenu     = new ParameterSelectionMenu(windowParametersTree, WINDOW_PARAMETERS_HEIGHT);
     private final ParameterSelectionMenu viewingParametersMenu    = new ParameterSelectionMenu(viewingParametersTree, VIEWING_PARAMETERS_HEIGHT);
-    private final ParameterSelectionMenu simulationParametersMenu = new ParameterSelectionMenu("Simulation Parameters", SIMULATION_PARAMETERS_HEIGHT);
+    private final ParameterSelectionMenu simulationParametersMenu;
 
     final ViewingCanvas canvas = new ViewingCanvas(MAX_SIMULATION_WIDTH, MAX_SIMULATION_HEIGHT);
 
     private Scene scene;
 
-    public SimulationScene() {
+    public SimulationScene(final DistinguishedTree<String, SimulationParameterGroup> simulationParameterTree) {
+        this.simulationParametersMenu = new ParameterSelectionMenu(simulationParameterTree, SIMULATION_PARAMETERS_HEIGHT);
+
         final BorderPane borderPane = new BorderPane();
         final HBox bottom = new HBox();
         final VBox right  = new VBox(10);
