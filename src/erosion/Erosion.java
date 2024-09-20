@@ -1,0 +1,16 @@
+package erosion;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import simulation.display.SimulationScene;
+
+public class Erosion extends Application {
+    @Override
+    public void start(final Stage stage) throws Exception {
+        final SimulationScene scene = new SimulationScene();
+
+        stage.setScene(scene.asScene());
+        stage.setResizable(false);
+        stage.show();
+    }
+}
