@@ -1,9 +1,11 @@
 package simulation.display;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -35,7 +37,11 @@ public class SimulationScene {
     private final ParameterSelectionMenu viewingParametersMenu    = new ParameterSelectionMenu(viewingParametersTree, VIEWING_PARAMETERS_HEIGHT);
     private final ParameterSelectionMenu simulationParametersMenu;
 
-    final ViewingCanvas canvas = new ViewingCanvas(MAX_SIMULATION_WIDTH, MAX_SIMULATION_HEIGHT);
+    private final ViewingCanvas canvas = new ViewingCanvas(MAX_SIMULATION_WIDTH, MAX_SIMULATION_HEIGHT);
+
+    private final Button playButton = new Button("Play");
+    private final Button stepButton = new Button("Step");
+    private final Button endButton  = new Button("End");
 
     private Scene scene;
 
@@ -71,6 +77,35 @@ public class SimulationScene {
             windowParametersMenu.asNode(),
             viewingParametersMenu.asNode(),
             simulationParametersMenu.asNode());
+
+        bottom.getChildren().addAll(
+            playButton,
+            stepButton,
+            endButton);
+    }
+
+    public void bindPlayButton(final Runnable onPlay, final Runnable onPause) {
+        final AtomicBoolean play = new AtomicBoolean(true);
+        playButton.setOnAction(
+            event -> {
+                if (play.get()) {
+                    onPlay.run();
+                    playButton.setText("Pause");
+                    play.set(false);
+                } else {
+                    onPause.run();
+                    playButton.setText("Play");
+                    play.set(true);
+                }
+            });
+    }
+
+    public void bindStepButton(final Runnable onStep) {
+        stepButton.setOnAction(event -> onStep.run());
+    }
+
+    public void bindEndButton(final Runnable onEnd) {
+        endButton.setOnAction(event -> onEnd.run());
     }
 
     public Scene asScene() {
