@@ -28,4 +28,12 @@ public abstract class LinearD<N extends Cardinal, M extends Cardinal>
     public LinearD(final VecD<N> domainSpace, final VecD<M> targetSpace) {
         super(domainSpace, targetSpace);
     }
+
+    public static <N extends Cardinal, K extends Cardinal, M extends Cardinal> Exp<HomTuple<N, Double>, HomTuple<M, Double>>
+        compose(
+            final Exp<HomTuple<N, Double>, HomTuple<K, Double>> first,
+            final Exp<HomTuple<K, Double>, HomTuple<M, Double>> last) {
+        
+        return last.after(first);
+    }
 }

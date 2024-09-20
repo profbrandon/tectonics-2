@@ -1,5 +1,6 @@
 package util.math.vectorspaces;
 
+import util.math.AbelianGroup;
 import util.math.Field;
 import util.math.Group;
 
@@ -15,7 +16,7 @@ import util.math.Group;
  *   <li>Vector Distributivity - {@code (a + b)v = av + bv}</li>
  * </ul>
  */
-public interface VectorSpace<V, K> extends Group<V> {
+public interface VectorSpace<V, K> extends AbelianGroup<V> {
     
     /**
      * @return the underlying {@link Field} of the vector space
@@ -31,4 +32,15 @@ public interface VectorSpace<V, K> extends Group<V> {
      * @return the stretched vector
      */
     public V scale(final V v, final K scalar);
+
+    /**
+     * Subtracts two vectors using the addition and negation.
+     * 
+     * @param v1 the minuend
+     * @param v2 the subtrahend
+     * @return the difference
+     */
+    public default V subVec(final V v1, final V v2) {
+        return sum(v1, neg(v2));
+    }
 }

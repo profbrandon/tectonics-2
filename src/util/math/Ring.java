@@ -59,6 +59,17 @@ public interface Ring<R> extends AbelianGroup<R> {
     }
 
     /**
+     * Subtraction in the ring defined by {@code r1 - r2 := r1 + (-r2)}.
+     * 
+     * @param r1 the first argument
+     * @param r2 the second argument
+     * @return the result of the subtraction
+     */
+    public default R sub(final R r1, final R r2) {
+        return sum(r1, neg(r2));
+    }
+
+    /**
      * @return the underlying multiplicative monoid (given by {@link Ring#unit()} and {@link Ring#mult(Object, Object)})
      */
     public default Monoid<NonZero<R>> multiplicativeMonoid() {

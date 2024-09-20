@@ -155,9 +155,9 @@ public class Ordinal<N extends Cardinal> {
 
     private static <N extends Cardinal, P extends Pred<N>> Ordinal<N> lift(final Ordinal<P> value) {
         Preconditions.throwIfNull(value, "value");
-        return new Ordinal<N>(value.ordinal.match(
-            prev -> new Ordinal<>(prev),
-            prevOrdSet -> new Ordinal<>(prevOrdSet)));
+        return new Ordinal<N>((Ordinal<P>) value.ordinal.match(
+            prev -> new Ordinal<P>(prev),
+            prevOrdSet -> new Ordinal<P>(prevOrdSet)));
     }
 
     private static <A> Function<Ordinal<One>, A> injectOne(final A value) {

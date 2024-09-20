@@ -45,6 +45,20 @@ public final class Vec2D
     }
 
     /**
+     * Extracts the x coordinate of a vector.
+     */
+    public static double x(final HomTuple<Two, Double> vector) {
+        return vector.at(Ordinal.ZERO_2);
+    }
+
+    /**
+     * Extracts the y coordinate of a vector.
+     */
+    public static double y(final HomTuple<Two, Double> vector) {
+        return vector.at(Ordinal.ONE_2);
+    }
+
+    /**
      * Determines if the two vectors are equal up to {@link DoubleField#equiv(Double, Double)}.
      * 
      * @param v1 the first vector

@@ -22,6 +22,19 @@ public class VecD<N extends Cardinal>
         super(enumerated, DoubleField.INSTANCE);
     }
 
+    /**
+     * Creates a vector of unit length if the given vector is nonzero, otherwise
+     * it returns the zero vector.
+     * 
+     * @param v the vector to normalize
+     * @return the vector in the same direction with unit length (or zero)
+     */
+    public HomTuple<N, Double> normalize(final HomTuple<N, Double> v) {
+        return underlyingField().inv(Math.sqrt(dot(v, v))).match(
+            __     -> zero(),
+            factor -> scale(v, factor));
+    }
+
     @Override
     public Double dot(final HomTuple<N, Double> v1, final HomTuple<N, Double> v2) {
         final HomTuple<N, Double> prod = v1
