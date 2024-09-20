@@ -1,12 +1,19 @@
 package simulation.display;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import util.Functional;
 import util.counting.Cardinals.Two;
+import util.data.algebraic.Exp;
 import util.data.algebraic.HomTuple;
+import util.data.algebraic.Maybe;
+import util.data.algebraic.Unit;
 import util.math.instances.doubles.linear.Linear2D;
 import util.math.instances.doubles.vectors.Vec2D;
 
@@ -25,6 +32,8 @@ public class ViewingCanvas implements NodeInterpretable {
     // The offset of the center in canvas space
     private final HomTuple<Two, Double> offset;
 
+    private final List<Runnable> toDraw = new ArrayList<>();
+
     private final Canvas canvas;
     private final GraphicsContext context;
 
@@ -32,6 +41,8 @@ public class ViewingCanvas implements NodeInterpretable {
         this.offset = Vec2D.vector(actualWidth / 2.0, actualHeight / 2.0);
         this.canvas = new Canvas(actualWidth, actualHeight);
         this.context = this.canvas.getGraphicsContext2D();
+
+        clearScreen();
 
         setBounds(actualWidth, actualHeight);
     }
@@ -41,8 +52,6 @@ public class ViewingCanvas implements NodeInterpretable {
         this.height     = height;
         this.upperRight = Vec2D.vector(width / 2.0, height / 2.0);
         this.lowerLeft  = Vec2D.INSTANCE.neg(this.upperRight);
-        clear();
-        drawBounds();
     }
 
     public void setWidth(final double width) {
@@ -55,23 +64,24 @@ public class ViewingCanvas implements NodeInterpretable {
 
     public void setZoom(final double zoom) {
         this.zoom = zoom;
-        clear();
-        drawBounds();
     }
 
-    public void clear() {
-        this.context.setFill(
-            Functional.let(this.context.getFill(), oldFill -> {
-                this.context.setFill(Color.BLACK);
-                this.context.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
-                return oldFill;
-            }));
+    public void clearDrawings() {
+        this.toDraw.clear();
+    }
+
+    public void clearScreen() {
+        this.context.setFill(Color.BLACK);
+        this.context.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+    }
+
+    public void draw() {
+        clearScreen();
+        toDraw.forEach(fun -> fun.run());
     }
 
     public void setCenter(final HomTuple<Two, Double> center) {
         this.center = center;
-        clear();
-        drawBounds();
     }
 
     public void setCenterX(final double x) {
@@ -86,85 +96,42 @@ public class ViewingCanvas implements NodeInterpretable {
             y));
     }
 
-    public void drawLine(final HomTuple<Two, Double> start, final HomTuple<Two, Double> end, final Color color) {
-        this.context.setStroke(
-            Functional.let(this.context.getStroke(), oldStroke ->
-            Functional.let(toCanvasCoords(start), realStart ->
-            Functional.let(toCanvasCoords(end), realEnd -> {
-                this.context.setStroke(color);
-                this.context.strokeLine(
-                    Vec2D.x(realStart), Vec2D.y(realStart), 
-                    Vec2D.x(realEnd), Vec2D.y(realEnd));
-                return oldStroke;
-            }))));
+    public void drawImage(final HomTuple<Two, Double> center, final Image image) {
+        Maybe.<Runnable, Unit>bind(
+            Functional.let(Vec2D.vector(image.getWidth(), image.getHeight()), widthAndHeight ->
+            Functional.let(Linear2D.asLinearMap(0.5, 0, 0, -0.5).apply(widthAndHeight), lowerLeftRelative ->
+            Functional.let(Vec2D.INSTANCE.neg(lowerLeftRelative), upperRightRelative ->
+            Maybe.bind(toCanvasCoords(Vec2D.INSTANCE.sum(center, lowerLeftRelative)), realLowerLeft ->
+            Maybe.bind(toCanvasCoords(Vec2D.INSTANCE.sum(center, upperRightRelative)), realUpperRight ->
+            Functional.let(Vec2D.INSTANCE.subVec(realLowerLeft, realUpperRight), realWidthAndHeight ->
+            Maybe.<Runnable>just(
+                () -> {
+                    this.context.drawImage(
+                        image, 
+                        Vec2D.x(realUpperRight), 
+                        Vec2D.y(realUpperRight), 
+                        Vec2D.x(realWidthAndHeight),
+                         Vec2D.y(realWidthAndHeight));
+                }))))))),
+            fun -> {
+                this.toDraw.add(fun);
+                return Maybe.<Unit>nothing();
+            });
     }
 
-    public void drawRect(final HomTuple<Two, Double> lowerLeft, final HomTuple<Two, Double> upperRight, final Color strokeColor) {
-        this.context.setStroke(
-            Functional.let(this.context.getStroke(), oldStroke ->
-            Functional.let(toCanvasCoords(lowerLeft), realLowerLeft ->
-            Functional.let(toCanvasCoords(upperRight), realUpperRight ->
-            Functional.let(Vec2D.INSTANCE.subVec(toCanvasCoords(upperRight), toCanvasCoords(lowerLeft)), widthAndHeight -> {
-                this.context.setStroke(strokeColor);
-                this.context.strokeRect(
-                    Vec2D.x(realLowerLeft), Vec2D.y(realUpperRight),
-                    Math.abs(Vec2D.x(widthAndHeight)), Math.abs(Vec2D.y(widthAndHeight)));
-                return oldStroke;
-            })))));
-    }
-
-    public void fillRect(final HomTuple<Two, Double> lowerLeft, final HomTuple<Two, Double> upperRight, final Color fillColor) {
-        this.context.setFill(
-            Functional.let(this.context.getFill(), oldFill ->
-            Functional.let(toCanvasCoords(lowerLeft), realLowerLeft ->
-            Functional.let(toCanvasCoords(upperRight), realUpperRight ->
-            Functional.let(Vec2D.INSTANCE.subVec(toCanvasCoords(upperRight), toCanvasCoords(lowerLeft)), widthAndHeight -> {
-                this.context.setFill(fillColor);
-                this.context.fillRect(
-                    Vec2D.x(realLowerLeft), Vec2D.y(realUpperRight),
-                    Math.abs(Vec2D.x(widthAndHeight)), Math.abs(Vec2D.y(widthAndHeight)));
-                return oldFill;
-            })))));
-    }
-
-    public void drawCircle(final HomTuple<Two, Double> center, final double radius, final Color strokeColor) {
-        this.context.setStroke(
-            Functional.let(this.context.getStroke(), oldStroke -> 
-            Functional.let(toCanvasCoords(center), realCenter ->
-            Functional.let(toCanvasCoords(Vec2D.INSTANCE.sum(center, HomTuple.tuple(-radius, radius))), upperLeft ->
-            Functional.let(Vec2D.x(Vec2D.INSTANCE.subVec(realCenter, upperLeft)), realRadius -> {
-                this.context.setStroke(strokeColor);
-                this.context.strokeOval(Vec2D.x(upperLeft), Vec2D.y(upperLeft), 2 * realRadius, 2 * realRadius);
-                return oldStroke;
-            })))));
-    }
-
-    public void fillCircle(final HomTuple<Two, Double> center, final double radius, final Color fillColor) {
-        this.context.setFill(
-            Functional.let(this.context.getFill(), oldFill -> 
-            Functional.let(toCanvasCoords(center), realCenter ->
-            Functional.let(toCanvasCoords(Vec2D.INSTANCE.sum(center, HomTuple.tuple(-radius, radius))), upperLeft ->
-            Functional.let(Vec2D.x(Vec2D.INSTANCE.subVec(realCenter, upperLeft)), realRadius -> {
-                this.context.setFill(fillColor);
-                this.context.fillOval(Vec2D.x(upperLeft), Vec2D.y(upperLeft), 2 * realRadius, 2 * realRadius);
-                return oldFill;
-            })))));
-    }
-
-    private void drawBounds() {
-        drawRect(this.lowerLeft, this.upperRight, Color.GRAY);
-        drawLine(this.lowerLeft, this.upperRight, Color.GRAY);
-        drawCircle(Vec2D.ZERO, Math.sqrt(this.width * this.width + this.height * this.height) / 2.0, Color.GRAY);
-    }
-
-    private HomTuple<Two, Double> toCanvasCoords(final HomTuple<Two, Double> vector) {
-        return
+    private Maybe<HomTuple<Two, Double>> toCanvasCoords(final HomTuple<Two, Double> vector) {
+        final Exp<HomTuple<Two, Double>, HomTuple<Two, Double>> flipY = Linear2D.asLinearMap(1, 0, 0, -1);
+        return Functional.let(
             Vec2D.INSTANCE.sum(
-                Linear2D.asLinearMap(1, 0, 0, -1).apply(
-                    Vec2D.INSTANCE.subVec(
-                        Vec2D.INSTANCE.scale(vector, Math.pow(2, this.zoom)),
-                        this.center)),
-                offset);
+                flipY.apply(
+                        Vec2D.INSTANCE.scale(
+                            Vec2D.INSTANCE.subVec(vector, this.center), Math.pow(2, this.zoom))),
+                offset),
+            coordVector ->
+                Vec2D.x(coordVector) < 0 || Vec2D.x(coordVector) > this.canvas.getWidth() ||
+                Vec2D.y(coordVector) < 0 || Vec2D.y(coordVector) > this.canvas.getHeight()
+                    ? Maybe.nothing()
+                    : Maybe.just(coordVector));
     }
 
     @Override
