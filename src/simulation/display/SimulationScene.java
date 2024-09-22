@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -13,12 +14,14 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import simulation.SimulationListener;
 import simulation.parameters.FloatParameter;
 import simulation.parameters.IntegerParameter;
 import simulation.parameters.SimulationParameterGroup;
 import util.data.trees.DistinguishedTree;
+import util.math.instances.doubles.vectors.Vec2D;
 
-public class SimulationScene {
+public class SimulationScene implements SimulationListener {
     private static final int MAX_SIMULATION_WIDTH  = 1024;
     private static final int MAX_SIMULATION_HEIGHT = 512;
 
@@ -55,9 +58,6 @@ public class SimulationScene {
         final Background background = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
 
         this.scene = new Scene(borderPane);
-
-        this.canvas.setCenterX(MAX_SIMULATION_WIDTH / 2);
-        this.canvas.setCenterY(MAX_SIMULATION_HEIGHT / 2);
 
         center.getChildren().add(this.canvas.asNode());
 
@@ -181,5 +181,13 @@ public class SimulationScene {
                     .addFloatParameter(centerXParameter)
                     .addFloatParameter(centerYParameter)
                     .build())));
+    }
+
+    @Override
+    public void postFrame(final WritableImage image) {
+        this.canvas.clearDrawings();
+        this.canvas.drawImage(Vec2D.ZERO, image);
+        this.canvas.clearScreen();
+        this.canvas.draw();
     }
 }
