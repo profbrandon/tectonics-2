@@ -45,8 +45,8 @@ public class ViewingCanvas implements NodeInterpretable {
     }
 
     public void setBounds(final double width, final double height) {
-        this.width      = width;
-        this.height     = height;
+        this.width  = width;
+        this.height = height;
     }
 
     public void setWidth(final double width) {

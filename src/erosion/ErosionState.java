@@ -10,30 +10,81 @@ public class ErosionState {
     private static final int WIDTH = ErosionSimulation.WIDTH;
     private static final int HEIGHT = ErosionSimulation.HEIGHT;
 
+    private final ErosionParameters parameters;
+
     private float[][] heights = new float[WIDTH][HEIGHT];
 
     private float[][] sediment = new float[WIDTH][HEIGHT];
     
-    private ErosionState(boolean initialize) {
+    private ErosionState(final ErosionParameters parameters, final boolean initialize) {
+        this.parameters = parameters;
+
         if (initialize) {
             setAllHeights(0f);
         }
+
+        setSediment(0f);
     }
 
-    private ErosionState(float initialHeight) {
+    private ErosionState(final ErosionParameters parameters, final float initialHeight) {
+        this.parameters = parameters;
+
         setAllHeights(initialHeight);
+        setSediment(0f);
+    }
+
+    private void setSediment(final float value) {
+        for (int i = 0; i < WIDTH; ++i)
+            for (int j = 0; j < HEIGHT; ++j)
+                sediment[i][j] = value;
     }
 
     public void evolve() {
         try {
-            flow(0.5f);
-            
-            blur(new float[][] {
-                new float[]{ 0.10f, 0.15f, 0.10f },
-                new float[]{ 0.15f, 0.01f, 0.15f },
-                new float[]{ 0.10f, 0.15f, 0.10f }
-            });
-            //perturb(0.001f);
+            final float blurS = parameters.getBlurStrength();
+
+            if (parameters.getBlurEnabled())
+                blur(new float[][] {
+                    new float[]{ 0.10f, 0.15f, 0.10f },
+                    new float[]{ 0.15f, blurS, 0.15f },
+                    new float[]{ 0.10f, 0.15f, 0.10f }
+                });
+
+            if (parameters.getNoiseEnabled()) {
+                perturb(parameters.getNoiseStrength());
+            }
+
+            double heightSum = 0.0f;
+            double sedimentSum = 0.0f;
+
+            float minHeight = heights[0][0];
+            float maxHeight = heights[0][0];
+
+            float minSediment = sediment[0][0];
+            float maxSediment = sediment[0][0];
+
+            for (int i = 0; i < WIDTH; ++i)
+                for (int j = 0; j < HEIGHT; ++j) {
+                    heightSum += heights[i][j];
+                    sedimentSum += sediment[i][j];
+
+                    if (minHeight > heights[i][j])
+                        minHeight = heights[i][j];
+                    
+                    if (maxHeight < heights[i][j])
+                        maxHeight = heights[i][j];
+
+                    if (minSediment > sediment[i][j])
+                        minSediment = sediment[i][j];
+                    
+                    if (maxSediment < sediment[i][j])
+                        maxSediment = sediment[i][j];
+                }
+
+            System.out.print("| height: " + heightSum + ", sediment: " + sedimentSum + ", total: " + (heightSum + sedimentSum) 
+                + ", min/max height: (" + minHeight + ", " + maxHeight + ")"
+                + ", min/max sediment: (" + minSediment + ", " + maxSediment + ")");
+
         } catch (final Exception e) {
             System.out.println(e);
         }
@@ -55,68 +106,15 @@ public class ErosionState {
                 heights[i][j] += perturbation * (float) (2.0 * Math.random() - 1.0);
     }
 
-    public void landslide(float slopeThreshold, float param) {
-        float[][] deltas = new float[WIDTH + 2][HEIGHT + 2];
+    public void flow(final float erodibility, final float transportFactor) {
+        float[][] deltaH = new float[WIDTH + 2][HEIGHT + 2];
+        float[][] deltaS = new float[WIDTH + 2][HEIGHT + 2];
 
         for (int i = 0; i < WIDTH + 2; ++i)
-            for (int j = 0; j < HEIGHT + 2; ++j)
-                deltas[i][j] = 0f;
-
-        for (int i = 1; i < WIDTH + 1; ++i) {
-            for (int j = 1; j < HEIGHT + 1; ++j) {
-                final int ci = i - 1;
-                final int cj = j - 1;
-                final float refHeight = heights[ci][cj];
-
-                if (ci > 0 && ci < WIDTH - 1 && cj > 0 && cj < HEIGHT - 1) {
-
-                    final float temp1 = refHeight - heights[ci - 1][cj];
-                    final float temp2 = refHeight - heights[ci + 1][cj];
-                    final float temp3 = refHeight - heights[ci][cj - 1];
-                    final float temp4 = refHeight - heights[ci][cj + 1];
-
-                    if (temp1 > slopeThreshold) deltas[i - 1][j] += temp1 * param;
-                    if (temp2 > slopeThreshold) deltas[i + 1][j] += temp2 * param;
-                    if (temp3 > slopeThreshold) deltas[i][j - 1] += temp3 * param;
-                    if (temp4 > slopeThreshold) deltas[i][j + 1] += temp4 * param;
-
-                    final float aggregate = 
-                        List.of(temp1, temp2, temp3, temp4)
-                            .stream()
-                            .filter(v -> v > 0)
-                            .reduce(0f, (f1, f2) -> f1 + f2);
-
-                    deltas[i][j] -= aggregate * param;
-                }
+            for (int j = 0; j < HEIGHT + 2; ++j) {
+                deltaH[i][j] = 0f;
+                deltaS[i][j] = 0f;
             }
-        }
-
-        for (int i = 0; i < WIDTH; ++i)
-            for (int j = 0; j < HEIGHT; ++j)
-                heights[i][j] += deltas[i + 1][j + 1];
-
-        for (int i = 0; i < WIDTH; ++i) {
-            heights[i][0] += deltas[i + 1][HEIGHT + 1];
-            heights[i][HEIGHT - 1] += deltas[i + 1][0];
-        }
-
-        for (int j = 0; j < HEIGHT; ++j) {
-            heights[0][j] += deltas[WIDTH + 1][j + 1];
-            heights[WIDTH - 1][j] += deltas[0][j + 1]; 
-        }
-
-        heights[0][0]                  += deltas[WIDTH + 1][HEIGHT + 1];
-        heights[WIDTH - 1][0]          += deltas[0][HEIGHT + 1];
-        heights[0][HEIGHT - 1]         += deltas[WIDTH + 1][0];
-        heights[WIDTH - 1][HEIGHT - 1] += deltas[0][0];
-    }
-
-    public void flow(float param) {
-        float[][] deltas = new float[WIDTH + 2][HEIGHT + 2];
-
-        for (int i = 0; i < WIDTH + 2; ++i)
-            for (int j = 0; j < HEIGHT + 2; ++j)
-                deltas[i][j] = 0f;
 
         for (int i = 1; i < WIDTH + 1; ++i) {
             for (int j = 1; j < HEIGHT + 1; ++j) {
@@ -130,118 +128,122 @@ public class ErosionState {
 
                 final List<Prod<Prod<Integer, Integer>, Float>> elements
                     = List.of(
-                        //Prod.pair(ci - 1, cj - 1),
-                        Prod.pair(ci - 1, cj),
-                        //Prod.pair(ci - 1, cj + 1),
-                        Prod.pair(ci, cj - 1),
-                        Prod.pair(ci, cj + 1),
-                        //Prod.pair(ci + 1, cj - 1),
-                        Prod.pair(ci + 1, cj)
-                        //Prod.pair(ci + 1, cj + 1)
-                        )
-                    .stream()
-                    .map(pair -> Prod.destroy(pair, c -> r -> Prod.pair(pair, heights[c][r] - refHeight)))
-                    .filter(pair -> Prod.destroy(pair, __ -> relative -> relative < 0))
-                    .sorted((a, b) -> a.second() > b.second() ? -1 : 1)
-                    .toList();
-
-                if (elements.size() > 1) {
-                    final float toRemove = - param * elements.get(0).second();
-                    final Prod<Prod<Integer, Integer>, Float> lowest = elements.get(elements.size() - 1);
-
-                    deltas[i][j] -= toRemove;
-                    deltas[lowest.first().first() + 1][lowest.first().second() + 1] += 0.1f * toRemove;
-
-                    elements
+                            //Prod.pair(ci - 1, cj - 1),
+                            Prod.pair(ci - 1, cj),
+                            //Prod.pair(ci - 1, cj + 1),
+                            Prod.pair(ci, cj - 1),
+                            Prod.pair(ci, cj + 1),
+                            //Prod.pair(ci + 1, cj - 1),
+                            Prod.pair(ci + 1, cj)
+                            //Prod.pair(ci + 1, cj + 1)
+                            )
                         .stream()
-                        .skip(1)
-                        .forEach(v -> {
-                            deltas[v.first().first() + 1][v.first().second() + 1] += 0.7f * toRemove / (elements.size() - 1);
-                        });
-                } else if (elements.size() == 1) {
-                    final Prod<Prod<Integer, Integer>, Float> lowest = elements.get(0);
-                    final float toRemove = - (float)Math.sqrt(param) * lowest.second();
+                        .map(pair -> Prod.destroy(pair, c -> r -> Prod.pair(pair, heights[c][r] - refHeight)))
+                        .toList();
+                    
+                final List<Prod<Prod<Integer, Integer>, Float>> below
+                    = elements
+                        .stream()
+                        .filter(pair -> Prod.destroy(pair, __ -> relative -> relative < 0))
+                        .sorted((a, b) -> a.second() > b.second() ? -1 : 1)
+                        .toList();
 
-                    deltas[i][j] -= toRemove;
-                    //deltas[lowest.first().first() + 1][lowest.first().second() + 1] += toRemove;
+                // Filling a hole
+                if (below.size() == 0) {
+                    deltaH[i][j] += sediment[ci][cj];
+                    deltaS[i][j] -= sediment[ci][cj];
                 }
-            }
-        }
+                else if (below.size() == 1) {
+                    final Prod<Prod<Integer, Integer>, Float> lowest = below.get(0);
 
-        for (int i = 0; i < WIDTH; ++i)
-            for (int j = 0; j < HEIGHT; ++j)
-                heights[i][j] += deltas[i + 1][j + 1];
+                    final float drop       = - lowest.second();
+                    final float erosion    = (float) erodibility * drop;
+                    final float transport  = (float) transportFactor * sediment[ci][cj];
+                    final float deposition = sediment[ci][cj] - transport;
 
-        for (int i = 0; i < WIDTH; ++i) {
-            heights[i][0] += deltas[i + 1][HEIGHT + 1];
-            heights[i][HEIGHT - 1] += deltas[i + 1][0];
-        }
+                    final int di = lowest.first().first() + 1;
+                    final int dj = lowest.first().second() + 1;
 
-        for (int j = 0; j < HEIGHT; ++j) {
-            heights[0][j] += deltas[WIDTH + 1][j + 1];
-            heights[WIDTH - 1][j] += deltas[0][j + 1]; 
-        }
+                    deltaS[di][dj]         += transport + erosion;
 
-        heights[0][0]                  += deltas[WIDTH + 1][HEIGHT + 1];
-        heights[WIDTH - 1][0]          += deltas[0][HEIGHT + 1];
-        heights[0][HEIGHT - 1]         += deltas[WIDTH + 1][0];
-        heights[WIDTH - 1][HEIGHT - 1] += deltas[0][0];
-    }
+                    deltaH[ci + 1][cj + 1] += deposition;
+                    deltaH[ci + 1][cj + 1] -= erosion;
+                    deltaS[ci + 1][cj + 1] -= sediment[ci][cj];
+                } 
+                else if (below.size() >= 2) {
+                    final int n = below.size();
 
-    public void fillLows(float param) {
-        float[][] deltas = new float[WIDTH + 2][HEIGHT + 2];
-
-        for (int i = 0; i < WIDTH + 2; ++i)
-            for (int j = 0; j < HEIGHT + 2; ++j)
-                deltas[i][j] = 0f;
-
-        for (int i = 1; i < WIDTH + 1; ++i) {
-            for (int j = 1; j < HEIGHT + 1; ++j) {
-                final int ci = i - 1;
-                final int cj = j - 1;
-                final float refHeight = heights[ci][cj];
-
-                if (ci > 0 && ci < WIDTH - 1 && cj > 0 && cj < HEIGHT - 1) {
-
-                    final float temp1 = refHeight - heights[ci - 1][cj];
-                    final float temp2 = refHeight - heights[ci + 1][cj];
-                    final float temp3 = refHeight - heights[ci][cj - 1];
-                    final float temp4 = refHeight - heights[ci][cj + 1];
-
-                    if (temp1 > 0) deltas[i - 1][j] += temp1 * param;
-                    if (temp2 > 0) deltas[i + 1][j] += temp2 * param;
-                    if (temp3 > 0) deltas[i][j - 1] += temp3 * param;
-                    if (temp4 > 0) deltas[i][j + 1] += temp4 * param;
-
-                    final float aggregate = 
-                        List.of(temp1, temp2, temp3, temp4)
+                    final float aggregateDrop
+                        = - below
                             .stream()
-                            .filter(v -> v > 0)
-                            .reduce(0f, (f1, f2) -> f1 + f2);
+                            .map(v -> v.second())
+                            .reduce(0f, (v1, v2) -> v1 + v2);
 
-                    deltas[i][j] -= aggregate * param;
+                    final float slumpFactor = squeeze(aggregateDrop);
+
+                    final float aggregateErosion
+                        = erodibility * erodibility * aggregateDrop / n;
+
+                    final float aggregateTransport
+                        = slumpFactor * transportFactor * sediment[ci][cj];
+
+                    final float aggregateDeposition
+                        = sediment[ci][cj] - aggregateTransport;
+
+                    below.forEach(
+                        v -> {
+                            final float drop  = - v.second();
+                            final int di      = v.first().first() + 1;
+                            final int dj      = v.first().second() + 1;
+
+                            final float dropFactor = drop / aggregateDrop;
+
+                            final float transport  = aggregateTransport * dropFactor;
+                            final float deposition = aggregateDeposition * dropFactor; 
+                            final float erosion    = aggregateErosion * dropFactor;
+                            
+                            deltaS[di][dj]         += transport + erosion;
+                            deltaH[ci + 1][cj + 1] += deposition;
+                        }
+                    );
+
+                    deltaS[ci + 1][cj + 1] -= sediment[ci][cj];
+                    deltaH[ci + 1][cj + 1] -= aggregateErosion;
                 }
             }
         }
 
         for (int i = 0; i < WIDTH; ++i)
-            for (int j = 0; j < HEIGHT; ++j)
-                heights[i][j] += deltas[i + 1][j + 1];
+            for (int j = 0; j < HEIGHT; ++j) {
+                heights[i][j] += deltaH[i + 1][j + 1];
+                sediment[i][j] += deltaS[i + 1][j + 1];
+            }
 
         for (int i = 0; i < WIDTH; ++i) {
-            heights[i][0] += deltas[i + 1][HEIGHT + 1];
-            heights[i][HEIGHT - 1] += deltas[i + 1][0];
+            heights[i][0]          += deltaH[i + 1][HEIGHT + 1];
+            heights[i][HEIGHT - 1] += deltaH[i + 1][0];
+
+            sediment[i][0]          += deltaS[i + 1][HEIGHT + 1];
+            sediment[i][HEIGHT - 1] += deltaS[i + 1][0];
         }
 
         for (int j = 0; j < HEIGHT; ++j) {
-            heights[0][j] += deltas[WIDTH + 1][j + 1];
-            heights[WIDTH - 1][j] += deltas[0][j + 1]; 
+            heights[0][j]         += deltaH[WIDTH + 1][j + 1];
+            heights[WIDTH - 1][j] += deltaH[0][j + 1]; 
+
+            sediment[0][j]         += deltaS[WIDTH + 1][j + 1];
+            sediment[WIDTH - 1][j] += deltaS[0][j + 1]; 
         }
 
-        heights[0][0]                  += deltas[WIDTH + 1][HEIGHT + 1];
-        heights[WIDTH - 1][0]          += deltas[0][HEIGHT + 1];
-        heights[0][HEIGHT - 1]         += deltas[WIDTH + 1][0];
-        heights[WIDTH - 1][HEIGHT - 1] += deltas[0][0];
+        heights[0][0]                  += deltaH[WIDTH + 1][HEIGHT + 1];
+        heights[WIDTH - 1][0]          += deltaH[0][HEIGHT + 1];
+        heights[0][HEIGHT - 1]         += deltaH[WIDTH + 1][0];
+        heights[WIDTH - 1][HEIGHT - 1] += deltaH[0][0];
+
+        sediment[0][0]                  += deltaS[WIDTH + 1][HEIGHT + 1];
+        sediment[WIDTH - 1][0]          += deltaS[0][HEIGHT + 1];
+        sediment[0][HEIGHT - 1]         += deltaS[WIDTH + 1][0];
+        sediment[WIDTH - 1][HEIGHT - 1] += deltaS[0][0];
     }
 
     public void blur(float[][] mask) {
@@ -290,23 +292,27 @@ public class ErosionState {
 
     }
 
-    public static ErosionState erosionState(float initialHeight) {
-        return new ErosionState(initialHeight);
+    public static ErosionState erosionState(final ErosionParameters parameters, final float initialHeight) {
+        return new ErosionState(parameters, initialHeight);
     }
 
-    public static ErosionState randomErosionState(float initialHeight, float perturbation) {
-        final ErosionState erosionState = new ErosionState(initialHeight);
+    public static ErosionState randomErosionState(final ErosionParameters parameters, final float initialHeight, final float perturbation) {
+        final ErosionState erosionState = new ErosionState(parameters, initialHeight);
         erosionState.perturb(perturbation);
         return erosionState;
     }
 
-    public static ErosionState fromHeightFunction(Function<Integer, Function<Integer, Float>> heightFunction) {
-        final ErosionState erosionState = new ErosionState(false);
+    public static ErosionState fromHeightFunction(final ErosionParameters parameters,  final Function<Integer, Function<Integer, Float>> heightFunction) {
+        final ErosionState erosionState = new ErosionState(parameters, false);
 
         for (int i = 0; i < WIDTH; ++i)
             for (int j = 0; j < HEIGHT; ++j)
                 erosionState.heights[i][j] = heightFunction.apply(j).apply(i);
 
         return erosionState;
+    }
+
+    private static float squeeze(final float f) {
+        return (float) (Math.atan(f) / Math.PI * 2.0f);
     }
 }

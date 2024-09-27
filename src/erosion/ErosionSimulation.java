@@ -11,9 +11,6 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import simulation.Simulation;
 import simulation.SimulationListener;
-import simulation.parameters.BooleanParameter;
-import simulation.parameters.FloatParameter;
-import simulation.parameters.IntegerParameter;
 import simulation.parameters.SimulationParameterGroup;
 import util.Functional;
 import util.data.trees.DistinguishedTree;
@@ -23,92 +20,18 @@ public class ErosionSimulation implements Simulation<ErosionSimulationMode> {
     public static final int WIDTH  = 700;
     public static final int HEIGHT = 500;
 
-    private final DistinguishedTree<String, SimulationParameterGroup> parameters 
-        = new DistinguishedTree<>(
-            "Erosion",
-            List.of(
-                new DistinguishedTree<>(
-                    "Landslides",
-                    List.of(
-                        new DistinguishedTree<>(
-                            new SimulationParameterGroup.Builder()
-                                .addIntegerParameter(new IntegerParameter(
-                                    "Blur Radius", 
-                                    "BlRad", 
-                                    "The radius of effect for the given blur",
-                                    1,
-                                    1,
-                                    20))
-                                .build()),
-                        new DistinguishedTree<>(
-                            new SimulationParameterGroup.Builder()
-                                .addFloatParameter(new FloatParameter (
-                                    "Blur Strength",
-                                    "BlSt", 
-                                    "The strength of the blur to be applied",
-                                    1.0f,
-                                    0.0f,
-                                    10.0f))
-                                .build()),
-                        new DistinguishedTree<>(
-                            new SimulationParameterGroup.Builder()
-                                .addFloatParameter(new FloatParameter(
-                                    "Prominence Dependence", 
-                                    "PromDep", 
-                                    "Determines how much the blur should vary with prominence",
-                                    0.0f,
-                                    0.0f,
-                                    1.0f))
-                                .build()),
-                        new DistinguishedTree<>(
-                            "Megaslides",
-                            List.of(
-                                new DistinguishedTree<>(
-                                    new SimulationParameterGroup.Builder()
-                                        .addBooleanParameter(new BooleanParameter(
-                                            "Enable Megaslides",
-                                            "EnMegSld", 
-                                            "Determines whether megaslides should be enabled",
-                                            false,
-                                            false,
-                                            false))
-                                        .build())))
-                        )),
-                new DistinguishedTree<>(
-                    "Simulated Water",
-                    List.of(
-                        new DistinguishedTree<>(
-                            new SimulationParameterGroup.Builder()
-                                .addFloatParameter(new FloatParameter(
-                                    "Slope Dependence", 
-                                    "SlpDep", 
-                                    "To what degree slope controls erosion",
-                                    1.0f,
-                                    0.0f,
-                                    10.0f))
-                                .build()),
-                        new DistinguishedTree<>(
-                            new SimulationParameterGroup.Builder()
-                                .addFloatParameter(new FloatParameter(
-                                    "Confluence Factor",
-                                    "CnflFac",
-                                    "How much the confluence of multiple lows increases the output",
-                                    1.0f,
-                                    0.0f,
-                                    2.0f))
-                                .build())
-                    ))
-            ));
+    private final ErosionParameters parameters = new ErosionParameters();
 
     private ByteBuffer byteBuffer;
     private PixelBuffer<ByteBuffer> pixelBuffer;
 
     private ErosionState state = ErosionState.fromHeightFunction(
+        this.parameters,
         row -> col -> 
             Functional.let(Math.abs(350f - col), x ->
             Functional.let(Math.abs(250f - row), y ->
             Functional.let((float)x / 350f, normalizedDistance -> 
-                (1.0f - normalizedDistance) > 0.5 ? 15f : 0f
+                (1.0f - normalizedDistance) > 0.5 ? 15f : 1f
             ))));
 
     //private ErosionSimulationMode mode = ErosionSimulationMode.HEIGHT;
@@ -131,16 +54,17 @@ public class ErosionSimulation implements Simulation<ErosionSimulationMode> {
                 //byteBuffer.put(offset, (byte) 0xFF);
             }
 
-        state.perturb(0.1f);
+        state.perturb(1f);
     }
 
     @Override
     public DistinguishedTree<String, SimulationParameterGroup> getParameters() {
-        return parameters;
+        return parameters.getParameterTree();
     }
 
     @Override
     public void play() {
+        this.parameters.lock();
         this.thread = new ErosionThread();
         thread.play();
     }
@@ -153,13 +77,18 @@ public class ErosionSimulation implements Simulation<ErosionSimulationMode> {
     @Override
     public void end() {
         thread.pause();
+        this.parameters.unlock();
         this.state = ErosionState.fromHeightFunction(
+            this.parameters,
             row -> col -> 
                 Functional.let(Math.abs(350f - col), x ->
                 Functional.let(Math.abs(250f - row), y ->
                 Functional.let((float)x / 350f, normalizedDistance -> 
-                    (1.0f - normalizedDistance) > 0.5 ? 15f : 0f
+                    (1.0f - normalizedDistance) > 0.5 ? 15f : 1f
                 ))));
+
+        this.state.perturb(1f);
+        thread.postImage();
     }
 
     @Override
@@ -170,6 +99,7 @@ public class ErosionSimulation implements Simulation<ErosionSimulationMode> {
     @Override
     public void addSimulationListeners(final Collection<SimulationListener> listeners) {
         this.listeners.addAll(listeners);
+        thread.postImage();
     }
     
     @Override
@@ -193,22 +123,21 @@ public class ErosionSimulation implements Simulation<ErosionSimulationMode> {
             }
         }
 
-        public void pause() {
-            synchronized(this) {
-                unlocked.set(false);
-            }
+        public synchronized void pause() {
+            unlocked.set(false);
         }
 
-        public void play() {
-            synchronized(this) {
-                unlocked.set(true);
-                this.start();
-            }
+        public synchronized void play() {
+            unlocked.set(true);
+            this.start();
         }
 
         public void generateNextFrame() {
             state.evolve();
+            postImage();
+        }
 
+        public void postImage() {
             final float[][] heights = state.getHeights();
 
             for (int i = 0; i < WIDTH; ++i)

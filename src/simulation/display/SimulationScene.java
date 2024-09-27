@@ -105,7 +105,11 @@ public class SimulationScene implements SimulationListener {
     }
 
     public void bindEndButton(final Runnable onEnd) {
-        endButton.setOnAction(event -> onEnd.run());
+        endButton.setOnAction(event -> {
+            onEnd.run();
+            this.canvas.clearDrawings();
+            this.canvas.clearScreen();
+        });
     }
 
     public Scene asScene() {
