@@ -2,10 +2,13 @@ package simulation.display;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -15,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import simulation.SimulationListener;
+import simulation.SimulationMode;
 import simulation.parameters.FloatParameter;
 import simulation.parameters.IntegerParameter;
 import simulation.parameters.SimulationParameterGroup;
@@ -46,10 +50,16 @@ public class SimulationScene implements SimulationListener {
     private final Button stepButton = new Button("Step");
     private final Button endButton  = new Button("End");
 
+    private final ComboBox<SimulationMode> comboBox;
+
+    private final AtomicLong lastTime = new AtomicLong(System.currentTimeMillis());
+
     private Scene scene;
 
-    public SimulationScene(final DistinguishedTree<String, SimulationParameterGroup> simulationParameterTree) {
+    public SimulationScene(final DistinguishedTree<String, SimulationParameterGroup> simulationParameterTree, final List<SimulationMode> modes) {
         this.simulationParametersMenu = new ParameterSelectionMenu(simulationParameterTree, SIMULATION_PARAMETERS_HEIGHT);
+        this.comboBox = new ComboBox<SimulationMode>();
+        this.comboBox.getItems().addAll(modes);
 
         final BorderPane borderPane = new BorderPane();
         final HBox bottom = new HBox();
@@ -81,7 +91,8 @@ public class SimulationScene implements SimulationListener {
         bottom.getChildren().addAll(
             playButton,
             stepButton,
-            endButton);
+            endButton,
+            comboBox);
     }
 
     public void bindPlayButton(final Runnable onPlay, final Runnable onPause) {
@@ -109,6 +120,12 @@ public class SimulationScene implements SimulationListener {
             onEnd.run();
             this.canvas.clearDrawings();
             this.canvas.clearScreen();
+        });
+    }
+
+    public void bindModeBox(final Consumer<SimulationMode> onModeChange) {
+        comboBox.setOnAction(event -> {
+            onModeChange.accept(comboBox.getValue());
         });
     }
 
@@ -188,10 +205,15 @@ public class SimulationScene implements SimulationListener {
     }
 
     @Override
-    public void postFrame(final WritableImage image) {
-        this.canvas.clearDrawings();
-        this.canvas.drawImage(Vec2D.ZERO, image);
-        this.canvas.clearScreen();
-        this.canvas.draw();
+    public synchronized void postFrame(final WritableImage image) {
+        final long currentTime = System.currentTimeMillis();
+
+        if (currentTime - lastTime.get() > 10) {
+
+            this.canvas.clearDrawings();
+            this.canvas.drawImage(Vec2D.ZERO, image);
+            this.canvas.clearScreen();
+            this.canvas.draw();
+        }
     }
 }

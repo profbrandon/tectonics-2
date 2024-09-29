@@ -1,5 +1,7 @@
 package tectonics;
 
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import simulation.display.SimulationScene;
@@ -10,7 +12,7 @@ public class Tectonics extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final SimulationScene scene = new SimulationScene(simulation.getParameters());
+        final SimulationScene scene = new SimulationScene(simulation.getParameters(), List.of(TectonicSimulationMode.values()));
 
         scene.bindPlayButton(simulation::play, simulation::pause);
         scene.bindStepButton(simulation::step);

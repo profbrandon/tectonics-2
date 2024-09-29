@@ -18,7 +18,6 @@ import util.math.instances.doubles.linear.Linear2D;
 import util.math.instances.doubles.vectors.Vec2D;
 
 public class ViewingCanvas implements NodeInterpretable {
-
     private double zoom = 0.0;
     private double width;
     private double height;
@@ -67,12 +66,12 @@ public class ViewingCanvas implements NodeInterpretable {
         this.toDraw.clear();
     }
 
-    public void clearScreen() {
+    public synchronized void clearScreen() {
         this.context.setFill(Color.BLACK);
         this.context.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
     }
 
-    public void draw() {
+    public synchronized void draw() {
         clearScreen();
         toDraw.forEach(fun -> fun.accept(this::toCanvasCoords));
     }
@@ -95,7 +94,7 @@ public class ViewingCanvas implements NodeInterpretable {
             y));
     }
 
-    public void drawImage(final HomTuple<Two, Double> center, final Image image) {
+    public synchronized void drawImage(final HomTuple<Two, Double> center, final Image image) {
         this.toDraw.add(
             Functional.let(Vec2D.INSTANCE.scale(Vec2D.vector(image.getWidth(), image.getHeight()), 0.5), upperRightRelative ->
             Functional.let(Vec2D.INSTANCE.neg(upperRightRelative), lowerLeftRelative ->

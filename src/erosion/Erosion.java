@@ -12,11 +12,15 @@ public class Erosion extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final SimulationScene scene = new SimulationScene(simulation.getParameters());
+        final SimulationScene scene = new SimulationScene(simulation.getParameters(), List.of(ErosionSimulationMode.values()));
 
         scene.bindPlayButton(simulation::play, simulation::pause);
         scene.bindStepButton(simulation::step);
         scene.bindEndButton(simulation::end);
+
+        scene.bindModeBox(mode -> {
+            simulation.setMode((ErosionSimulationMode) mode);
+        });
 
         simulation.addSimulationListeners(List.of(scene));
 
