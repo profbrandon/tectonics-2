@@ -11,14 +11,42 @@ import util.math.vectorspaces.NVectorSpace;
 
 public final class MathUtil {
     
+    /**
+     * Linearly interpolates between the two given values satisfying {@code i(x0, x1, 0) = x0}
+     * and {@code i(x0, x1, 1) = x1}.
+     * 
+     * @param x0 the value at {@code t = 0}
+     * @param x1 the value at {@code t = 1}
+     * @param t the parameter value
+     * @return the interpolated value
+     */
     public static double interpolate(final double x0, final double x1, final double t) {
         return (x1 - x0) * t + x0;
     }
 
+    /**
+     * Linearly interpolates between the two given values satisfying {@code i(x0, x1, 0) = x0}
+     * and {@code i(x0, x1, 1) = x1}.
+     * 
+     * @param x0 the value at {@code t = 0}
+     * @param x1 the value at {@code t = 1}
+     * @param t the parameter value
+     * @return the interpolated value
+     */
     public static float interpolate(final float x0, final float x1, final float t) {
         return (x1 - x0) * t + x0;
     }
 
+    /**
+     * Linearly interpolates between the two given values satisfying {@code i(x0, x1, 0) = x0}
+     * and {@code i(x0, x1, 1) = x1}.
+     * 
+     * @param vspace the underlying vector space
+     * @param x0 the value at {@code t = 0}
+     * @param x1 the value at {@code t = 1}
+     * @param t the parameter value
+     * @return the interpolated value
+     */
     public static <N extends Cardinal, K> HomTuple<N, K> interpolate(
         final NVectorSpace<N, K, K> vspace, 
         final HomTuple<N, K> x0, 
@@ -28,17 +56,26 @@ public final class MathUtil {
         return vspace.sum(vspace.scale(vspace.subVec(x1, x0), t), x0);
     }
 
+    /**
+     * Essentially turns an array into a piecewise-linear 2D domain which can be sampled via the
+     * produced function.
+     * 
+     * @param array the array to interpolate
+     * @return a function which samples the interpolated domain
+     */
     public static Function<Prod<Float, Float>, Float> interpolate(final float[][] array) {
         return pair -> pair.destroy(
             i -> j ->
-                Functional.let(i.intValue(), (Integer i0) ->
-                Functional.let(j.intValue(), (Integer j0) -> 
-                Functional.let(i - i0, (Float t0) ->
-                Functional.let(j - j0, (Float t1) ->
-                interpolate(
-                    interpolate(array[i0][j0],     array[i0 + 1][j0],     t1),
-                    interpolate(array[i0][j0 + 1], array[i0 + 1][j0 + 1], t1),
-                    t0))))));
+                i < 0 || j < 0 || i >= array.length - 1 || j >= array[0].length - 1
+                    ? 0f 
+                    : Functional.let(i.intValue(), (Integer i0) ->
+                      Functional.let(j.intValue(), (Integer j0) -> 
+                      Functional.let(i - i0, (Float t0) ->
+                      Functional.let(j - j0, (Float t1) ->
+                      interpolate(
+                          interpolate(array[i0][j0],     array[i0 + 1][j0],     t0),
+                          interpolate(array[i0][j0 + 1], array[i0 + 1][j0 + 1], t0),
+                          t1))))));
     }
 
     /**

@@ -66,7 +66,7 @@ public class ThreadedSimulation
         for (int i = 0; i < WIDTH; ++i)
             for (int j = 0; j < HEIGHT; ++j) {
                 int offset = 4 * (WIDTH * j + i);
-                byteBuffer.put(offset + 3, (byte) 0xFF); // Set opaque
+                byteBuffer.put(offset + 3, (byte) 0x00); // Set opaque
             }
     }
 

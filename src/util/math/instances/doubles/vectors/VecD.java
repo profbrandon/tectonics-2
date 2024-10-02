@@ -30,9 +30,19 @@ public class VecD<N extends Cardinal>
      * @return the vector in the same direction with unit length (or zero)
      */
     public HomTuple<N, Double> normalize(final HomTuple<N, Double> v) {
-        return underlyingField().inv(Math.sqrt(dot(v, v))).match(
+        return underlyingField().inv(length(v)).match(
             __     -> zero(),
             factor -> scale(v, factor));
+    }
+
+    /**
+     * Computes the length of the vector.
+     * 
+     * @param v the vector
+     * @return the length
+     */
+    public double length(final HomTuple<N, Double> v) {
+        return Math.sqrt(dot(v, v));
     }
 
     @Override

@@ -10,43 +10,43 @@ import util.data.trees.DistinguishedTree;
 
 public class Fluid2DParameters extends SimulationParameters {
 
-    private final float DEFAULT_VISCOSITY       = 0.0f;
-    private final float DEFAULT_COMPRESSIBILITY = 0.0f;
+    private final float DEFAULT_VISCOSITY = 0.0f;
+    private final float DEFAULT_DIFFUSION = 0.0f;
 
     private final FloatParameter viscosityParameter = new FloatParameter(
         "Viscosity",
-        "V",
+        "Visc",
         "The viscosity of the fluid",
         DEFAULT_VISCOSITY,
         0.0f,
         1.0f);
-    private final FloatParameter compressibilityParameter = new FloatParameter(
-        "Compressibility",
-        "Comp",
-        "How much the fluid can be compressed",
-        DEFAULT_COMPRESSIBILITY,
+    private final FloatParameter diffusionParameter = new FloatParameter(
+        "Diffusion",
+        "Diff",
+        "How fast the density field diffuses",
+        DEFAULT_DIFFUSION,
         0.0f,
         1.0f);
 
     private final AtomicReference<Float> viscosity       = new AtomicReference<>(DEFAULT_VISCOSITY);
-    private final AtomicReference<Float> compressibility = new AtomicReference<>(DEFAULT_COMPRESSIBILITY);
+    private final AtomicReference<Float> diffusion = new AtomicReference<>(DEFAULT_DIFFUSION);
 
     public Fluid2DParameters() {
         this.setEnableableValues(List.of(
             viscosityParameter,
-            compressibilityParameter
+            diffusionParameter
         ));
 
         bindParameter(viscosityParameter, viscosity);
-        bindParameter(compressibilityParameter, compressibility);
+        bindParameter(diffusionParameter, diffusion);
     }
 
     public float getViscosity() {
         return this.viscosity.get();
     }
 
-    public float getCompressibility() {
-        return this.compressibility.get();
+    public float getDiffusion() {
+        return this.diffusion.get();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class Fluid2DParameters extends SimulationParameters {
                 new DistinguishedTree<>(
                     new SimulationParameterGroup.Builder()
                         .addFloatParameter(viscosityParameter)
-                        .addFloatParameter(compressibilityParameter)
+                        .addFloatParameter(diffusionParameter)
                         .build())));
     }
 }

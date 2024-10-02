@@ -59,6 +59,35 @@ public final class Vec2D
     }
 
     /**
+     * Computes the angle between the two vectors (first to second, counterclockwise).
+     * 
+     * @param v1 the starting vector (angle = 0.0 radians)
+     * @param v2 the second vector
+     * @return the angle of the second vector relative to the first
+     */
+    public static double angle(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
+        final HomTuple<Two, Double> norm1 = INSTANCE.normalize(v1);
+        final HomTuple<Two, Double> norm2 = INSTANCE.normalize(v2);
+
+        final double a = Math.acos(INSTANCE.dot(norm1, norm2));
+        final double w = wedge(norm1, norm2);
+
+        if (w > 0) return a > 0 ? a : Math.PI + a;
+        else return a > 0 ? 2 * Math.PI - a : Math.PI - a;
+    }
+
+    /**
+     * Computes the coefficient on the wedge product between the two vectors.
+     * 
+     * @param v1 the first vector
+     * @param v2 the second vector
+     * @return the wedge product's coefficient
+     */
+    public static double wedge(final HomTuple<Two, Double> v1, final HomTuple<Two, Double> v2) {
+        return x(v1) * y(v2) - x(v2) * y(v1);
+    }
+
+    /**
      * Determines if the two vectors are equal up to {@link DoubleField#equiv(Double, Double)}.
      * 
      * @param v1 the first vector

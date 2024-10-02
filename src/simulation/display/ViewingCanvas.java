@@ -56,17 +56,18 @@ public class ViewingCanvas implements NodeInterpretable {
         setBounds(this.width, height);
     }
 
-    public void setZoom(final double zoom) {
+    public synchronized void setZoom(final double zoom) {
         this.zoom = zoom;
         clearScreen();
         draw();
     }
 
-    public void clearDrawings() {
+    public synchronized void clearDrawings() {
         this.toDraw.clear();
     }
 
     public synchronized void clearScreen() {
+        this.context.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
         this.context.setFill(Color.BLACK);
         this.context.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
     }
@@ -76,19 +77,19 @@ public class ViewingCanvas implements NodeInterpretable {
         toDraw.forEach(fun -> fun.accept(this::toCanvasCoords));
     }
 
-    public void setCenter(final HomTuple<Two, Double> center) {
+    public synchronized void setCenter(final HomTuple<Two, Double> center) {
         this.center = center;
         clearScreen();
         draw();
     }
 
-    public void setCenterX(final double x) {
+    public synchronized void setCenterX(final double x) {
         setCenter(HomTuple.tuple(
             x, 
             Vec2D.y(this.center)));
     }
 
-    public void setCenterY(final double y) {
+    public synchronized void setCenterY(final double y) {
         setCenter(HomTuple.tuple(
             Vec2D.x(this.center), 
             y));

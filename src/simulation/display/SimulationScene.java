@@ -208,8 +208,7 @@ public class SimulationScene implements SimulationListener {
     public synchronized void postFrame(final WritableImage image) {
         final long currentTime = System.currentTimeMillis();
 
-        if (currentTime - lastTime.get() > 10) {
-
+        if (currentTime - lastTime.get() > 20) {
             this.canvas.clearDrawings();
             this.canvas.drawImage(Vec2D.ZERO, image);
             this.canvas.clearScreen();
