@@ -44,16 +44,10 @@ public class Fluid2DState implements SimulationState {
 
         for (int i = 1; i < this.width - 1; ++i)
             for (int j = 1; j < this.height - 1; ++j) {
-                //this.density[i][j] = j < this.height / 2 ? 0.5f + (float)Math.random() * 0.1f : 0f;
-
-                //this.source.get()[i][j] = (j == 1 && Math.abs(i - this.width / 2) < 20) ? 100f : 0f;
-                //this.prevVelocityX.get()[i][j] = (j > 200 && j < 300) ? 100.0f * (1.0f - (float)Math.abs(j - this.height / 2) / this.height) : 0f;
-
-                this.forceY.get()[i][j] = (j < 20) ? 0.1f * (20 - j) : (j > this.height - 21) ? -0.1f * (j - this.height + 20) : 0f;
-                this.forceY.get()[i][j] += -0.01f;
+                this.forceX.get()[i][j]  = 0;
+                this.forceY.get()[i][j]  = (j <= 2 && 200 < i && i < 300) ? 40f : 0f;
+                this.density.get()[i][j] = (j <= 2) ? 0.03f : 0f;
             }
-
-        this.prevDensity.get()[250][250] = 10f;
     }
 
     public float[][] getDensity() {
@@ -178,7 +172,7 @@ public class Fluid2DState implements SimulationState {
 
         addSource(newVelX, velX, dt);
         addSource(newVelY, velY, dt);
-        
+
         swap(velX, newVelX);
         diffuse(1, newVelX, velX, visc, dt);
         swap(velY, newVelY);
@@ -228,12 +222,6 @@ public class Fluid2DState implements SimulationState {
         setBoundary(velY, 2);
     }
 
-    private void plusEquals(final AtomicReference<float[][]> a, final AtomicReference<float[][]> b) {
-        for (int i = 0; i < this.width; ++i)
-            for (int j = 0; j < this.height; ++j)
-                a.get()[i][j] += b.get()[i][j];
-    }
-
     private AtomicReference<float[][]> copy(final AtomicReference<float[][]> a) {
         final AtomicReference<float[][]> temp = new AtomicReference<>(new float[this.width][this.height]);
 
@@ -259,26 +247,10 @@ public class Fluid2DState implements SimulationState {
             0.01f);
         densitySolver(
             density, 
-            prevDensity, 
+            new AtomicReference<>(new float[this.width][this.height]), 
             velocityX, 
             velocityY, 
             parameters.getDiffusion(), 
             0.01f);
-
-        //swap(prevDensity, density);
-        //swap(prevVelocityY, velocityY);
-/*
-        float densitySum = 0.0f;
-        float velXSum    = 0.0f;
-        float velYSum    = 0.0f;
-
-        for (int i = 0; i < this.width; ++i)
-            for (int j = 0; j < this.height; ++j) {
-                densitySum += this.density.get()[i][j];
-                velXSum += this.velocityX.get()[i][j];
-                velYSum += this.velocityY.get()[i][j];
-            }
-
-        System.out.print(" | " + densitySum + ", (" + velXSum + ", " + velYSum + ")");*/
     }
 }
