@@ -1,18 +1,14 @@
 package erosion;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import simulation.SimulationParameters;
 import simulation.parameters.FloatParameter;
-import simulation.parameters.Parameter;
 import simulation.parameters.SimulationParameterGroup;
 import util.data.trees.DistinguishedTree;
-import util.properties.EnableableValue;
 
-class ErosionParameters {
-    private final AtomicBoolean locked = new AtomicBoolean(false);
-
+public class ErosionParameters extends SimulationParameters {
     private final float DEFAULT_INITIAL_HEIGHT     = 15f;
     private final float DEFAULT_INITIAL_NOISE      = 0.5f;
     private final float DEFAULT_NOISE_STRENGTH     = 0.0f;
@@ -70,16 +66,6 @@ class ErosionParameters {
         DEFAULT_CARVING_FACTOR,
         0.0f,
         1.0f);
-    
-    private final List<EnableableValue> enableableValues = List.of(
-        initialHeightParameter,
-        initialNoiseParameter,
-        noiseStrengthParameter,
-        blurStrengthParameter,
-        erodibilityParameter,
-        sedimentTransportParameter,
-        carvingFactorParameter
-    );
 
     private AtomicReference<Float> initialHeight     = new AtomicReference<>(DEFAULT_INITIAL_HEIGHT);
     private AtomicReference<Float> initialNoise      = new AtomicReference<>(DEFAULT_INITIAL_NOISE);
@@ -97,16 +83,6 @@ class ErosionParameters {
         bindParameter(erodibilityParameter, erodibility);
         bindParameter(sedimentTransportParameter, sedimentTransport);
         bindParameter(carvingFactorParameter, carvingFactor);
-    }
-
-    public synchronized void lock() {
-        this.locked.set(true);
-        this.enableableValues.forEach(v -> v.setEnabled(false));
-    }
-
-    public synchronized void unlock() {
-        this.locked.set(false);
-        this.enableableValues.forEach(v -> v.setEnabled(true));
     }
 
     public float getInitialHeight() {
@@ -170,11 +146,5 @@ class ErosionParameters {
                                 .addFloatParameter(sedimentTransportParameter)
                                 .addFloatParameter(carvingFactorParameter)
                                 .build())))));
-    }
-
-    private <T> void bindParameter(final Parameter<T> parameter, final AtomicReference<T> value) {
-        parameter.addUpdateListener(v -> {
-            if (!this.locked.get()) value.set(v);
-        });
     }
 }

@@ -3,13 +3,15 @@ package erosion;
 import java.util.List;
 import java.util.function.Function;
 
+import simulation.SimulationState;
 import util.data.algebraic.Prod;
 import util.data.algebraic.Unit;
+import util.math.MathUtil;
 
-public class ErosionState {
+public class ErosionState implements SimulationState {
 
-    private static final int WIDTH = ErosionSimulation.WIDTH;
-    private static final int HEIGHT = ErosionSimulation.HEIGHT;
+    private static final int WIDTH  = Erosion.WIDTH;
+    private static final int HEIGHT = Erosion.HEIGHT;
 
     private final ErosionParameters parameters;
 
@@ -35,64 +37,6 @@ public class ErosionState {
         for (int i = 0; i < WIDTH; ++i)
             for (int j = 0; j < HEIGHT; ++j)
                 sediment[i][j] = value;
-    }
-
-    public void evolve() {
-        final float erodibility  = parameters.getErodibility();
-        final float transport    = parameters.getSedimentTransport();
-        final float blurS        = parameters.getBlurStrength();
-        final float perturbation = parameters.getNoiseStrength();
-        final float carving      = parameters.getCarvingFactor();
-
-        try {
-            if (erodibility != 0f || transport != 0f)
-                flow(erodibility, transport, carving);
-
-            if (blurS != 0f)
-                blur(new float[][] {
-                    new float[]{ 0.10f, 0.15f, 0.10f },
-                    new float[]{ 0.15f, blurS, 0.15f },
-                    new float[]{ 0.10f, 0.15f, 0.10f }
-                });
-
-            if (perturbation != 0f)
-                perturb(perturbation);
-    
-            double heightSum   = 0.0f;
-            double sedimentSum = 0.0f;
-
-            float minHeight = heights[0][0];
-            float maxHeight = heights[0][0];
-
-            float minSediment = sediment[0][0];
-            float maxSediment = sediment[0][0];
-
-            for (int i = 0; i < WIDTH; ++i)
-                for (int j = 0; j < HEIGHT; ++j) {
-                    heightSum += heights[i][j];
-                    sedimentSum += sediment[i][j];
-
-                    if (minHeight > heights[i][j])
-                        minHeight = heights[i][j];
-                    
-                    if (maxHeight < heights[i][j])
-                        maxHeight = heights[i][j];
-
-                    if (minSediment > sediment[i][j])
-                        minSediment = sediment[i][j];
-                    
-                    if (maxSediment < sediment[i][j])
-                        maxSediment = sediment[i][j];
-                }
-
-            System.out.print("| height: " + heightSum + ", sediment: " + sedimentSum + ", total: " + (heightSum + sedimentSum) 
-                + ", min/max height: (" + minHeight + ", " + maxHeight + ")"
-                + ", min/max sediment: (" + minSediment + ", " + maxSediment + ")");
-    
-
-        } catch (final Exception e) {
-            System.out.println(e);
-        }
     }
 
     public float[][] getHeights() {
@@ -182,8 +126,8 @@ public class ErosionState {
                 // A valley
                 if (n == 1 || carvingFactor * lowest.second() < (aggregateDrop - lowest.second())) {
                     final float drop       = - lowest.second();
-                    final float erosion    = (float) (Math.sqrt(erodibility) + squeeze(10f * drop)) * drop / 2;
-                    final float transport  = (float) (Math.sqrt(transportFactor) + squeeze(1 / (drop + 1))) * sediment[ci][cj] / 2;
+                    final float erosion    = (float) (Math.sqrt(erodibility) + MathUtil.squeeze(10f * drop)) * drop / 2;
+                    final float transport  = (float) (Math.sqrt(transportFactor) + MathUtil.squeeze(1 / (drop + 1))) * sediment[ci][cj] / 2;
                     final float deposition = sediment[ci][cj] - transport;
 
                     final int di = lowest.first().first() + 1;
@@ -197,7 +141,7 @@ public class ErosionState {
                 } 
                 
                 else if (n > 1) {
-                    final float transport  = sediment[ci][cj] * (1 - squeeze(sediment[ci][cj] + 1f) + transportFactor) / 2.0f;
+                    final float transport  = sediment[ci][cj] * (1 - MathUtil.squeeze(sediment[ci][cj] + 1f) + transportFactor) / 2.0f;
                     final float deposition = sediment[ci][cj] - transport;
                     //final float erosion    = - (float)Math.pow(erodibility, 4) * lowest.second();
 
@@ -320,7 +264,63 @@ public class ErosionState {
         return erosionState;
     }
     
-    private static float squeeze(final float f) {
-        return (float) (Math.atan(f) / Math.PI * 2.0f);
+    @Override
+    public void evolve() {
+        final float erodibility  = parameters.getErodibility();
+        final float transport    = parameters.getSedimentTransport();
+        final float blurS        = parameters.getBlurStrength();
+        final float perturbation = parameters.getNoiseStrength();
+        final float carving      = parameters.getCarvingFactor();
+
+        try {
+            if (erodibility != 0f || transport != 0f)
+                flow(erodibility, transport, carving);
+
+            if (blurS != 0f)
+                blur(new float[][] {
+                    new float[]{ 0.10f, 0.15f, 0.10f },
+                    new float[]{ 0.15f, blurS, 0.15f },
+                    new float[]{ 0.10f, 0.15f, 0.10f }
+                });
+
+            if (perturbation != 0f)
+                perturb(perturbation);
+    
+            double heightSum   = 0.0f;
+            double sedimentSum = 0.0f;
+
+            float minHeight = heights[0][0];
+            float maxHeight = heights[0][0];
+
+            float minSediment = sediment[0][0];
+            float maxSediment = sediment[0][0];
+
+            for (int i = 0; i < WIDTH; ++i)
+                for (int j = 0; j < HEIGHT; ++j) {
+                    heightSum += heights[i][j];
+                    sedimentSum += sediment[i][j];
+
+                    if (minHeight > heights[i][j])
+                        minHeight = heights[i][j];
+                    
+                    if (maxHeight < heights[i][j])
+                        maxHeight = heights[i][j];
+
+                    if (minSediment > sediment[i][j])
+                        minSediment = sediment[i][j];
+                    
+                    if (maxSediment < sediment[i][j])
+                        maxSediment = sediment[i][j];
+                }
+
+            System.out.print("| height: " + heightSum + ", sediment: " + sedimentSum + ", total: " + (heightSum + sedimentSum) 
+                + ", min/max height: (" + minHeight + ", " + maxHeight + ")"
+                + ", min/max sediment: (" + minSediment + ", " + maxSediment + ")");
+    
+
+        } catch (final Exception e) {
+            System.out.println(e);
+        }
     }
+
 }
